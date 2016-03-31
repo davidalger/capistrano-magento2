@@ -20,7 +20,22 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Install Capistrano in your Magento project:
+
+    $ cd <project_root>
+    $ mkdir -p tools/cap
+    $ cd ./tools/cap
+    $ cap install
+
+Update your project `Capfile` to look like the following:
+
+```ruby
+# Load DSL and set up stages
+require 'capistrano/setup'
+
+# Load Magento deployment tasks
+require 'capistrano/magento'
+```
 
 ## Development
 

@@ -126,3 +126,25 @@ namespace :magento do
   end
 
 end
+
+namespace :load do
+  task :defaults do
+    set :linked_files, fetch(:linked_files, []).push(
+      'app/etc/env.php',
+      'var/.setup_cronjob_status',
+      'var/.update_cronjob_status',
+      'sitemap.xml'
+    )
+
+    set :linked_dirs, fetch(:linked_dirs, []).push(
+      'pub/media', 
+      'var/backups', 
+      'var/composer_home', 
+      'var/importexport', 
+      'var/import_history', 
+      'var/log',
+      'var/session', 
+      'var/tmp'
+    )
+  end
+end

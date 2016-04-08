@@ -25,20 +25,12 @@ namespace :magento do
         on release_roles :all do
           next unless any? :ban_urls
           within release_path do
-            # TODO: set default value for this parameter so if not set by site config, this won't fail
-            # TODO: change this to a more unique name
             for url in fetch(:ban_urls) do
-              varnish_response = capture(:curl, '-v', '-k', '-H', %'"X-Host: #{url}"', '-X', 'BAN', '127.0.0.1:6081')
-              if varnish_response.include? '<title>200 Banned</title>'
-                puts '    200 Banned: ' + url
+              response = capture(:curl, '-s', '-v', '-k', '-H', %W{"X-Host: #{url}"}, '-X', 'BAN', '127.0.0.1:6081')
+              if response.include? '<title>200 Banned</title>'
+                puts "    200 Banned: #{url}"
               elsif
-                puts "\n\e[0;31m" \
-                  "    ######################################################################\n" \
-                  "    #                                                                    #\n" \
-                  "    #                    Failed to ban Varnish urls                      #\n" \
-                  "    #                                                                    #\n" \
-                  "    ######################################################################\n\n"
-                puts varnish_response + "\e[0m\n"
+                puts "\e[0;31m    Warning: Failed to ban url: #{url}\n#{response}\n\e[0m\n"
               end
             end
           end
@@ -56,7 +48,7 @@ namespace :magento do
         end
       end
     end
-
+    
     # TODO: Change this once the bug with single tenant compiler is fixed http://devdocs.magento.com/guides/v2.0/config-guide/cli/config-cli-subcommands-compiler.html#config-cli-subcommands-single
     namespace :di do
       task :compile_multi_tenant do

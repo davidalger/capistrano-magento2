@@ -21,8 +21,7 @@ namespace :deploy do
         # It is necessary to run install in the update directory in order to be able to run a CRON job
         # execute :composer, 'install', '-d', './update'
         
-        execute :chmod, '+x', './bin/magento'
-        
+        invoke 'magento:reset_permissions'
         invoke 'magento:cache:flush'
         invoke 'magento:setup:upgrade'
         invoke 'magento:setup:static_content:deploy'

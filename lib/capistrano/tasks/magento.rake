@@ -27,7 +27,7 @@ namespace :magento do
           within release_path do
             # TODO: set default value for this parameter so if not set by site config, this won't fail
             # TODO: change this to a more unique name
-            for url in fetch(:urls) do
+            for url in fetch(:ban_urls) do
               varnish_response = capture(:curl, '-v', '-k', '-H', %'"X-Host: #{url}"', '-X', 'BAN', '127.0.0.1:6081')
               if varnish_response.include? '<title>200 Banned</title>'
                 puts '    200 Banned: ' + url
@@ -38,8 +38,7 @@ namespace :magento do
                   "    #                    Failed to ban Varnish urls                      #\n" \
                   "    #                                                                    #\n" \
                   "    ######################################################################\n\n"
-                puts varnish_response
-                puts "\e[0m\n"
+                puts varnish_response + "\e[0m\n"
               end
             end
           end
@@ -92,9 +91,7 @@ namespace :magento do
                 "    #                 Failed to compile static assets                    #\n" \
                 "    #                                                                    #\n" \
                 "    ######################################################################\n\n"
-              puts fetch(:static_content_deploy_output)
-              puts "\e[0m\n"
-              
+              puts fetch(:static_content_deploy_output) + "\e[0m\n"
               raise Exception, 'Failed to compile static assets'
             else
               puts '    Static content compilation successful'

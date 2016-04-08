@@ -23,6 +23,7 @@ namespace :magento do
       desc 'Add ban to Varnish for url(s)'
       task :ban do
         on release_roles :all do
+          next unless any? :ban_urls
           within release_path do
             # TODO: set default value for this parameter so if not set by site config, this won't fail
             # TODO: change this to a more unique name

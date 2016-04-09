@@ -71,22 +71,18 @@ namespace :magento do
             # compilation is successful. Once the aforementioned bug is fixed, pass a "-q" flag to
             # 'setup:static-content:deploy' to silence verbose output, as right now the log is being filled with
             # thousands of extraneous lines, per this issue: https://github.com/magento/magento2/issues/3692
+            output = capture(:php, '-f', 'bin/magento', '--', 'setup:static-content:deploy', verbosity: Logger::INFO)
             
-            set :static_content_deploy_output, capture(:php, '-f', 'bin/magento', '--', 'setup:static-content:deploy')
-            
-            if fetch(:static_content_deploy_output).to_s.include? 'Compilation from source'
-              
-              # TODO: add method to output heading messages such as this
+            # TODO: add method to output heading messages such as this
+            if output.to_s.include? 'Compilation from source'
               puts "\n\e[0;31m" \
                 "    ######################################################################\n" \
                 "    #                                                                    #\n" \
                 "    #                 Failed to compile static assets                    #\n" \
                 "    #                                                                    #\n" \
                 "    ######################################################################\n\n"
-              puts fetch(:static_content_deploy_output) + "\e[0m\n"
+              puts output + "\e[0m\n"
               raise Exception, 'Failed to compile static assets'
-            else
-              puts '    Static content compilation successful'
             end
           end
         end

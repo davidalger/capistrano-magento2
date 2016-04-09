@@ -21,27 +21,30 @@ namespace :deploy do
         if test "[ -d #{release_path}/update ]"
           execute :composer, 'install -d ./update 2>&1'
         end
-        
-        invoke 'magento:reset_permissions'
-        invoke 'magento:cache:flush'
-        invoke 'magento:setup:static_content:deploy'
-        invoke 'magento:setup:di:compile_multi_tenant'
-        invoke 'magento:reset_permissions'
-        invoke 'magento:maintenance:enable'
-        invoke 'magento:setup:upgrade'
-        invoke 'magento:cache:varnish:ban'
-        invoke 'magento:maintenance:disable'
       end
+      
+      invoke 'magento:reset_permissions'
+      invoke 'magento:setup:static_content:deploy'
+      invoke 'magento:setup:di:compile_multi_tenant'
+      invoke 'magento:reset_permissions'
+      invoke 'magento:maintenance:enable'
+      invoke 'magento:setup:upgrade'
+    end
+  end
+
+  task :published do
+    on release_roles :all do
+      invoke 'magento:cache:flush'
+      invoke 'magento:cache:varnish:ban'
+      invoke 'magento:maintenance:disable'
     end
   end
 
   task :reverted do
     on release_roles :all do
-      within release_path do
-        invoke 'magento:maintenance:disable'
-        invoke 'magento:cache:flush'
-        invoke 'magento:cache:varnish:ban'
-      end
+      invoke 'magento:maintenance:disable'
+      invoke 'magento:cache:flush'
+      invoke 'magento:cache:varnish:ban'
     end
   end
 

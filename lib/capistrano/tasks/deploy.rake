@@ -17,9 +17,10 @@ namespace :deploy do
         # If the auth.json file doesn't contain valid credentials, errors will be output to log/capistrano.log
         execute :composer, 'install', '--no-interaction'
         
-        # TODO: Need to add check in case this directory doesn't exist... even though it typically should
-        # It is necessary to run install in the update directory in order to be able to run a CRON job
-        # execute :composer, 'install', '-d', './update'
+        # This may fail if the repository does not correctly contain the update dir
+        if test "[ -d #{release_path}/update ]"
+          execute :composer, 'install', '-d', './update'
+        end
         
         invoke 'magento:reset_permissions'
         invoke 'magento:cache:flush'

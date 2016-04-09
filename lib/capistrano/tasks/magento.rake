@@ -55,6 +55,7 @@ namespace :magento do
         on release_roles :all do
           within release_path do
             execute :php, '-f', 'bin/magento', '--', 'setup:di:compile-multi-tenant', '-q'
+            execute :rm, '-f', 'var/di/relations.ser'   # TODO: Workaround for broken DI compilation in 2.0.4 (GH #4070)
           end
         end
       end

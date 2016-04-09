@@ -15,11 +15,11 @@ namespace :deploy do
     on release_roles :all do
       within release_path do
         # If the auth.json file doesn't contain valid credentials, errors will be output to log/capistrano.log
-        execute :composer, 'install', '--no-interaction'
+        execute :composer, 'install --no-interaction 2>&1'
         
         # This may fail if the repository does not correctly contain the update dir
         if test "[ -d #{release_path}/update ]"
-          execute :composer, 'install', '-d', './update'
+          execute :composer, 'install -d ./update 2>&1'
         end
         
         invoke 'magento:reset_permissions'

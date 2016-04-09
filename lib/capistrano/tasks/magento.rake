@@ -14,7 +14,7 @@ namespace :magento do
     task :flush do
       on release_roles :all do
         within release_path do
-          execute :php, '-f', 'bin/magento', '--', 'cache:flush'
+          execute :php, '-f bin/magento -- cache:flush'
         end
       end
     end
@@ -26,7 +26,7 @@ namespace :magento do
           next unless any? :ban_urls
           within release_path do
             for url in fetch(:ban_urls) do
-              response = capture(:curl, '-s', '-v', '-k', '-H', %W{"X-Host: #{url}"}, '-X', 'BAN', '127.0.0.1:6081')
+              response = capture :curl, %W{-svk -H 'X-Host: #{url}' -X BAN 127.0.0.1:6081}
               if response.include? '<title>200 Banned</title>'
                 puts "    200 Banned: #{url}"
               elsif
@@ -44,7 +44,7 @@ namespace :magento do
     task :upgrade do
       on release_roles :all do
         within release_path do
-          execute :php, '-f', 'bin/magento', '--', 'setup:upgrade'
+          execute :php, '-f bin/magento -- setup:upgrade'
         end
       end
     end
@@ -54,8 +54,8 @@ namespace :magento do
       task :compile_multi_tenant do
         on release_roles :all do
           within release_path do
-            execute :php, '-f', 'bin/magento', '--', 'setup:di:compile-multi-tenant', '-q'
-            execute :rm, '-f', 'var/di/relations.ser'   # TODO: Workaround for broken DI compilation in 2.0.4 (GH #4070)
+            execute :php, '-f bin/magento -- setup:di:compile-multi-tenant -q'
+            execute :rm, '-f var/di/relations.ser'   # TODO: Workaround for broken DI compilation in 2.0.4 (GH #4070)
           end
         end
       end
@@ -72,7 +72,7 @@ namespace :magento do
             # compilation is successful. Once the aforementioned bug is fixed, pass a "-q" flag to
             # 'setup:static-content:deploy' to silence verbose output, as right now the log is being filled with
             # thousands of extraneous lines, per this issue: https://github.com/magento/magento2/issues/3692
-            output = capture(:php, '-f', 'bin/magento', '--', 'setup:static-content:deploy', verbosity: Logger::INFO)
+            output = capture :php, '-f bin/magento -- setup:static-content:deploy', verbosity: Logger::INFO
             
             # TODO: add method to output heading messages such as this
             if output.to_s.include? 'Compilation from source'
@@ -97,7 +97,7 @@ namespace :magento do
       on release_roles :all do
         for path in [current_path, release_path].uniq
           within path do
-            execute :php, '-f', 'bin/magento', '--', 'maintenance:enable'
+            execute :php, '-f bin/magento -- maintenance:enable'
           end
         end
       end
@@ -107,7 +107,7 @@ namespace :magento do
       on release_roles :all do
         for path in [current_path, release_path].uniq
           within path do
-            execute :php, '-f', 'bin/magento', '--', 'maintenance:disable'
+            execute :php, '-f bin/magento -- maintenance:disable'
           end
         end
       end
@@ -118,10 +118,10 @@ namespace :magento do
   task :reset_permissions do
     on release_roles :all do
       within release_path do
-        execute :find, '.', '-type', 'd', '-exec', 'chmod', '770', '{}', '+'
-        execute :find, '.', '-type', 'f', '-exec', 'chmod', '660', '{}', '+'
-        execute :chmod, '-R', 'g+s', '.'
-        execute :chmod, '+x', './bin/magento'
+        execute :find, release_path, '-type d -exec chmod 770 {} +'
+        execute :find, release_path, '-type f -exec chmod 660 {} +'
+        execute :chmod, '-R g+s', release_path
+        execute :chmod, '+x ./bin/magento'
       end
     end
   end
@@ -131,7 +131,7 @@ namespace :magento do
     task :reindex do
       on release_roles :all do
         within release_path do
-          execute :php, '-f', 'bin/magento', '--', 'indexer:reindex'
+          execute :php, '-f bin/magento -- indexer:reindex'
         end
       end
     end

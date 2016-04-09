@@ -30,6 +30,7 @@ namespace :deploy do
         invoke 'magento:maintenance:enable'
         invoke 'magento:setup:upgrade'
         invoke 'magento:cache:varnish:ban'
+        invoke 'magento:maintenance:disable'
       end
     end
   end

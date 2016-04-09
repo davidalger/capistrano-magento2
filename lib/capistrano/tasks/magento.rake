@@ -23,14 +23,14 @@ namespace :magento do
       desc 'Add ban to Varnish for url(s)'
       task :ban do
         on release_roles :all do
-          next unless any? :ban_urls
+          next unless any? :ban_pools
           within release_path do
-            for url in fetch(:ban_urls) do
-              response = capture :curl, %W{-svk -H 'X-Host: #{url}' -X BAN 127.0.0.1:6081}
-              if response.include? '<title>200 Banned</title>'
-                puts "    200 Banned: #{url}"
+            for pool in fetch(:ban_pools) do
+              response = capture :curl, %W{-svk -H 'X-Pool: #{pool}' -X PURGE 127.0.0.1:6081}
+              if response.include? '<title>200 Purged</title>'
+                puts "    200 Purged: #{pool}"
               elsif
-                puts "\e[0;31m    Warning: Failed to ban url: #{url}\n#{response}\n\e[0m\n"
+                puts "\e[0;31m    Warning: Failed to ban '#{pool}' pool!\n#{response}\n\e[0m\n"
               end
             end
           end

@@ -24,10 +24,11 @@ namespace :deploy do
         
         invoke 'magento:reset_permissions'
         invoke 'magento:cache:flush'
-        invoke 'magento:setup:upgrade'
         invoke 'magento:setup:static_content:deploy'
         invoke 'magento:setup:di:compile_multi_tenant'
         invoke 'magento:reset_permissions'
+        invoke 'magento:maintenance:enable'
+        invoke 'magento:setup:upgrade'
         invoke 'magento:cache:varnish:ban'
       end
     end
@@ -36,6 +37,7 @@ namespace :deploy do
   task :reverted do
     on release_roles :all do
       within release_path do
+        invoke 'magento:maintenance:disable'
         invoke 'magento:cache:flush'
         invoke 'magento:cache:varnish:ban'
       end

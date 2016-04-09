@@ -94,6 +94,29 @@ namespace :magento do
     end
   end
   
+  namespace :maintenance do
+    desc 'Enable maintenance mode'
+    task :enable do
+      on release_roles :all do
+        for path in [current_path, release_path].uniq
+          within path do
+            execute :php, '-f', 'bin/magento', '--', 'maintenance:enable'
+          end
+        end
+      end
+    end
+    
+    task :disable do
+      on release_roles :all do
+        for path in [current_path, release_path].uniq
+          within path do
+            execute :php, '-f', 'bin/magento', '--', 'maintenance:disable'
+          end
+        end
+      end
+    end
+  end
+  
   desc 'Reset permissions'
   task :reset_permissions do
     on release_roles :all do
@@ -110,7 +133,7 @@ namespace :magento do
     desc 'Reindex data by all indexers'
     task :reindex do
       on release_roles :all do
-        within "#{release_path}" do
+        within release_path do
           execute :php, '-f', 'bin/magento', '--', 'indexer:reindex'
         end
       end

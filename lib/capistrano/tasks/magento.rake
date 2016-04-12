@@ -10,11 +10,47 @@
 namespace :magento do
   
   namespace :cache do
-    desc 'Flush the Magento Cache'
+    desc 'Flush Magento cache storage'
     task :flush do
       on release_roles :all do
         within release_path do
           execute :php, '-f bin/magento -- cache:flush'
+        end
+      end
+    end
+    
+    desc 'Clean Magento cache by types'
+    task :clean do
+      on release_roles :all do
+        within release_path do
+          execute :php, '-f bin/magento -- cache:clean'
+        end
+      end
+    end
+    
+    desc 'Enable Magento cache'
+    task :enable do
+      on release_roles :all do
+        within release_path do
+          execute :php, '-f bin/magento -- cache:enable'
+        end
+      end
+    end
+    
+    desc 'Disable Magento cache'
+    task :disable do
+      on release_roles :all do
+        within release_path do
+          execute :php, '-f bin/magento -- cache:disable'
+        end
+      end
+    end
+    
+    desc 'Check Magento cache enabled status'
+    task :status do
+      on release_roles :all do
+        within release_path do
+          execute :php, '-f bin/magento -- cache:status'
         end
       end
     end

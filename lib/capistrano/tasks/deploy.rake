@@ -42,7 +42,7 @@ namespace :deploy do
   # Check for pending changes and notify user of incoming changes or warn them that there are no changes
   before :starting, :check_for_changes do
     # Only check for pending changes if REVISION file exists
-    on roles fetch(:capistrano_pending_role, :db) do |host|
+    on roles fetch(:capistrano_pending_role, :app) do |host|
       if test "[ -f #{current_path}/REVISION ]"
         invoke 'deploy:pending:log_changes'
       end

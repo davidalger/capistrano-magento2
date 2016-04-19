@@ -20,11 +20,26 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Install Capistrano in your Magento project:
+
+    $ cd <project_root>
+    $ mkdir -p tools/cap
+    $ cd ./tools/cap
+    $ cap install
+
+Update your project `Capfile` to look like the following:
+
+```ruby
+# Load DSL and set up stages
+require 'capistrano/setup'
+
+# Load Magento deployment tasks
+require 'capistrano/magento'
+```
 
 ## Development
 
-After checking out the repo, run `bundle install` to install dependencies. Then, run `rake spec` to run the tests.
+After checking out the repo, run `bundle install` to install dependencies.
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `capistrano/magento2/version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 

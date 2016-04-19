@@ -7,4 +7,6 @@
  # http://davidalger.com/contact/
  ##
 
-require 'bundler/gem_tasks'
+require 'capistrano/magento2/deploy'
+
+load File.expand_path('../tasks/magento.rake', __FILE__)

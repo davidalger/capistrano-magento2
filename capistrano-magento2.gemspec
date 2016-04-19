@@ -9,11 +9,11 @@
 
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'capistrano/magento/version'
+require 'capistrano/magento2/version'
 
 Gem::Specification.new do |spec|
   spec.name          = 'capistrano-magento2'
-  spec.version       = Capistrano::Magento::VERSION
+  spec.version       = Capistrano::Magento2::VERSION
   spec.authors       = ['David Alger']
   spec.email         = ['davidmalger@gmail.com']
 
@@ -28,8 +28,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'capistrano', '~> 3.1'
+  spec.add_dependency 'terminal-notifier', '~> 1.6'
 
   spec.add_development_dependency 'bundler', '~> 1.11'
   spec.add_development_dependency 'rake', '~> 10.0'
-  spec.add_development_dependency 'rspec', '~> 3.0'
 end

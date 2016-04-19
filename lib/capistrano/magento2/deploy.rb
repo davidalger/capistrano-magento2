@@ -7,8 +7,6 @@
  # http://davidalger.com/contact/
  ##
 
-module Capistrano
-  module Magento
-    VERSION = '0.1.0'
-  end
-end
+require 'capistrano/deploy'
+
+load File.expand_path('../../tasks/deploy.rake', __FILE__)

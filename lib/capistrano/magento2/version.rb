@@ -7,4 +7,8 @@
  # http://davidalger.com/contact/
  ##
 
-require 'bundler/gem_tasks'
+module Capistrano
+  module Magento2
+    VERSION = '0.1.1'
+  end
+end

@@ -10,27 +10,12 @@
 require 'terminal-notifier'
 
 namespace :deploy do
-
-  # Check for pending changes and notify user of incoming changes or warn them that there are no changes
-  before :starting, :check_for_changes do
-    # Only check for pending changes if REVISION file exists
-    on roles fetch(:capistrano_pending_role, :app) do |host|
-      if test "[ -f #{current_path}/REVISION ]"
-        invoke 'deploy:pending:log_changes'
-      end
-    end
-  end
-
   before :starting, :confirm_action do
     if fetch(:stage).to_s == "prod"
       puts "\n\e[0;31m"
       puts "    ######################################################################"
       puts "    #                                                                    #"
       puts "    #        Are you sure you want to deploy to production? [y/N]        #"
-      puts "    #                                                                    #"
-      puts "    #             Use these commands to see pending changes:             #"
-      puts "    #                     cap prod deploy:pending                        #"
-      puts "    #                     cap prod deploy:pending:diff                   #"
       puts "    #                                                                    #"
       puts "    ######################################################################\e[0m\n"
       proceed = STDIN.gets[0..0] rescue nil
@@ -49,17 +34,6 @@ namespace :deploy do
     run_locally do
       set :message, "Finished deploying " + fetch(:application).to_s + " to " + fetch(:stage).to_s
       TerminalNotifier.notify(fetch(:message), :title => 'Capistrano')
-    end
-  end
-
-  # Wrapper for the log_changes method
-  namespace :pending do
-    def _log_changes(from, to)
-      _scm.log_changes(from, to)
-    end
-
-    task :log_changes => :setup do
-      _log_changes(fetch(:revision), fetch(:branch))
     end
   end
 end

@@ -37,6 +37,12 @@ require 'capistrano/setup'
 require 'capistrano/magento'
 ```
 
+This gem requires [terminal-notifier](https://rubygems.org/gems/terminal-notifier) and adds notifications to the deployment process via an optional include. To use terminal-notifier, add the following line to your `Capfile`:
+
+```ruby
+require 'capistrano/magento2/deploy/notify'
+```
+
 ## Development
 
 After checking out the repo, run `bundle install` to install dependencies.

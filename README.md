@@ -1,5 +1,7 @@
 # Capistrano::Magento2
 
+[![Gem Version](https://badge.fury.io/rb/capistrano-magento2.svg)](https://badge.fury.io/rb/capistrano-magento2)
+
 A Capistrano extension for Magento 2 deployments. Takes care of specific Magento 2 requirements and adds tasks specific to the Magento 2 application.
 
 ## Installation

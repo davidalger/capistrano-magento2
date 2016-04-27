@@ -85,11 +85,11 @@ namespace :magento do
     task :install do
       on release_roles :all do
         within release_path do
-          execute :composer, 'install --no-interaction 2>&1'
+          execute :composer, 'install --prefer-dist --no-interaction 2>&1'
             
           # Dir should be here if properly setup, but check for it anyways just in case
           if test "[ -d #{release_path}/update ]"
-            execute :composer, 'install -d ./update 2>&1'
+            execute :composer, 'install --prefer-dist --no-interaction -d ./update 2>&1'
           else
             puts "\e[0;31m    Warning: ./update dir does not exist in repository!\n\e[0m\n"
           end

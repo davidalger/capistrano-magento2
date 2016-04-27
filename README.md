@@ -38,7 +38,7 @@ Update your project `Capfile` to look like the following:
 require 'capistrano/setup'
 
 # Load Magento deployment tasks
-require 'capistrano/magento2'
+require 'capistrano/magento2/deploy'
 ```
 
 This gem specifies [terminal-notifier](https://rubygems.org/gems/terminal-notifier) as a dependency in order to support notifications on OS X via an optional include. To use the built-in notifications, add the following line to your `Capfile`:

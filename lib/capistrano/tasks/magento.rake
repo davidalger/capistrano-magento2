@@ -14,7 +14,7 @@ namespace :magento do
     task :flush do
       on release_roles :all do
         within release_path do
-          execute :php, '-f bin/magento -- cache:flush'
+          execute :magento, 'cache:flush'
         end
       end
     end
@@ -23,7 +23,7 @@ namespace :magento do
     task :clean do
       on release_roles :all do
         within release_path do
-          execute :php, '-f bin/magento -- cache:clean'
+          execute :magento, 'cache:clean'
         end
       end
     end
@@ -32,7 +32,7 @@ namespace :magento do
     task :enable do
       on release_roles :all do
         within release_path do
-          execute :php, '-f bin/magento -- cache:enable'
+          execute :magento, 'cache:enable'
         end
       end
     end
@@ -41,7 +41,7 @@ namespace :magento do
     task :disable do
       on release_roles :all do
         within release_path do
-          execute :php, '-f bin/magento -- cache:disable'
+          execute :magento, 'cache:disable'
         end
       end
     end
@@ -50,7 +50,7 @@ namespace :magento do
     task :status do
       on release_roles :all do
         within release_path do
-          execute :php, '-f bin/magento -- cache:status'
+          execute :magento, 'cache:status'
         end
       end
     end
@@ -59,19 +59,14 @@ namespace :magento do
       desc 'Add ban to Varnish for url(s)'
       task :ban do
         on release_roles :all do
+          # TODO: Document use of :ban_pools and :varnish_cache_hosts in project config file
           next unless any? :ban_pools
           next unless any? :varnish_cache_hosts
           
           within release_path do
             for pool in fetch(:ban_pools) do
               for cache_host in fetch(:varnish_cache_hosts) do
-                response = capture :curl, %W{-svk -H 'X-Pool: #{pool}' -X PURGE #{cache_host}}
-                if response.include? '<title>200 Purged</title>'
-                  puts "    200 Purged: #{pool}"
-                elsif
-                  puts "\e[0;31m    Warning: Failed to ban '#{pool}' pool on cache host '#{cache_host}'!\n"
-                  puts "#{response}\n\e[0m\n"
-                end
+                execute :curl, %W{-s -H 'X-Pool: #{pool}' -X PURGE #{cache_host}}
               end
             end
           end
@@ -85,11 +80,11 @@ namespace :magento do
     task :install do
       on release_roles :all do
         within release_path do
-          execute :composer, 'install --no-interaction 2>&1'
+          execute :composer, 'install --prefer-dist --no-interaction 2>&1'
             
           # Dir should be here if properly setup, but check for it anyways just in case
           if test "[ -d #{release_path}/update ]"
-            execute :composer, 'install -d ./update 2>&1'
+            execute :composer, 'install --prefer-dist --no-interaction -d ./update 2>&1'
           else
             puts "\e[0;31m    Warning: ./update dir does not exist in repository!\n\e[0m\n"
           end
@@ -103,45 +98,51 @@ namespace :magento do
     task :upgrade do
       on release_roles :all do
         within release_path do
-          execute :php, '-f bin/magento -- setup:upgrade'
+          execute :magento, 'setup:upgrade --keep-generated'
         end
       end
     end
     
-    # TODO: Change this once the bug with single tenant compiler is fixed http://devdocs.magento.com/guides/v2.0/config-guide/cli/config-cli-subcommands-compiler.html#config-cli-subcommands-single
+    desc 'Sets proper permissions on application'
+    task :permissions do
+      on release_roles :all do
+        within release_path do
+          execute :find, release_path, '-type d -exec chmod 770 {} +'
+          execute :find, release_path, '-type f -exec chmod 660 {} +'
+          execute :chmod, '-R g+s', release_path
+          execute :chmod, '+x ./bin/magento'
+        end
+      end
+    end
+    
     namespace :di do
-      task :compile_multi_tenant do
+      desc 'Runs dependency injection compilation routine'
+      task :compile do
         on release_roles :all do
           within release_path do
-            execute :php, '-f bin/magento -- setup:di:compile-multi-tenant -q'
-            execute :rm, '-f var/di/relations.ser'   # TODO: Workaround for broken DI compilation in 2.0.4 (GH #4070)
+            # Due to a bug in the single-tenant compiler released in 2.0 (see here for details: http://bit.ly/21eMPtt)
+            # we have to use multi-tenant currently. However, the multi-tenant is being dropped in 2.1 and is no longer
+            # present in the develop mainline, so we are testing for multi-tenant presence for long-term portability.
+            if test :magento, 'setup:di:compile-multi-tenant --help'
+              execute :magento, 'setup:di:compile-multi-tenant'
+              execute :rm, '-f var/di/relations.ser'   # TODO: Workaround broken DI compilation on PHP 7.0.5 (GH #4070)
+            else
+              execute :magento, 'setup:di:compile'
+            end
           end
         end
       end
     end
     
-    namespace :static_content do
+    namespace 'static-content' do
+      desc 'Deploys static view files'
       task :deploy do
         on release_roles :all do
           within release_path do
-            
-            # Due to a bug (https://github.com/magento/magento2/issues/3060) in bin/magento, errors in the
-            # compilation will not result in a non-zero exit code, so Capistrano is not aware an error has occurred.
-            # As a result, we must capture the output and manually search for an error string to determine whether
-            # compilation is successful. Once the aforementioned bug is fixed, pass a "-q" flag to
-            # 'setup:static-content:deploy' to silence verbose output, as right now the log is being filled with
-            # thousands of extraneous lines, per this issue: https://github.com/magento/magento2/issues/3692
-            output = capture :php, '-f bin/magento -- setup:static-content:deploy', verbosity: Logger::INFO
-            
-            # TODO: add method to output heading messages such as this
-            if output.to_s.include? 'Compilation from source'
-              puts "\n\e[0;31m" \
-                "    ######################################################################\n" \
-                "    #                                                                    #\n" \
-                "    #                 Failed to compile static assets                    #\n" \
-                "    #                                                                    #\n" \
-                "    ######################################################################\n\n"
-              puts output + "\e[0m\n"
+            # TODO: Remove custom error detection logic once magento/magento2#3060 is resolved
+            # Currently the cli tool is not reporting failures via the exit code, so manual detection is neccesary
+            output = capture :magento, 'setup:static-content:deploy | stdbuf -o0 tr -d .', verbosity: Logger::INFO
+            if not output.to_s.include? 'New version of deployed files'
               raise Exception, 'Failed to compile static assets'
             end
           end
@@ -154,33 +155,36 @@ namespace :magento do
     desc 'Enable maintenance mode'
     task :enable do
       on release_roles :all do
-        for path in [current_path, release_path].uniq
-          within path do
-            execute :php, '-f bin/magento -- maintenance:enable'
-          end
+        within release_path do
+          execute :magento, 'maintenance:enable'
         end
       end
     end
     
+    desc 'Disable maintenance mode'
     task :disable do
       on release_roles :all do
-        for path in [current_path, release_path].uniq
-          within path do
-            execute :php, '-f bin/magento -- maintenance:disable'
-          end
+        within release_path do
+          execute :magento, 'maintenance:disable'
         end
       end
     end
-  end
-  
-  desc 'Reset permissions'
-  task :reset_permissions do
-    on release_roles :all do
-      within release_path do
-        execute :find, release_path, '-type d -exec chmod 770 {} +'
-        execute :find, release_path, '-type f -exec chmod 660 {} +'
-        execute :chmod, '-R g+s', release_path
-        execute :chmod, '+x ./bin/magento'
+
+    desc 'Displays maintenance mode status'
+    task :status do
+      on release_roles :all do
+        within release_path do
+          execute :magento, 'maintenance:status'
+        end
+      end
+    end
+
+    desc 'Sets maintenance mode exempt IPs'
+    task 'allow-ips', :ip do |t, args|
+      on release_roles :all do
+        within release_path do
+          execute :magento, 'maintenance:allow-ips', args[:ip]
+        end
       end
     end
   end
@@ -190,7 +194,43 @@ namespace :magento do
     task :reindex do
       on release_roles :all do
         within release_path do
-          execute :php, '-f bin/magento -- indexer:reindex'
+          execute :magento, 'indexer:reindex'
+        end
+      end
+    end
+
+    desc 'Shows allowed indexers'
+    task :info do
+      on release_roles :all do
+        within release_path do
+          execute :magento, 'indexer:info'
+        end
+      end
+    end
+
+    desc 'Shows status of all indexers'
+    task :status do
+      on release_roles :all do
+        within release_path do
+          execute :magento, 'indexer:status'
+        end
+      end
+    end
+
+    desc 'Shows mode of all indexers'
+    task 'show-mode', :index do |t, args|
+      on release_roles :all do
+        within release_path do
+          execute :magento, 'indexer:show-mode', args[:index]
+        end
+      end
+    end
+
+    desc 'Sets mode of all indexers'
+    task 'set-mode', :mode, :index do |t, args|
+      on release_roles :all do
+        within release_path do
+          execute :magento, 'indexer:set-mode', args[:mode], args[:index]
         end
       end
     end
@@ -200,6 +240,9 @@ end
 
 namespace :load do
   task :defaults do
+
+    SSHKit.config.command_map[:magento] = "/usr/bin/env php -f bin/magento --"
+
     set :linked_files, fetch(:linked_files, []).push(
       'app/etc/env.php',
       'var/.setup_cronjob_status',

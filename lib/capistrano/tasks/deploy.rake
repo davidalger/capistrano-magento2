@@ -13,12 +13,7 @@ namespace :deploy do
       invoke 'magento:composer:install'
       invoke 'magento:setup:permissions'
       invoke 'magento:setup:static_content:deploy'
-
-      # TODO: Using multi-tenant due to bug in single-tenant compiler, see devdocs for details: http://bit.ly/21eMPtt
-      # TODO: Multi-tenant is being dropped in 2.1, will need to update when that occurs
-      invoke 'magento:setup:di:compile_multi_tenant'
-      # invoke 'magento:setup:di:compile'
-
+      invoke 'magento:setup:di:compile'
       invoke 'magento:setup:permissions'
       within current_path do
         execute :magento, 'maintenance:enable'

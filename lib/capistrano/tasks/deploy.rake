@@ -20,6 +20,9 @@ namespace :deploy do
       # invoke 'magento:setup:di:compile'
 
       invoke 'magento:reset_permissions'
+      within current_path do
+        execute :magento, 'maintenance:enable'
+      end
       invoke 'magento:maintenance:enable'
       invoke 'magento:setup:upgrade'
     end

@@ -121,7 +121,7 @@ namespace :magento do
         on release_roles :all do
           within release_path do
             execute :magento, '-q setup:di:compile-multi-tenant'
-            execute :rm, '-f var/di/relations.ser'   # TODO: Workaround for broken DI compilation in 2.0.4 (GH #4070)
+            execute :rm, '-f var/di/relations.ser'   # TODO: Workaround broken DI compilation on PHP 7.0.5 (GH #4070)
           end
         end
       end
@@ -156,20 +156,16 @@ namespace :magento do
     desc 'Enable maintenance mode'
     task :enable do
       on release_roles :all do
-        for path in [current_path, release_path].uniq
-          within path do
-            execute :magento, 'maintenance:enable'
-          end
+        within release_path do
+          execute :magento, 'maintenance:enable'
         end
       end
     end
     
     task :disable do
       on release_roles :all do
-        for path in [current_path, release_path].uniq
-          within path do
-            execute :magento, 'maintenance:disable'
-          end
+        within release_path do
+          execute :magento, 'maintenance:disable'
         end
       end
     end

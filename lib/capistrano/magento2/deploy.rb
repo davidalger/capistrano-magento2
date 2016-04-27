@@ -8,5 +8,6 @@
  ##
 
 require 'capistrano/deploy'
+require 'capistrano/magento2'
 
 load File.expand_path('../../tasks/deploy.rake', __FILE__)

@@ -14,7 +14,7 @@ namespace :magento do
     task :flush do
       on release_roles :all do
         within release_path do
-          execute :php, '-f bin/magento -- cache:flush'
+          execute :magento, 'cache:flush'
         end
       end
     end
@@ -23,7 +23,7 @@ namespace :magento do
     task :clean do
       on release_roles :all do
         within release_path do
-          execute :php, '-f bin/magento -- cache:clean'
+          execute :magento, 'cache:clean'
         end
       end
     end
@@ -32,7 +32,7 @@ namespace :magento do
     task :enable do
       on release_roles :all do
         within release_path do
-          execute :php, '-f bin/magento -- cache:enable'
+          execute :magento, 'cache:enable'
         end
       end
     end
@@ -41,7 +41,7 @@ namespace :magento do
     task :disable do
       on release_roles :all do
         within release_path do
-          execute :php, '-f bin/magento -- cache:disable'
+          execute :magento, 'cache:disable'
         end
       end
     end
@@ -50,7 +50,7 @@ namespace :magento do
     task :status do
       on release_roles :all do
         within release_path do
-          execute :php, '-f bin/magento -- cache:status'
+          execute :magento, 'cache:status'
         end
       end
     end
@@ -103,17 +103,18 @@ namespace :magento do
     task :upgrade do
       on release_roles :all do
         within release_path do
-          execute :php, '-f bin/magento -- setup:upgrade'
+          execute :magento, 'setup:upgrade'
         end
       end
     end
     
     # TODO: Change this once the bug with single tenant compiler is fixed http://devdocs.magento.com/guides/v2.0/config-guide/cli/config-cli-subcommands-compiler.html#config-cli-subcommands-single
+    # TODO: Magento 2.1 should be stripping out the multi-tentant compiler, so it should be changed then.
     namespace :di do
       task :compile_multi_tenant do
         on release_roles :all do
           within release_path do
-            execute :php, '-f bin/magento -- setup:di:compile-multi-tenant -q'
+            execute :magento, '-q setup:di:compile-multi-tenant'
             execute :rm, '-f var/di/relations.ser'   # TODO: Workaround for broken DI compilation in 2.0.4 (GH #4070)
           end
         end
@@ -131,7 +132,7 @@ namespace :magento do
             # compilation is successful. Once the aforementioned bug is fixed, pass a "-q" flag to
             # 'setup:static-content:deploy' to silence verbose output, as right now the log is being filled with
             # thousands of extraneous lines, per this issue: https://github.com/magento/magento2/issues/3692
-            output = capture :php, '-f bin/magento -- setup:static-content:deploy | stdbuf -o0 tr -d .', verbosity: Logger::INFO
+            output = capture :magento, 'setup:static-content:deploy | stdbuf -o0 tr -d .', verbosity: Logger::INFO
             
             # TODO: add method to output heading messages such as this
             if output.to_s.include? 'Compilation from source'
@@ -156,7 +157,7 @@ namespace :magento do
       on release_roles :all do
         for path in [current_path, release_path].uniq
           within path do
-            execute :php, '-f bin/magento -- maintenance:enable'
+            execute :magento, 'maintenance:enable'
           end
         end
       end
@@ -166,7 +167,7 @@ namespace :magento do
       on release_roles :all do
         for path in [current_path, release_path].uniq
           within path do
-            execute :php, '-f bin/magento -- maintenance:disable'
+            execute :magento, 'maintenance:disable'
           end
         end
       end
@@ -190,7 +191,7 @@ namespace :magento do
     task :reindex do
       on release_roles :all do
         within release_path do
-          execute :php, '-f bin/magento -- indexer:reindex'
+          execute :magento, 'indexer:reindex'
         end
       end
     end
@@ -200,6 +201,9 @@ end
 
 namespace :load do
   task :defaults do
+
+    SSHKit.config.command_map[:magento] = "/usr/bin/env php -f bin/magento --"
+
     set :linked_files, fetch(:linked_files, []).push(
       'app/etc/env.php',
       'var/.setup_cronjob_status',

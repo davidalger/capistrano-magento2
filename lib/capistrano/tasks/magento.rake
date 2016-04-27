@@ -131,7 +131,7 @@ namespace :magento do
             # compilation is successful. Once the aforementioned bug is fixed, pass a "-q" flag to
             # 'setup:static-content:deploy' to silence verbose output, as right now the log is being filled with
             # thousands of extraneous lines, per this issue: https://github.com/magento/magento2/issues/3692
-            output = capture :php, '-f bin/magento -- setup:static-content:deploy', verbosity: Logger::INFO
+            output = capture :php, '-f bin/magento -- setup:static-content:deploy | stdbuf -o0 tr -d .', verbosity: Logger::INFO
             
             # TODO: add method to output heading messages such as this
             if output.to_s.include? 'Compilation from source'

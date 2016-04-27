@@ -65,13 +65,7 @@ namespace :magento do
           within release_path do
             for pool in fetch(:ban_pools) do
               for cache_host in fetch(:varnish_cache_hosts) do
-                response = capture :curl, %W{-svk -H 'X-Pool: #{pool}' -X PURGE #{cache_host}}, verbosity: Logger::INFO
-                if response.include? '<title>200 Purged</title>'
-                  puts "    200 Purged: #{pool}"
-                elsif
-                  puts "\e[0;31m    Warning: Failed to ban '#{pool}' pool on cache host '#{cache_host}'!\n"
-                  puts "#{response}\n\e[0m\n"
-                end
+                execute :curl, %W{-H 'X-Pool: #{pool}' -X PURGE #{cache_host}}
               end
             end
           end

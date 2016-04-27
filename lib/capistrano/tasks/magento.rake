@@ -147,10 +147,29 @@ namespace :magento do
       end
     end
     
+    desc 'Disable maintenance mode'
     task :disable do
       on release_roles :all do
         within release_path do
           execute :magento, 'maintenance:disable'
+        end
+      end
+    end
+
+    desc 'Displays maintenance mode status'
+    task :status do
+      on release_roles :all do
+        within release_path do
+          execute :magento, 'maintenance:status'
+        end
+      end
+    end
+
+    desc 'Sets maintenance mode exempt IPs'
+    task 'allow-ips', :ip do |t, args|
+      on release_roles :all do
+        within release_path do
+          execute :magento, 'maintenance:allow-ips', args[:ip]
         end
       end
     end

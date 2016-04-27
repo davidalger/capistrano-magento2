@@ -177,6 +177,42 @@ namespace :magento do
         end
       end
     end
+
+    desc 'Shows allowed indexers'
+    task :info do
+      on release_roles :all do
+        within release_path do
+          execute :magento, 'indexer:info'
+        end
+      end
+    end
+
+    desc 'Shows status of all indexers'
+    task :status do
+      on release_roles :all do
+        within release_path do
+          execute :magento, 'indexer:status'
+        end
+      end
+    end
+
+    desc 'Shows mode of all indexers'
+    task 'show-mode', :index do |t, args|
+      on release_roles :all do
+        within release_path do
+          execute :magento, 'indexer:show-mode', args[:index]
+        end
+      end
+    end
+
+    desc 'Sets mode of all indexers'
+    task 'set-mode', :mode, :index do |t, args|
+      on release_roles :all do
+        within release_path do
+          execute :magento, 'indexer:set-mode', args[:mode], args[:index]
+        end
+      end
+    end
   end
 
 end

@@ -133,7 +133,8 @@ namespace :magento do
       end
     end
     
-    namespace :static_content do
+    namespace 'static-content' do
+      desc 'Deploys static view files'
       task :deploy do
         on release_roles :all do
           within release_path do

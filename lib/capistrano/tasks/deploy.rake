@@ -12,7 +12,7 @@ namespace :deploy do
     on release_roles :all do
       invoke 'magento:composer:install'
       invoke 'magento:setup:permissions'
-      invoke 'magento:setup:static_content:deploy'
+      invoke 'magento:setup:static-content:deploy'
       invoke 'magento:setup:di:compile'
       invoke 'magento:setup:permissions'
       within current_path do

@@ -65,7 +65,7 @@ namespace :magento do
           within release_path do
             for pool in fetch(:ban_pools) do
               for cache_host in fetch(:varnish_cache_hosts) do
-                execute :curl, %W{-H 'X-Pool: #{pool}' -X PURGE #{cache_host}}
+                execute :curl, %W{-s -H 'X-Pool: #{pool}' -X PURGE #{cache_host}}
               end
             end
           end

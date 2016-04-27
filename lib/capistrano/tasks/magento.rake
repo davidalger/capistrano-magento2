@@ -114,7 +114,7 @@ namespace :magento do
       task :compile_multi_tenant do
         on release_roles :all do
           within release_path do
-            execute :magento, '-q setup:di:compile-multi-tenant'
+            execute :magento, 'setup:di:compile-multi-tenant'
             execute :rm, '-f var/di/relations.ser'   # TODO: Workaround broken DI compilation on PHP 7.0.5 (GH #4070)
           end
         end

@@ -102,6 +102,18 @@ namespace :magento do
       end
     end
     
+    desc 'Sets proper permissions on application'
+    task :permissions do
+      on release_roles :all do
+        within release_path do
+          execute :find, release_path, '-type d -exec chmod 770 {} +'
+          execute :find, release_path, '-type f -exec chmod 660 {} +'
+          execute :chmod, '-R g+s', release_path
+          execute :chmod, '+x ./bin/magento'
+        end
+      end
+    end
+    
     namespace :di do
       task :compile do
         on release_roles :all do
@@ -171,18 +183,6 @@ namespace :magento do
         within release_path do
           execute :magento, 'maintenance:allow-ips', args[:ip]
         end
-      end
-    end
-  end
-  
-  desc 'Reset permissions'
-  task :reset_permissions do
-    on release_roles :all do
-      within release_path do
-        execute :find, release_path, '-type d -exec chmod 770 {} +'
-        execute :find, release_path, '-type f -exec chmod 660 {} +'
-        execute :chmod, '-R g+s', release_path
-        execute :chmod, '+x ./bin/magento'
       end
     end
   end

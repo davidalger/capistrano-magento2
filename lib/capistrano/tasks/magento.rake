@@ -97,7 +97,7 @@ namespace :magento do
     task :upgrade do
       on release_roles :all do
         within release_path do
-          execute :magento, 'setup:upgrade'
+          execute :magento, 'setup:upgrade --keep-generated'
         end
       end
     end

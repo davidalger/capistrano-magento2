@@ -59,6 +59,7 @@ namespace :magento do
       desc 'Add ban to Varnish for url(s)'
       task :ban do
         on release_roles :all do
+          # TODO: Document use of :ban_pools and :varnish_cache_hosts in project config file
           next unless any? :ban_pools
           next unless any? :varnish_cache_hosts
           

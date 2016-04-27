@@ -24,10 +24,12 @@ Or install it yourself as:
 
 Install Capistrano in your Magento project:
 
-    $ cd <project_root>
-    $ mkdir -p tools/cap
-    $ cd ./tools/cap
-    $ cap install
+```shell
+$ cd <project_root>
+$ mkdir -p tools/cap
+$ cd ./tools/cap
+$ cap install
+```
 
 Update your project `Capfile` to look like the following:
 
@@ -36,13 +38,13 @@ Update your project `Capfile` to look like the following:
 require 'capistrano/setup'
 
 # Load Magento deployment tasks
-require 'capistrano/magento'
+require 'capistrano/magento2'
 ```
 
-This gem requires [terminal-notifier](https://rubygems.org/gems/terminal-notifier) and adds notifications to the deployment process via an optional include. To use terminal-notifier, add the following line to your `Capfile`:
+This gem specifies [terminal-notifier](https://rubygems.org/gems/terminal-notifier) as a dependency in order to support notifications on OS X via an optional include. To use the built-in notifications, add the following line to your `Capfile`:
 
 ```ruby
-require 'capistrano/magento2/deploy/notify'
+require 'capistrano/magento2/notifier'
 ```
 
 ## Development

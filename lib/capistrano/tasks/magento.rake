@@ -125,19 +125,10 @@ namespace :magento do
       task :deploy do
         on release_roles :all do
           within release_path do
-            
             # TODO: Remove custom error detection logic once magento/magento2#3060 is resolved
             # Currently the cli tool is not reporting failures via the exit code, so manual detection is neccesary
             output = capture :magento, 'setup:static-content:deploy | stdbuf -o0 tr -d .', verbosity: Logger::INFO
-            
-            if output.to_s.include? 'Compilation from source'
-              puts "\n\e[0;31m" \
-                "    ######################################################################\n" \
-                "    #                                                                    #\n" \
-                "    #                 Failed to compile static assets                    #\n" \
-                "    #                                                                    #\n" \
-                "    ######################################################################\n\n"
-              puts output + "\e[0m\n"
+            if not output.to_s.include? 'New version of deployed files'
               raise Exception, 'Failed to compile static assets'
             end
           end

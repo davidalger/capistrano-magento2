@@ -108,9 +108,15 @@ namespace :magento do
       end
     end
     
-    # TODO: Change this once the bug with single tenant compiler is fixed http://devdocs.magento.com/guides/v2.0/config-guide/cli/config-cli-subcommands-compiler.html#config-cli-subcommands-single
-    # TODO: Magento 2.1 should be stripping out the multi-tentant compiler, so it should be changed then.
     namespace :di do
+      task :compile do
+        on release_roles :all do
+          within release_path do
+            execute :magento, 'setup:di:compile'
+          end
+        end
+      end
+      
       task :compile_multi_tenant do
         on release_roles :all do
           within release_path do
@@ -126,15 +132,10 @@ namespace :magento do
         on release_roles :all do
           within release_path do
             
-            # Due to a bug (https://github.com/magento/magento2/issues/3060) in bin/magento, errors in the
-            # compilation will not result in a non-zero exit code, so Capistrano is not aware an error has occurred.
-            # As a result, we must capture the output and manually search for an error string to determine whether
-            # compilation is successful. Once the aforementioned bug is fixed, pass a "-q" flag to
-            # 'setup:static-content:deploy' to silence verbose output, as right now the log is being filled with
-            # thousands of extraneous lines, per this issue: https://github.com/magento/magento2/issues/3692
+            # TODO: Remove custom error detection logic once magento/magento2#3060 is resolved
+            # Currently the cli tool is not reporting failures via the exit code, so manual detection is neccesary
             output = capture :magento, 'setup:static-content:deploy | stdbuf -o0 tr -d .', verbosity: Logger::INFO
             
-            # TODO: add method to output heading messages such as this
             if output.to_s.include? 'Compilation from source'
               puts "\n\e[0;31m" \
                 "    ######################################################################\n" \

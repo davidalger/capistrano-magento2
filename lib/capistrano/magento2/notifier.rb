@@ -7,6 +7,6 @@
  # http://davidalger.com/contact/
  ##
 
-require 'capistrano/magento2/deploy'
+require 'capistrano/deploy'
 
-load File.expand_path('../../../tasks/deploy/notify.rake', __FILE__)
+load File.expand_path('../../tasks/notifier.rake', __FILE__)

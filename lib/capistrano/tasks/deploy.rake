@@ -11,10 +11,13 @@ namespace :deploy do
   task :updated do
     on release_roles :all do
       invoke 'magento:composer:install'
-      invoke 'magento:reset_permissions'
-      invoke 'magento:setup:static_content:deploy'
-      invoke 'magento:setup:di:compile_multi_tenant'
-      invoke 'magento:reset_permissions'
+      invoke 'magento:setup:permissions'
+      invoke 'magento:setup:static-content:deploy'
+      invoke 'magento:setup:di:compile'
+      invoke 'magento:setup:permissions'
+      within current_path do
+        execute :magento, 'maintenance:enable'
+      end
       invoke 'magento:maintenance:enable'
       invoke 'magento:setup:upgrade'
     end

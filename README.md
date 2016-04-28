@@ -6,6 +6,14 @@ A Capistrano extension for Magento 2 deployments. Takes care of specific Magento
 
 ## Installation
 
+### Standalone Installation
+
+If you don't have an existing Ruby application you can install the gem using:
+
+    $ gem install capistrano-magento2
+
+### Add to Existing Ruby Application
+
 Add this line to your application's Gemfile:
 
 ```ruby
@@ -15,10 +23,6 @@ gem 'capistrano-magento2'
 And then execute:
 
     $ bundle
-
-Or install it yourself as:
-
-    $ gem install capistrano-magento2
 
 ## Usage
 
@@ -31,7 +35,9 @@ $ cd ./tools/cap
 $ cap install
 ```
 
-Update your project `Capfile` to look like the following:
+By default, Capistrano creates "staging" and "production" stages. If you want to define custom staging areas, you can do so using the "STAGES" option. e.g., `cap install STAGES=stage,prod .`
+
+Update your project's `Capfile` to look like the following:
 
 ```ruby
 # Load DSL and set up stages
@@ -39,6 +45,9 @@ require 'capistrano/setup'
 
 # Load Magento deployment tasks
 require 'capistrano/magento2/deploy'
+
+# Load custom tasks from `lib/capistrano/tasks` if you have any defined
+Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }
 ```
 
 ## Default Configuration
@@ -66,6 +75,8 @@ For the sake of simplicity in new project setups `:linked_dirs` and `:linked_fil
       'var/tmp'
     ]
 ```
+
+If you would like to customize the linked files or directories for your project, you can copy either/both of the above arrays into the `config/deploy.rb` or `config/deploy/*.rb` files and tweak them to fit your project's needs.
 
 ### Magento 2 Deploy Routine
 
@@ -102,7 +113,7 @@ All Magento 2 tasks used by the built-in `deploy.rake` file as well as some addi
 
 ## Using Capistrano
 
-For inrformation on how to use Capistrano and setup deployment take a look at the [Capistrano documentation](http://capistranorb.com) and [README](https://github.com/capistrano/capistrano/blob/master/README.md) file.
+For information on how to use Capistrano and setup deployment take a look at the [Capistrano documentation](http://capistranorb.com) and [README](https://github.com/capistrano/capistrano/blob/master/README.md) file.
 
 ## Terminal Notifier on OS X
 This gem specifies [terminal-notifier](https://rubygems.org/gems/terminal-notifier) as a dependency in order to support notifications on OS X via an optional include. To use the built-in notifications, add the following line to your `Capfile`:

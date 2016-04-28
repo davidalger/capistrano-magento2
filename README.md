@@ -37,7 +37,7 @@ $ cap install
 
 By default, Capistrano creates "staging" and "production" stages. If you want to define custom staging areas, you can do so using the "STAGES" option. e.g., `cap install STAGES=stage,prod .`
 
-Update your project `Capfile` to look like the following:
+Update your project's `Capfile` to look like the following:
 
 ```ruby
 # Load DSL and set up stages
@@ -45,6 +45,9 @@ require 'capistrano/setup'
 
 # Load Magento deployment tasks
 require 'capistrano/magento2/deploy'
+
+# Load custom tasks from `lib/capistrano/tasks` if you have any defined
+Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }
 ```
 
 ## Default Configuration

@@ -26,7 +26,7 @@ namespace :deploy do
   task :published do
     on release_roles :all do
       invoke 'magento:cache:flush'
-      invoke 'magento:cache:varnish:ban'    # TODO: this should not be needed after magento/magento2#3339 is released
+      invoke 'magento:cache:varnish:ban'    # TODO: This invocation should not be needed post magento/magento2#3339
       invoke 'magento:maintenance:disable'
     end
   end
@@ -35,7 +35,7 @@ namespace :deploy do
     on release_roles :all do
       invoke 'magento:maintenance:disable'
       invoke 'magento:cache:flush'
-      invoke 'magento:cache:varnish:ban'
+      invoke 'magento:cache:varnish:ban'    # TODO: This invocation should not be needed post magento/magento2#3339
     end
   end
 end

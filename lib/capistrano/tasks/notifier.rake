@@ -42,6 +42,7 @@ end
 
 namespace :load do
   task :defaults do
+    # TODO: Document the :deploy_warn_stages option
     set :deploy_warn_stages, fetch(:deploy_warn_stages, []).push('prod', 'production')
   end
 end

@@ -56,6 +56,7 @@ namespace :magento do
     end
   
     namespace :varnish do
+      # TODO: Document what the magento:cache:varnish:ban task is for and how to use it. See also magento/magento2#4106
       desc 'Add ban to Varnish for url(s)'
       task :ban do
         on release_roles :all do

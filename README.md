@@ -110,7 +110,7 @@ All Magento 2 tasks used by the built-in `deploy.rake` file as well as some addi
 
 ## Using Capistrano
 
-For inrformation on how to use Capistrano and setup deployment take a look at the [Capistrano documentation](http://capistranorb.com) and [README](https://github.com/capistrano/capistrano/blob/master/README.md) file.
+For information on how to use Capistrano and setup deployment take a look at the [Capistrano documentation](http://capistranorb.com) and [README](https://github.com/capistrano/capistrano/blob/master/README.md) file.
 
 ## Terminal Notifier on OS X
 This gem specifies [terminal-notifier](https://rubygems.org/gems/terminal-notifier) as a dependency in order to support notifications on OS X via an optional include. To use the built-in notifications, add the following line to your `Capfile`:

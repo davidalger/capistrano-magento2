@@ -8,47 +8,45 @@ A Capistrano extension for Magento 2 deployments. Takes care of specific Magento
 
 ### Standalone Installation
 
-If you don't have an existing Ruby application you can install the gem using:
-
     $ gem install capistrano-magento2
 
-### Add to Existing Ruby Application
+### Using Bundler
 
-Add this line to your application's Gemfile:
+1. Add the following to your project's `Gemfile`:
 
-```ruby
-gem 'capistrano-magento2'
-```
+    ```ruby
+    source 'https://rubygems.org'
+    gem 'capistrano-magento2'
+    ```
 
-And then execute:
+2. Execute the following:
 
-    $ bundle
+        $ bundle install
 
 ## Usage
 
-Install Capistrano in your Magento project:
+1. Install Capistrano in your Magento project:
+    
+    ```shell
+    $ cd <project_root>
+    $ mkdir -p tools/cap
+    $ cd ./tools/cap
+    $ cap install
+    ```
+_Note: By default, Capistrano creates "staging" and "production" stages. If you want to define custom staging areas, you can do so using the "STAGES" option (e.g. `cap install STAGES=stage,prod`). Built-in notifications ([see below](#terminal-notifier-on-os-x)) confirm deploy action on both "production" and "prod" area names by default._
 
-```shell
-$ cd <project_root>
-$ mkdir -p tools/cap
-$ cd ./tools/cap
-$ cap install
-```
+2. Update your project's `Capfile` to look like the following:
 
-By default, Capistrano creates "staging" and "production" stages. If you want to define custom staging areas, you can do so using the "STAGES" option. e.g., `cap install STAGES=stage,prod .`
-
-Update your project's `Capfile` to look like the following:
-
-```ruby
-# Load DSL and set up stages
-require 'capistrano/setup'
-
-# Load Magento deployment tasks
-require 'capistrano/magento2/deploy'
-
-# Load custom tasks from `lib/capistrano/tasks` if you have any defined
-Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }
-```
+    ```ruby
+    # Load DSL and set up stages
+    require 'capistrano/setup'
+    
+    # Load Magento deployment tasks
+    require 'capistrano/magento2/deploy'
+    
+    # Load custom tasks from `lib/capistrano/tasks` if you have any defined
+    Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }
+    ```
 
 ## Default Configuration
 
@@ -57,36 +55,36 @@ Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }
 For the sake of simplicity in new project setups `:linked_dirs` and `:linked_files` are pre-configured per the following.
 
 ```ruby
-    set :linked_files, [
-      'app/etc/env.php',
-      'var/.setup_cronjob_status',
-      'var/.update_cronjob_status',
-      'sitemap.xml'
-    ]
-    
-    set :linked_dirs, [
-      'pub/media', 
-      'var/backups', 
-      'var/composer_home', 
-      'var/importexport', 
-      'var/import_history', 
-      'var/log',
-      'var/session', 
-      'var/tmp'
-    ]
+set :linked_files, [
+  'app/etc/env.php',
+  'var/.setup_cronjob_status',
+  'var/.update_cronjob_status',
+  'sitemap.xml'
+]
+
+set :linked_dirs, [
+  'pub/media', 
+  'var/backups', 
+  'var/composer_home', 
+  'var/importexport', 
+  'var/import_history', 
+  'var/log',
+  'var/session', 
+  'var/tmp'
+]
 ```
 
-If you would like to customize the linked files or directories for your project, you can copy either/both of the above arrays into the `config/deploy.rb` or `config/deploy/*.rb` files and tweak them to fit your project's needs.
+If you would like to customize the linked files or directories for your project, you can copy either one or both of the above arrays into the `config/deploy.rb` or `config/deploy/*.rb` files and tweak them to fit your project's needs.
 
 ### Magento 2 Deploy Routine
 
-A pre-built deploy routine is available out-of-the-box. This can be overriden on a per-project basis by including only the Magento 2 specific tasks and defining your own `deploy.rake` file under `lib/capistrano/tasks` in your projects capistrano install location.
+A pre-built deploy routine is available out-of-the-box. This can be overriden on a per-project basis by including only the Magento 2 specific tasks and defining your own `deploy.rake` file under `lib/capistrano/tasks` in your projects Capistrano install location.
 
 To see what process the built-in routine runs, take a look at the included rake file here: https://github.com/davidalger/capistrano-magento2/blob/master/lib/capistrano/tasks/deploy.rake
 
 ## Magento Specific Tasks
 
-All Magento 2 tasks used by the built-in `deploy.rake` file as well as some additional commands are implimented and exposed to the end-user for use directly via the cap tool. You can also see this list by running `cap -T` from your shell.
+All Magento 2 tasks used by the built-in `deploy.rake` file as well as some additional commands are implemented and exposed to the end-user for use directly via the cap tool. You can also see this list by running `cap -T` from your shell.
 
 | cap command                           | what it does                                       |
 | ------------------------------------- | -------------------------------------------------- |
@@ -124,7 +122,7 @@ require 'capistrano/magento2/notifier'
 
 ## Development
 
-After checking out the repo, run `bundle install` to install dependencies. Make the neccesary changes, then run `bundle exec rake install` to install a modified version of the gem on your local system.
+After checking out the repo, run `bundle install` to install dependencies. Make the necessary changes, then run `bundle exec rake install` to install a modified version of the gem on your local system.
 
 To release a new version, update the version number in `capistrano/magento2/version.rb`, merge all changes to master, and then run `bundle exec rake release`. This will create a git tag for the version (the tag will apply to the current HEAD), push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
 

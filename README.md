@@ -54,11 +54,11 @@ _Note: By default, Capistrano creates "staging" and "production" stages. If you 
 
 5. Deploy Magento 2 to staging or production by running the following command in the `tools/cap` directory:
     
-    ```
+    ```shell
     $ cap staging deploy
     ```
     or
-    ```
+    ```shell
     $ cap production deploy
     ```
     
@@ -141,7 +141,19 @@ To see what process the built-in routine runs, take a look at the included rake 
 
 ## Server Configuration
 
+### Web Server Root Path
+
 Before deploying with Capistrano, you must update each of your web servers to point to a `current` directory inside of the `:deploy_to` directory. For example: `/var/www/html/current` Refer to the [Capistrano Structure](http://capistranorb.com/documentation/getting-started/structure/) to learn more about Capistrano's folder structure.
+
+### Create Linked Files
+
+Capistrano assumes that the `:linked_files` files will exist, so before you deploy for the first time, you need to create those files. On each of your web servers, create them using a command like this:
+
+```shell
+$ cd /var/www/html
+$ mkdir -p shared/var shared/app/etc
+$ touch shared/app/etc/env.php shared/var/.setup_cronjob_status shared/var/.update_cronjob_status shared/sitemap.xml
+```
 
 ## Magento Specific Tasks
 

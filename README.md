@@ -48,7 +48,64 @@ _Note: By default, Capistrano creates "staging" and "production" stages. If you 
     Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }
     ```
 
+3. Configure Capistrano, per the [Capistrano Configuration](#capistrano-configuration) section below.
+
+4. Configure your server(s), per the [Server Configuration](#server-configuration) section below.
+
+5. Deploy Magento 2 to staging or production by running the following command in the `tools/cap` directory:
+    
+    ```shell
+    $ cap staging deploy
+    ```
+    or
+    ```shell
+    $ cap production deploy
+    ```
+    
 ## Default Configuration
+
+### Capistrano Configuration
+
+Before you can use Capistrano to deploy, you must configure the `config/deploy.rb` and `config/deploy/*.rb` files. This section will cover the basic details for configuring these files. Refer to the [Capistrano documentation](http://capistranorb.com/documentation/getting-started/preparing-your-application/#configure-your-server-addresses-in-the-generated-files) and [README](https://github.com/capistrano/capistrano/blob/master/README.md) for more details.
+
+1. Configuring `config/deploy.rb`
+    
+    Update the `:application` and `:repo_url` values in `config/deploy.rb`:
+    
+    ```ruby
+    # Something unique such as the website or company name
+    set :application, 'example'
+    # The repository that hosts the Magento 2 application (Magento should live in the root of the repo)
+    set :repo_url, 'git@github.com:acme/example-com.git'
+    ```
+
+2. Configuring `config/deploy/*.rb` files
+    
+    Capistrano allows you to use server-based or role-based syntax. You can read through the comments in the file to learn more about each option. If you have a single application server then the server-based syntax is the simplest configuration option.
+    
+    * Single application servers
+        
+        If your environment only has a single application server, your configuration files should look something like this:
+        
+        `config/deploy/production.rb`
+        ```ruby
+        server 'www.example.com', user: 'www', roles: %w{app db web}
+        
+        set :deploy_to, '/var/www/html'
+        set :branch, proc { `git rev-parse --abbrev-ref master`.chomp }
+        ```
+        
+        `config/deploy/staging.rb`
+        ```ruby
+        server 'stage.example.com', user: 'www', roles: %w{app db web}
+        
+        set :deploy_to, '/var/www/html'
+        set :branch, proc { `git rev-parse --abbrev-ref develop`.chomp }
+        ```
+        
+    * Multiple application servers
+        
+        Refer to the "role-based syntax" comments in the `config/deploy/*.rb` files or to the [Capistrano documentation](http://capistranorb.com/documentation/getting-started/preparing-your-application/#configure-your-server-addresses-in-the-generated-files) for details on how to configure multiple application servers.
 
 ### Capistrano Built-Ins
 
@@ -82,6 +139,22 @@ A pre-built deploy routine is available out-of-the-box. This can be overriden on
 
 To see what process the built-in routine runs, take a look at the included rake file here: https://github.com/davidalger/capistrano-magento2/blob/master/lib/capistrano/tasks/deploy.rake
 
+## Server Configuration
+
+### Web Server Root Path
+
+Before deploying with Capistrano, you must update each of your web servers to point to a `current` directory inside of the `:deploy_to` directory. For example: `/var/www/html/current` Refer to the [Capistrano Structure](http://capistranorb.com/documentation/getting-started/structure/) to learn more about Capistrano's folder structure.
+
+### Create Linked Files
+
+Capistrano assumes that the `:linked_files` files will exist, so before you deploy for the first time, you need to create those files. On each of your web servers, create them using a command like this:
+
+```shell
+$ cd /var/www/html
+$ mkdir -p shared/var shared/app/etc
+$ touch shared/app/etc/env.php shared/var/.setup_cronjob_status shared/var/.update_cronjob_status shared/sitemap.xml
+```
+
 ## Magento Specific Tasks
 
 All Magento 2 tasks used by the built-in `deploy.rake` file as well as some additional commands are implemented and exposed to the end-user for use directly via the cap tool. You can also see this list by running `cap -T` from your shell.
@@ -108,10 +181,6 @@ All Magento 2 tasks used by the built-in `deploy.rake` file as well as some addi
 | magento:setup:permissions             | Sets proper permissions on application             |
 | magento:setup:static-content:deploy   | Deploys static view files                          |
 | magento:setup:upgrade                 | Run the Magento upgrade process                    |
-
-## Using Capistrano
-
-For information on how to use Capistrano and setup deployment take a look at the [Capistrano documentation](http://capistranorb.com) and [README](https://github.com/capistrano/capistrano/blob/master/README.md) file.
 
 ## Terminal Notifier on OS X
 This gem specifies [terminal-notifier](https://rubygems.org/gems/terminal-notifier) as a dependency in order to support notifications on OS X via an optional include. To use the built-in notifications, add the following line to your `Capfile`:

@@ -83,13 +83,13 @@ Before you can use Capistrano to deploy, you must configure the `config/deploy.r
     
     Capistrano allows you to use server-based or role-based syntax. You can read through the comments in the file to learn more about each option. If you have a single application server then the server-based syntax is the simplest configuration option.
     
-    * Single application servers
+    * Single application server
         
-        If your environment only has a single application server, your configuration files should look something like this:
+        If your stage and production environments consist of a single application server, your configuration files should look something like this:
         
         `config/deploy/production.rb`
         ```ruby
-        server 'www.example.com', user: 'www', roles: %w{app db web}
+        server 'www.example.com', user: 'www-data', roles: %w{app db web}
         
         set :deploy_to, '/var/www/html'
         set :branch, proc { `git rev-parse --abbrev-ref master`.chomp }
@@ -97,7 +97,7 @@ Before you can use Capistrano to deploy, you must configure the `config/deploy.r
         
         `config/deploy/staging.rb`
         ```ruby
-        server 'stage.example.com', user: 'www', roles: %w{app db web}
+        server 'stage.example.com', user: 'www-data', roles: %w{app db web}
         
         set :deploy_to, '/var/www/html'
         set :branch, proc { `git rev-parse --abbrev-ref develop`.chomp }

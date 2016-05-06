@@ -16,7 +16,9 @@ namespace :deploy do
       invoke 'magento:setup:di:compile'
       invoke 'magento:setup:permissions'
       within current_path do
-        execute :magento, 'maintenance:enable'
+        if test 'ls bin/magento'
+          execute :magento, 'maintenance:enable'
+        end
       end
       invoke 'magento:maintenance:enable'
       invoke 'magento:setup:upgrade'

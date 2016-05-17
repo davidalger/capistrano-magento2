@@ -15,8 +15,10 @@ namespace :deploy do
       invoke 'magento:setup:static-content:deploy'
       invoke 'magento:setup:di:compile'
       invoke 'magento:setup:permissions'
-      within current_path do
-        execute :magento, 'maintenance:enable'
+      if test '-d #{current_path}'
+        within current_path do
+          execute :magento, 'maintenance:enable'
+        end
       end
       invoke 'magento:maintenance:enable'
       invoke 'magento:setup:upgrade'

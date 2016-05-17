@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+==========
+0.2.1
+
+* Fixed issue with initial deploy failing before 'current' link has been created on target
+
 0.2.0
 ==========
 

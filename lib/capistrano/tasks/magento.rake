@@ -126,7 +126,6 @@ namespace :magento do
             # present in the develop mainline, so we are testing for multi-tenant presence for long-term portability.
             if test :magento, 'setup:di:compile-multi-tenant --help'
               execute :magento, 'setup:di:compile-multi-tenant'
-              execute :rm, '-f var/di/relations.ser'   # TODO: Workaround broken DI compilation on PHP 7.0.5 (GH #4070)
             else
               execute :magento, 'setup:di:compile'
             end

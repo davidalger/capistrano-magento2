@@ -1,7 +1,7 @@
 # Capistrano::Magento2 Change Log
 
 ==========
-Unreleased
+0.2.2
 
 * Revert "Add workaround for M2.0.4 bug noted in magento/magento2#4070"
 

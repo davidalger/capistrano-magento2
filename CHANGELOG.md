@@ -1,12 +1,12 @@
 # Capistrano::Magento2 Change Log
 
-==========
 0.2.2
+==========
 
 * Revert "Add workaround for M2.0.4 bug noted in magento/magento2#4070"
 
-==========
 0.2.1
+==========
 
 * Fixed issue with initial deploy failing before 'current' link has been created on target
 

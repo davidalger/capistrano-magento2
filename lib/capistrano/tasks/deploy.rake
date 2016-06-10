@@ -10,6 +10,7 @@
 namespace :deploy do
   task :updated do
     on release_roles :all do
+      invoke 'magento:setup:verify'
       invoke 'magento:composer:install'
       invoke 'magento:setup:permissions'
       invoke 'magento:setup:static-content:deploy'

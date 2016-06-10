@@ -95,6 +95,15 @@ namespace :magento do
   end
   
   namespace :setup do
+    task :verify do
+      on release_roles :all do
+        unless test "[ -f #{release_path}/app/etc/config.php ]"
+          error "The repository is missing app/etc/config.php. Please install the application and retry!"
+          exit 1
+        end
+      end
+    end
+
     desc 'Run the Magento upgrade process'
     task :upgrade do
       on release_roles :all do

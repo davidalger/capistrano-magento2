@@ -1,5 +1,11 @@
 # Capistrano::Magento2 Change Log
 
+0.2.3
+==========
+
+* Added file check to halt deploy if app/etc/config.php is not present in repository
+* Added check to verify that app/etc/env.php contains an array with an install date
+
 0.2.2
 ==========
 

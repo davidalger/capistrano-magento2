@@ -101,6 +101,14 @@ namespace :magento do
           error "The repository is missing app/etc/config.php. Please install the application and retry!"
           exit 1
         end
+
+        unless test %Q[#{SSHKit.config.command_map[:php]} -r '
+              $cfg = include "#{release_path}/app/etc/env.php";
+              exit((int)!isset($cfg["install"]["date"]));
+          ']
+          error "No environment configuration could be found. Please configure app/etc/env.php and retry!"
+          exit 1
+        end
       end
     end
 

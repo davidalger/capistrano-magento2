@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+-- unreleased --
+==========
+
+* Moved default linked file for sitemap.xml into pub directory
+
 0.2.3
 ==========
 

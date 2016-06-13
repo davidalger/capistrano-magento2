@@ -116,7 +116,7 @@ set :linked_files, [
   'app/etc/env.php',
   'var/.setup_cronjob_status',
   'var/.update_cronjob_status',
-  'sitemap.xml'
+  'pub/sitemap.xml'
 ]
 
 set :linked_dirs, [

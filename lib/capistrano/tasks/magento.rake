@@ -279,14 +279,14 @@ namespace :load do
       'app/etc/env.php',
       'var/.setup_cronjob_status',
       'var/.update_cronjob_status',
-      'sitemap.xml'
+      'pub/sitemap.xml'
     )
 
     set :linked_files_touch, fetch(:linked_files_touch, []).push(
       'app/etc/env.php',
       'var/.setup_cronjob_status',
       'var/.update_cronjob_status',
-      'sitemap.xml'
+      'pub/sitemap.xml'
     )
 
     set :linked_dirs, fetch(:linked_dirs, []).push(

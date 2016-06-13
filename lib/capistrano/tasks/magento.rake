@@ -93,8 +93,21 @@ namespace :magento do
       end
     end
   end
-  
-  namespace :setup do
+
+  namespace :deploy do
+    task :check do
+      on release_roles :all do
+        next unless any? :linked_files_touch
+        on release_roles :all do |host|
+          join_paths(shared_path, fetch(:linked_files_touch)).each do |file|
+            unless test "[ -f #{file} ]"
+              execute "touch #{file}"
+            end
+          end
+        end
+      end
+    end
+
     task :verify do
       on release_roles :all do
         unless test "[ -f #{release_path}/app/etc/config.php ]"
@@ -111,7 +124,9 @@ namespace :magento do
         end
       end
     end
+  end
 
+  namespace :setup do
     desc 'Run the Magento upgrade process'
     task :upgrade do
       on release_roles :all do
@@ -261,6 +276,13 @@ namespace :load do
     SSHKit.config.command_map[:magento] = "/usr/bin/env php -f bin/magento --"
 
     set :linked_files, fetch(:linked_files, []).push(
+      'app/etc/env.php',
+      'var/.setup_cronjob_status',
+      'var/.update_cronjob_status',
+      'sitemap.xml'
+    )
+
+    set :linked_files_touch, fetch(:linked_files_touch, []).push(
       'app/etc/env.php',
       'var/.setup_cronjob_status',
       'var/.update_cronjob_status',

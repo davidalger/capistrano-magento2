@@ -145,16 +145,6 @@ To see what process the built-in routine runs, take a look at the included rake 
 
 Before deploying with Capistrano, you must update each of your web servers to point to a `current` directory inside of the `:deploy_to` directory. For example: `/var/www/html/current` Refer to the [Capistrano Structure](http://capistranorb.com/documentation/getting-started/structure/) to learn more about Capistrano's folder structure.
 
-### Create Linked Files
-
-Capistrano assumes that the `:linked_files` files will exist, so before you deploy for the first time, you need to create those files. On each of your web servers, create them using a command like this:
-
-```shell
-$ cd /var/www/html
-$ mkdir -p shared/var shared/app/etc
-$ touch shared/app/etc/env.php shared/var/.setup_cronjob_status shared/var/.update_cronjob_status shared/sitemap.xml
-```
-
 ## Magento Specific Tasks
 
 All Magento 2 tasks used by the built-in `deploy.rake` file as well as some additional commands are implemented and exposed to the end-user for use directly via the cap tool. You can also see this list by running `cap -T` from your shell.

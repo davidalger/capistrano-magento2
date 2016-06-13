@@ -8,9 +8,11 @@
  ##
 
 namespace :deploy do
+  before 'deploy:check:linked_files', 'magento:deploy:check'
+
   task :updated do
     on release_roles :all do
-      invoke 'magento:setup:verify'
+      invoke 'magento:deploy:verify'
       invoke 'magento:composer:install'
       invoke 'magento:setup:permissions'
       invoke 'magento:setup:static-content:deploy'

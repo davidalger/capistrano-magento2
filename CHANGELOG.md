@@ -1,8 +1,9 @@
 # Capistrano::Magento2 Change Log
 
--- unreleased --
+0.2.4
 ==========
 
+* Added internal `magento:deploy:check` task and `:linked_files_touch` setting to minimize manual server setup
 * Moved default linked file for sitemap.xml into pub directory
 
 0.2.3

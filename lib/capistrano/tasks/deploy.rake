@@ -15,8 +15,10 @@ namespace :deploy do
       invoke 'magento:deploy:verify'
       invoke 'magento:composer:install'
       invoke 'magento:setup:permissions'
-      invoke 'magento:setup:static-content:deploy'
-      invoke 'magento:setup:di:compile'
+			if fetch(:magento_deploy_production, true)
+				invoke 'magento:setup:static-content:deploy'
+				invoke 'magento:setup:di:compile'
+			end
       invoke 'magento:setup:permissions'
       if test '-d #{current_path}'
         within current_path do

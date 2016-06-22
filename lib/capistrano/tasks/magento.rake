@@ -170,10 +170,11 @@ namespace :magento do
       desc 'Deploys static view files'
       task :deploy do
         on release_roles :all do
+					languages = fetch(:magento_deploy_languages, Array.new)
           within release_path do
             # TODO: Remove custom error detection logic once magento/magento2#3060 is resolved
             # Currently the cli tool is not reporting failures via the exit code, so manual detection is neccesary
-            output = capture :magento, 'setup:static-content:deploy | stdbuf -o0 tr -d .', verbosity: Logger::INFO
+            output = capture :magento, "setup:static-content:deploy #{languages.join(' ')}| stdbuf -o0 tr -d .", verbosity: Logger::INFO
             if not output.to_s.include? 'New version of deployed files'
               raise Exception, 'Failed to compile static assets'
             end

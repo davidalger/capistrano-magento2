@@ -1,5 +1,11 @@
 # Capistrano::Magento2 Change Log
 
+0.3.0
+==========
+
+* Added `:magento_deploy_production` flag to disable production deploy commands (PR #10 by @giacmir).
+* Added `:magento_deploy_languages` setting to support passing language list to static content generator (PR #11 by @giacmir).
+
 0.2.4
 ==========
 

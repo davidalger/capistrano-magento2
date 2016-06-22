@@ -300,5 +300,7 @@ namespace :load do
       'var/session', 
       'var/tmp'
     )
+
+    set :magento_deploy_production, fetch(:magento_deploy_production, true)   # TODO: Document deploy mode setting
   end
 end

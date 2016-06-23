@@ -179,6 +179,10 @@ This gem specifies [terminal-notifier](https://rubygems.org/gems/terminal-notifi
 require 'capistrano/magento2/notifier'
 ```
 
+## Pending Changes
+
+This gem specifies [capistrano-pending](https://rubygems.org/gems/capistrano-pending) as a dependency and adds some custom functionality on top of that gem: Any time the `deploy` command is run, a one line summary of git commits that will be deployed will be displayed. If the server(s) you are deploying to already have the latest changes, you will be warned of this and a prompt will appear confirming that you want to continue deploying.
+
 ## Development
 
 After checking out the repo, run `bundle install` to install dependencies. Make the necessary changes, then run `bundle exec rake install` to install a modified version of the gem on your local system.

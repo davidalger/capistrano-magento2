@@ -16,7 +16,11 @@ module Capistrano
 
         # Enhance the native deploy:pending:log command by updating repository and then showing the actual changes that will be deployed
         # Change the log output to oneline for easy reading
-        def log(from, to)
+        # Params:
+        # +from+ - commit-ish to compare from
+        # +to+ - commit-ish to compare to
+        # +returnOutput+ - whether to return or print the output
+        def log(from, to, returnOutput=false)
           run_locally do
             # Ensure repository is up-to-date in order to give an accurate report of pending changes
             execute :git, :fetch, :origin
@@ -28,7 +32,12 @@ module Capistrano
               to = capture(:git, 'rev-parse', '--abbrev-ref', '--symbolic-full-name',  to + '@{u}')
             end
             
-            return capture(:git, :log, "#{from}..#{to}", '--pretty="format:%C(yellow)%h %Cblue%>(12)%ad %Cgreen%<(7)%aN%Cred%d %Creset%s"')
+            output = capture(:git, :log, "#{from}..#{to}", '--pretty="format:%C(yellow)%h %Cblue%>(12)%ad %Cgreen%<(7)%aN%Cred%d %Creset%s"')
+            if returnOutput
+              return output
+            else 
+              puts output
+            end
           end
         end
 

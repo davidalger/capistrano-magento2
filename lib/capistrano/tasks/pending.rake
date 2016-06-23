@@ -11,6 +11,10 @@ namespace :deploy do
   before :starting, 'deploy:pending:check_changes'
   
   namespace :pending do
+    # Wrapper for the log method that sets the return type to return the output rather than output it
+    def _log_return(from, to)
+      _scm.log(from, to, true)
+    end
     
     # Check for pending changes and notify user of incoming changes or warn them that there are no changes
     task :check_changes => :setup do
@@ -19,7 +23,7 @@ namespace :deploy do
         if test "[ -f #{current_path}/REVISION ]"
           from = fetch(:revision)
           to = fetch(:branch)
-          output = _log(from, to)
+          output = _log_return(from, to)
           # TODO: Centralize the notification code between this and deploy:confirm_action
           if output.to_s.strip.empty?
             puts "\e[0;31mNo changes to deploy (from and to are the same: #{from}..#{to}). \nAre you sure you want to continue deploying? [y/N]\e[0m"

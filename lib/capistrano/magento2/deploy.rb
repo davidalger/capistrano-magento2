@@ -8,6 +8,8 @@
  ##
 
 require 'capistrano/deploy'
+# Explicitly load this file first so the pending commit message log shows before the production confirmation prompt
+require 'capistrano/magento2/pending'
 require 'capistrano/magento2'
 
 load File.expand_path('../../tasks/deploy.rake', __FILE__)

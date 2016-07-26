@@ -304,7 +304,6 @@ namespace :load do
       'var/tmp'
     )
 
-    set :magento_deploy_production, fetch(:magento_deploy_production, true)   # TODO: Document deploy mode setting
-    set :magento_deploy_languages, fetch(:magento_deploy_languages, [])       # TODO: Document deploy lang setting
+    set :magento_deploy_languages, fetch(:magento_deploy_languages, ['en_US'])
   end
 end

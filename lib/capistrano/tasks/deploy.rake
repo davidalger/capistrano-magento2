@@ -46,3 +46,9 @@ namespace :deploy do
     end
   end
 end
+
+namespace :load do
+  task :defaults do
+    set :magento_deploy_production, fetch(:magento_deploy_production, true)
+  end
+end

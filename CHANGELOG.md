@@ -1,10 +1,5 @@
 # Capistrano::Magento2 Change Log
 
-0.3.1
-==========
-
-* Added capistrano-pending gem. Automatically show pending commit message log when deploying. Prompt user if there are no pending changes
-
 0.3.0
 ==========
 

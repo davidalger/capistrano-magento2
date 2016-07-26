@@ -13,7 +13,7 @@ namespace :deploy do
   task :updated do
     on release_roles :all do
       invoke 'magento:deploy:verify'
-      invoke 'magento:composer:install'
+      invoke 'magento:composer:install' if fetch(:magento_deploy_composer)
       invoke 'magento:setup:permissions'
       if fetch(:magento_deploy_production)
         invoke 'magento:setup:static-content:deploy'
@@ -25,7 +25,7 @@ namespace :deploy do
           execute :magento, 'maintenance:enable'
         end
       end
-      invoke 'magento:maintenance:enable'
+      invoke 'magento:maintenance:enable' if fetch(:magento_deploy_maintenance)
       invoke 'magento:setup:upgrade'
     end
   end
@@ -34,15 +34,23 @@ namespace :deploy do
     on release_roles :all do
       invoke 'magento:cache:flush'
       invoke 'magento:cache:varnish:ban'
-      invoke 'magento:maintenance:disable'
+      invoke 'magento:maintenance:disable' if fetch(:magento_deploy_maintenance)
     end
   end
 
   task :reverted do
     on release_roles :all do
-      invoke 'magento:maintenance:disable'
+      invoke 'magento:maintenance:disable' if fetch(:magento_deploy_maintenance)
       invoke 'magento:cache:flush'
       invoke 'magento:cache:varnish:ban'
     end
+  end
+end
+
+namespace :load do
+  task :defaults do
+    set :magento_deploy_composer, fetch(:magento_deploy_composer, true)
+    set :magento_deploy_production, fetch(:magento_deploy_production, true)
+    set :magento_deploy_maintenance, fetch(:magento_deploy_maintenance, true)
   end
 end

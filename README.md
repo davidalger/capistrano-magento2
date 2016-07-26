@@ -107,6 +107,27 @@ Before you can use Capistrano to deploy, you must configure the `config/deploy.r
         
         Refer to the "role-based syntax" comments in the `config/deploy/*.rb` files or to the [Capistrano documentation](http://capistranorb.com/documentation/getting-started/preparing-your-application/#configure-your-server-addresses-in-the-generated-files) for details on how to configure multiple application servers.
 
+### Magento Deploy Settings
+
+| setting                       | default | what it does
+| ----------------------------- | ------- | ---
+| `:magento_deploy_languages`   | `['en_US']` | Array of languages passed to static content deploy routine          |
+| `:magento_deploy_composer`    | `true` | Enables composer install behaviour in the built-in deploy routine        |
+| `:magento_deploy_production`  | `true` | Enables production specific DI compilation and static content generation |
+| `:magento_deploy_maintenance` | `true` | Enables use of maintenance mode while magento:setup:upgrade runs.        |
+
+#### Example Usage
+
+Add a line similar to the following in `config/deploy.rb` to set a custom value on one of the above settings:
+
+```ruby
+set :magento_deploy_languages, ['en_US', 'en_CA']
+```
+
+```ruby
+set :magento_deploy_composer, false
+```
+
 ### Capistrano Built-Ins
 
 For the sake of simplicity in new project setups `:linked_dirs` and `:linked_files` are pre-configured per the following.
@@ -177,6 +198,16 @@ This gem specifies [terminal-notifier](https://rubygems.org/gems/terminal-notifi
 
 ```ruby
 require 'capistrano/magento2/notifier'
+```
+
+## Pending Changes
+
+This gem specifies [capistrano-pending](https://rubygems.org/gems/capistrano-pending) as a dependency and adds some (optional) custom functionality on top of that gem: Any time the `deploy` command is run, a one line summary of git commits that will be deployed will be displayed. If the server(s) you are deploying to already have the latest changes, you will be warned of this and a prompt will appear confirming that you want to continue deploying.
+
+To add the `capistrano-pending` gem and additional functionality to you project, add the following line to your `Capfile`:
+
+```ruby
+require 'capistrano/magento2/pending'
 ```
 
 ## Development

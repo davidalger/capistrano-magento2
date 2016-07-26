@@ -181,7 +181,13 @@ require 'capistrano/magento2/notifier'
 
 ## Pending Changes
 
-This gem specifies [capistrano-pending](https://rubygems.org/gems/capistrano-pending) as a dependency and adds some custom functionality on top of that gem: Any time the `deploy` command is run, a one line summary of git commits that will be deployed will be displayed. If the server(s) you are deploying to already have the latest changes, you will be warned of this and a prompt will appear confirming that you want to continue deploying.
+This gem specifies [capistrano-pending](https://rubygems.org/gems/capistrano-pending) as a dependency and adds some (optional) custom functionality on top of that gem: Any time the `deploy` command is run, a one line summary of git commits that will be deployed will be displayed. If the server(s) you are deploying to already have the latest changes, you will be warned of this and a prompt will appear confirming that you want to continue deploying.
+
+To add the `capistrano-pending` gem and additional functionality to you project, add the following line to your `Capfile`:
+
+```ruby
+require 'capistrano/magento2/pending'
+```
 
 ## Development
 

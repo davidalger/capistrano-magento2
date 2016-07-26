@@ -7,26 +7,26 @@
  # http://davidalger.com/contact/
  ##
 
+require 'capistrano-pending'
+
 namespace :deploy do
   before :starting, 'deploy:pending:check_changes'
-  
+
   namespace :pending do
-    # Wrapper for the log method that sets the return type to return the output rather than output it
-    def _log_return(from, to)
-      _scm.log(from, to, true)
-    end
-    
     # Check for pending changes and notify user of incoming changes or warn them that there are no changes
     task :check_changes => :setup do
       on roles fetch(:capistrano_pending_role, :app) do |host|
-        # Only check for pending changes if REVISION file exists to prevent error
+        # check for pending changes only if REVISION file exists to prevent error
         if test "[ -f #{current_path}/REVISION ]"
           from = fetch(:revision)
           to = fetch(:branch)
-          output = _log_return(from, to)
-          # TODO: Centralize the notification code between this and deploy:confirm_action
+
+          output = _scm.log(from, to, true)
           if output.to_s.strip.empty?
-            puts "\e[0;31mNo changes to deploy (from and to are the same: #{from}..#{to}). \nAre you sure you want to continue deploying? [y/N]\e[0m"
+            puts "\e[0;31m"
+            puts "    No changes to deploy (from and to are the same: #{from}..#{to})"
+            print "    Are you sure you want to continue deploying? [y/n] \e[0m"
+
             proceed = STDIN.gets[0..0] rescue nil
             exit unless proceed == 'y' || proceed == 'Y'
           else
@@ -37,5 +37,4 @@ namespace :deploy do
       end
     end
   end
-  
 end

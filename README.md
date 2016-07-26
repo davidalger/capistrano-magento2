@@ -118,7 +118,7 @@ Before you can use Capistrano to deploy, you must configure the `config/deploy.r
 
 #### Example Usage
 
-Add a line similar to the following to `config/deploy.rb` to set a custom value on one of these settings:
+Add a line similar to the following in `config/deploy.rb` to set a custom value on one of the above settings:
 
 ```ruby
 set :magento_deploy_languages, ['en_US', 'en_CA']

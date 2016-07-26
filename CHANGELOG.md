@@ -1,5 +1,13 @@
 # Capistrano::Magento2 Change Log
 
+0.4.0
+==========
+
+* Added optional support for capistrano-pending gem.
+* Added `:magento_deploy_composer` flag. See README for details.
+* Added `:magento_deploy_maintenance` flag. See README for details.
+* Updated `:magento_deploy_languages` definition to explicitly declare default value.
+
 0.3.0
 ==========
 

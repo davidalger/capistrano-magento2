@@ -107,6 +107,25 @@ Before you can use Capistrano to deploy, you must configure the `config/deploy.r
         
         Refer to the "role-based syntax" comments in the `config/deploy/*.rb` files or to the [Capistrano documentation](http://capistranorb.com/documentation/getting-started/preparing-your-application/#configure-your-server-addresses-in-the-generated-files) for details on how to configure multiple application servers.
 
+### Magento Deploy Settings
+
+| setting                       | default | what it does
+| ----------------------------- | ------- | ---
+| `:magento_deploy_languages`   | `['en_US']` | Array of languages passed to static content deploy routine          |
+| `:magento_deploy_composer`    | `true` | Enables composer install behaviour in the built-in deploy routine        |
+| `:magento_deploy_production`  | `true` | Enables production specific DI compilation and static content generation |
+| `:magento_deploy_maintenance` | `true` | Enables use of maintenance mode while magento:setup:upgrade runs.        |
+
+#### Example Usage
+
+```ruby
+set :magento_deploy_languages, ['en_US', 'en_CA']
+```
+
+```ruby
+set :magento_deploy_composer, false
+```
+
 ### Capistrano Built-Ins
 
 For the sake of simplicity in new project setups `:linked_dirs` and `:linked_files` are pre-configured per the following.

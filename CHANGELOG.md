@@ -1,5 +1,12 @@
 # Capistrano::Magento2 Change Log
 
+UNRELEASED
+==========
+
+* Added :magento_deploy_confim setting which requires user confirmation of deployment to specific capistrano stages
+* Updated formatting of pending deployment messaging
+* Removed the undocumented :deploy_warn_stages setting from the notifier
+
 0.4.0
 ==========
 

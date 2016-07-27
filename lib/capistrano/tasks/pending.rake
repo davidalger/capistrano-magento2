@@ -23,15 +23,16 @@ namespace :deploy do
 
           output = _scm.log(from, to, true)
           if output.to_s.strip.empty?
-            puts "\e[0;31m"
-            puts "    No changes to deploy (from and to are the same: #{from}..#{to})"
-            print "    Are you sure you want to continue deploying? [y/n] \e[0m"
+            puts "\e[0;31m      No changes to deploy (from and to are the same: #{from}..#{to})"
+            print "      Are you sure you want to continue? [y/n] \e[0m"
 
             proceed = STDIN.gets[0..0] rescue nil
             exit unless proceed == 'y' || proceed == 'Y'
           else
-            puts "Deploying changes between #{from}..#{to}"
-            puts output
+            puts "\e[0;90m      Deploying changes #{from}..#{to}:\e[0m"
+            output.each_line do |s|
+              puts "      " + s
+            end
           end
         end
       end

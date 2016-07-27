@@ -10,6 +10,14 @@
 namespace :deploy do
   before 'deploy:check:linked_files', 'magento:deploy:check'
 
+  before :starting, :confirm_action do
+    if fetch(:magento_deploy_confirm).include? fetch(:stage).to_s
+      print "\e[0;31m      Are you sure you want to deploy to #{fetch(:stage).to_s}? [y/n] \e[0m"
+      proceed = STDIN.gets[0..0] rescue nil
+      exit unless proceed == 'y' || proceed == 'Y'
+    end
+  end
+
   task :updated do
     on release_roles :all do
       invoke 'magento:deploy:verify'
@@ -50,7 +58,8 @@ end
 namespace :load do
   task :defaults do
     set :magento_deploy_composer, fetch(:magento_deploy_composer, true)
-    set :magento_deploy_production, fetch(:magento_deploy_production, true)
+    set :magento_deploy_confirm, fetch(:magento_deploy_confirm, [])
     set :magento_deploy_maintenance, fetch(:magento_deploy_maintenance, true)
+    set :magento_deploy_production, fetch(:magento_deploy_production, true)
   end
 end

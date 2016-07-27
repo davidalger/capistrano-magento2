@@ -111,10 +111,11 @@ Before you can use Capistrano to deploy, you must configure the `config/deploy.r
 
 | setting                       | default | what it does
 | ----------------------------- | ------- | ---
-| `:magento_deploy_languages`   | `['en_US']` | Array of languages passed to static content deploy routine          |
-| `:magento_deploy_composer`    | `true` | Enables composer install behaviour in the built-in deploy routine        |
-| `:magento_deploy_production`  | `true` | Enables production specific DI compilation and static content generation |
-| `:magento_deploy_maintenance` | `true` | Enables use of maintenance mode while magento:setup:upgrade runs.        |
+| `:magento_deploy_languages`   | `['en_US']` | Array of languages passed to static content deploy routine
+| `:magento_deploy_composer`    | `true` | Enables composer install behaviour in the built-in deploy routine
+| `:magento_deploy_production`  | `true` | Enables production specific DI compilation and static content generation
+| `:magento_deploy_maintenance` | `true` | Enables use of maintenance mode while magento:setup:upgrade runs
+| `:deploy_warn_stages`     | `['prod','production']` | Used by `notifier.rb` to confirm deployments
 
 #### Example Usage
 

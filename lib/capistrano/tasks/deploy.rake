@@ -30,7 +30,7 @@ namespace :deploy do
       invoke 'magento:setup:permissions'
       if test '-d #{current_path}'
         within current_path do
-          execute :magento, 'maintenance:enable'
+          execute :magento, 'maintenance:enable' if fetch(:magento_deploy_maintenance)
         end
       end
       invoke 'magento:maintenance:enable' if fetch(:magento_deploy_maintenance)

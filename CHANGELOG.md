@@ -5,6 +5,7 @@ UNRELEASED
 
 * Added :magento_deploy_confim setting which requires user confirmation of deployment to specific capistrano stages
 * Updated formatting of pending deployment messaging
+* Fixed bug causing maintenance mode to be enabled on deploy even when `:magento_deploy_maintenance` was set to false
 * Removed the undocumented :deploy_warn_stages setting from the notifier
 
 0.4.0

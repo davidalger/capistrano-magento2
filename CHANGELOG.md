@@ -4,6 +4,7 @@ UNRELEASED
 ==========
 
 * Added :magento_deploy_confim setting which requires user confirmation of deployment to specific capistrano stages
+* Added call to pre-generate secure RequireJS config (issue #21)
 * Updated formatting of pending deployment messaging
 * Fixed bug causing maintenance mode to be enabled on deploy even when `:magento_deploy_maintenance` was set to false
 * Fixed bug preventing the second call to `magento:setup:permissions` from being executed (issue #18)

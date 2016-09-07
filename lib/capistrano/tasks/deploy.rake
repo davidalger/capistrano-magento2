@@ -28,12 +28,12 @@ namespace :deploy do
         invoke 'magento:setup:di:compile'
       end
       invoke 'magento:setup:permissions'
-      if test '-d #{current_path}'
+      invoke 'magento:maintenance:enable' if fetch(:magento_deploy_maintenance)
+      if test "[ -d #{current_path} ]"
         within current_path do
           execute :magento, 'maintenance:enable' if fetch(:magento_deploy_maintenance)
         end
       end
-      invoke 'magento:maintenance:enable' if fetch(:magento_deploy_maintenance)
       invoke 'magento:setup:upgrade'
     end
   end

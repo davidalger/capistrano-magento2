@@ -146,6 +146,7 @@ namespace :magento do
           execute :chmod, '+x ./bin/magento'
         end
       end
+      Rake::Task['magento:setup:permissions'].reenable  ## make task perpetually callable
     end
     
     namespace :di do

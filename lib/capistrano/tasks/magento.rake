@@ -175,7 +175,7 @@ namespace :magento do
           deploy_themes = fetch(:magento_deploy_themes)
 
           if deploy_themes.count() > 0
-            deploy_themes = '-t ' + deploy_themes.join(' -t ')   # prepare value for cli command if theme(s) specified
+            deploy_themes = ' -t ' + deploy_themes.join(' -t ')   # prepare value for cli command if theme(s) specified
           else
             deploy_themes = ''
           end
@@ -184,7 +184,7 @@ namespace :magento do
           # and 2.0.x CLI commands do not return error exit codes on failure. See magento/magento2#3060 for details.
           within release_path do
             output = capture :magento,
-              "setup:static-content:deploy #{deploy_languages} #{deploy_themes}| stdbuf -o0 tr -d .",
+              "setup:static-content:deploy #{deploy_languages}#{deploy_themes} | stdbuf -o0 tr -d .",
               verbosity: Logger::INFO
 
             if not output.to_s.include? 'New version of deployed files'
@@ -192,9 +192,16 @@ namespace :magento do
             end
 
             with(https: 'on') {
+              deploy_flags = ''
+
+              # Magento 2.0 does not have these flags, so only way to generate secure files is to do all of them :/
+              if test :magento, 'setup:static-content:deploy --help | grep -- --theme'
+                deploy_flags = " --no-javascript --no-css --no-less --no-images" \
+                  + " --no-fonts --no-html --no-misc --no-html-minify"
+              end
+
               output = capture :magento,
-                "setup:static-content:deploy #{deploy_languages} #{deploy_themes}" \
-                " --no-javascript --no-css --no-less --no-images --no-fonts --no-html --no-misc --no-html-minify",
+                "setup:static-content:deploy #{deploy_languages}#{deploy_themes}#{deploy_flags} | stdbuf -o0 tr -d .",
                 verbosity: Logger::INFO
 
               if not output.to_s.include? 'New version of deployed files'

@@ -112,6 +112,7 @@ Before you can use Capistrano to deploy, you must configure the `config/deploy.r
 | setting                       | default | what it does
 | ----------------------------- | ------- | ---
 | `:magento_deploy_languages`   | `['en_US']` | Array of languages passed to static content deploy routine
+| `:magento_deploy_themes`      | `[]`   | Array of themes passed to static content deploy routine (Magento 2.1+ only)
 | `:magento_deploy_composer`    | `true` | Enables composer install behaviour in the built-in deploy routine
 | `:magento_deploy_production`  | `true` | Enables production specific DI compilation and static content generation
 | `:magento_deploy_maintenance` | `true` | Enables use of maintenance mode while magento:setup:upgrade runs

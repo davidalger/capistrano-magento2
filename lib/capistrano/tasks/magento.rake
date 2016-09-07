@@ -172,13 +172,19 @@ namespace :magento do
       task :deploy do
         on release_roles :all do
           deploy_languages = fetch(:magento_deploy_languages).join(' ')
+          deploy_themes = fetch(:magento_deploy_themes)
+
+          if deploy_themes.count() > 0
+            deploy_themes = '-t ' + deploy_themes.join(' -t ')   # prepare value for cli command if theme(s) specified
+          else
+            deploy_themes = ''
+          end
+
+          # Output is being checked for a success message because this command may easily fail due to customizations
+          # and 2.0.x CLI commands do not return error exit codes on failure. See magento/magento2#3060 for details.
           within release_path do
-
-            # Output is being checked for a success message because this command may easily fail due to customizations
-            # and 2.0.x CLI commands do not return error exit codes on failure. See magento/magento2#3060 for details.
-
             output = capture :magento,
-              "setup:static-content:deploy #{deploy_languages}| stdbuf -o0 tr -d .",
+              "setup:static-content:deploy #{deploy_languages} #{deploy_themes}| stdbuf -o0 tr -d .",
               verbosity: Logger::INFO
 
             if not output.to_s.include? 'New version of deployed files'
@@ -187,7 +193,7 @@ namespace :magento do
 
             with(https: 'on') {
               output = capture :magento,
-                "setup:static-content:deploy #{deploy_languages}" \
+                "setup:static-content:deploy #{deploy_languages} #{deploy_themes}" \
                 " --no-javascript --no-css --no-less --no-images --no-fonts --no-html --no-misc --no-html-minify",
                 verbosity: Logger::INFO
 
@@ -319,5 +325,6 @@ namespace :load do
     )
 
     set :magento_deploy_languages, fetch(:magento_deploy_languages, ['en_US'])
+    set :magento_deploy_themes, fetch(:magento_deploy_themes, [])
   end
 end

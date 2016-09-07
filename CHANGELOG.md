@@ -3,6 +3,7 @@
 UNRELEASED
 ==========
 
+* Added ability to only deploy specific themes via the new `:magento_deploy_themes` array
 * Added :magento_deploy_confim setting which requires user confirmation of deployment to specific capistrano stages
 * Added call to pre-generate secure RequireJS config (issue #21)
 * Updated formatting of pending deployment messaging

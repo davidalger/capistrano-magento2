@@ -79,13 +79,28 @@ namespace :magento do
   namespace :composer do
     desc 'Run composer install'
     task :install do
+
       on release_roles :all do
         within release_path do
-          execute :composer, 'install --prefer-dist --no-interaction 2>&1'
+          composer_flags = '--prefer-dist --no-interaction'
+
+          if fetch(:magento_deploy_production)
+            composer_flags += ' --optimize-autoloader'
+          end
+
+          execute :composer, "install #{composer_flags} 2>&1"
+
+          if fetch(:magento_deploy_production)
+            feature_version = capture :magento, "-V | cut -d' ' -f4 | cut -d. -f1-2"
             
-          # Dir should be here if properly setup, but check for it anyways just in case
-          if test "[ -d #{release_path}/update ]"
-            execute :composer, 'install --prefer-dist --no-interaction -d ./update 2>&1'
+            if feature_version.to_f > 2.0
+              composer_flags += ' --no-dev'
+              execute :composer, "install #{composer_flags} 2>&1" # removes require-dev components from prev command
+            end
+          end
+
+          if test "[ -d #{release_path}/update ]"   # can't count on this, but emit warning if not present
+            execute :composer, "install #{composer_flags} -d ./update 2>&1"
           else
             puts "\e[0;31m    Warning: ./update dir does not exist in repository!\n\e[0m\n"
           end
@@ -146,6 +161,7 @@ namespace :magento do
           execute :chmod, '+x ./bin/magento'
         end
       end
+      Rake::Task['magento:setup:permissions'].reenable  ## make task perpetually callable
     end
     
     namespace :di do
@@ -156,8 +172,12 @@ namespace :magento do
             # Due to a bug in the single-tenant compiler released in 2.0 (see here for details: http://bit.ly/21eMPtt)
             # we have to use multi-tenant currently. However, the multi-tenant is being dropped in 2.1 and is no longer
             # present in the develop mainline, so we are testing for multi-tenant presence for long-term portability.
-            if test :magento, 'setup:di:compile-multi-tenant --help'
-              execute :magento, 'setup:di:compile-multi-tenant'
+            if test :magento, 'setup:di:compile-multi-tenant --help >/dev/null 2>&1'
+              output = capture :magento, 'setup:di:compile-multi-tenant', verbosity: Logger::INFO
+              
+              if output.to_s.include? 'Errors during compilation'
+                raise Exception, 'setup:di:compile-multi-tenant command execution failed'
+              end
             else
               execute :magento, 'setup:di:compile'
             end
@@ -171,16 +191,46 @@ namespace :magento do
       task :deploy do
         on release_roles :all do
           deploy_languages = fetch(:magento_deploy_languages).join(' ')
+          deploy_themes = fetch(:magento_deploy_themes)
+
+          if deploy_themes.count() > 0
+            deploy_themes = ' -t ' + deploy_themes.join(' -t ')   # prepare value for cli command if theme(s) specified
+          else
+            deploy_themes = ''
+          end
+
+          # Output is being checked for a success message because this command may easily fail due to customizations
+          # and 2.0.x CLI commands do not return error exit codes on failure. See magento/magento2#3060 for details.
           within release_path do
-            # TODO: Remove custom error detection logic once magento/magento2#3060 is resolved
-            # Currently the cli tool is not reporting failures via the exit code, so manual detection is neccesary
+
+            # Workaround for 2.1 specific issue: https://github.com/magento/magento2/pull/6437
+            execute "touch #{release_path}/pub/static/deployed_version.txt"
+
             output = capture :magento,
-              "setup:static-content:deploy #{deploy_languages}| stdbuf -o0 tr -d .",
+              "setup:static-content:deploy #{deploy_languages}#{deploy_themes} | stdbuf -o0 tr -d .",
               verbosity: Logger::INFO
 
             if not output.to_s.include? 'New version of deployed files'
               raise Exception, 'Failed to compile static assets'
             end
+
+            with(https: 'on') {
+              deploy_flags = ''
+
+              # Magento 2.0 does not have these flags, so only way to generate secure files is to do all of them :/
+              if test :magento, 'setup:static-content:deploy --help | grep -- --theme'
+                deploy_flags = " --no-javascript --no-css --no-less --no-images" \
+                  + " --no-fonts --no-html --no-misc --no-html-minify"
+              end
+
+              output = capture :magento,
+                "setup:static-content:deploy #{deploy_languages}#{deploy_themes}#{deploy_flags} | stdbuf -o0 tr -d .",
+                verbosity: Logger::INFO
+
+              if not output.to_s.include? 'New version of deployed files'
+                raise Exception, 'Failed to compile (secure) static assets'
+              end
+            }
           end
         end
       end
@@ -305,5 +355,6 @@ namespace :load do
     )
 
     set :magento_deploy_languages, fetch(:magento_deploy_languages, ['en_US'])
+    set :magento_deploy_themes, fetch(:magento_deploy_themes, [])
   end
 end

@@ -79,10 +79,10 @@ namespace :magento do
   namespace :composer do
     desc 'Run composer install'
     task :install do
-      composer_flags = '--prefer-dist --no-interaction --optimize-autoloader'
+      composer_flags = '--prefer-dist --no-interaction'
 
       if fetch(:magento_deploy_production)
-        composer_flags += ' --no-dev'
+        composer_flags += ' --optimize-autoloader --no-dev'
       end
 
       on release_roles :all do

@@ -79,15 +79,25 @@ namespace :magento do
   namespace :composer do
     desc 'Run composer install'
     task :install do
-      composer_flags = '--prefer-dist --no-interaction'
-
-      if fetch(:magento_deploy_production)
-        composer_flags += ' --optimize-autoloader --no-dev'
-      end
 
       on release_roles :all do
         within release_path do
+          composer_flags = '--prefer-dist --no-interaction'
+
+          if fetch(:magento_deploy_production)
+            composer_flags += ' --optimize-autoloader'
+          end
+
           execute :composer, "install #{composer_flags} 2>&1"
+
+          if fetch(:magento_deploy_production)
+            feature_version = capture :magento, "-V | cut -d' ' -f4 | cut -d. -f1-2"
+            
+            if feature_version.to_f > 2.0
+              composer_flags += ' --no-dev'
+              execute :composer, "install #{composer_flags} 2>&1" # removes require-dev components from prev command
+            end
+          end
 
           if test "[ -d #{release_path}/update ]"   # can't count on this, but emit warning if not present
             execute :composer, "install #{composer_flags} -d ./update 2>&1"

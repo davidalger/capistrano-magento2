@@ -163,7 +163,11 @@ namespace :magento do
             # we have to use multi-tenant currently. However, the multi-tenant is being dropped in 2.1 and is no longer
             # present in the develop mainline, so we are testing for multi-tenant presence for long-term portability.
             if test :magento, 'setup:di:compile-multi-tenant --help'
-              execute :magento, 'setup:di:compile-multi-tenant'
+              output = capture :magento, 'setup:di:compile-multi-tenant', verbosity: Logger::INFO
+              
+              if output.to_s.include? 'Errors during compilation'
+                raise Exception, 'setup:di:compile-multi-tenant command execution failed'
+              end
             else
               execute :magento, 'setup:di:compile'
             end

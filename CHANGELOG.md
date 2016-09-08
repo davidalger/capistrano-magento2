@@ -1,6 +1,6 @@
 # Capistrano::Magento2 Change Log
 
-UNRELEASED
+0.5.0
 ==========
 
 * Added ability to only deploy specific themes via the new `:magento_deploy_themes` array

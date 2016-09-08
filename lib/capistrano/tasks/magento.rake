@@ -79,13 +79,18 @@ namespace :magento do
   namespace :composer do
     desc 'Run composer install'
     task :install do
+      composer_flags = '--prefer-dist --no-interaction --optimize-autoloader'
+
+      if fetch(:magento_deploy_production)
+        composer_flags += ' --no-dev'
+      end
+
       on release_roles :all do
         within release_path do
-          execute :composer, 'install --no-dev --prefer-dist --no-interaction --optimize-autoloader 2>&1'
-            
-          # Dir should be here if properly setup, but check for it anyways just in case
-          if test "[ -d #{release_path}/update ]"
-            execute :composer, 'install --no-dev --prefer-dist --no-interaction --optimize-autoloader -d ./update 2>&1'
+          execute :composer, "install #{composer_flags} 2>&1"
+
+          if test "[ -d #{release_path}/update ]"   # can't count on this, but emit warning if not present
+            execute :composer, "install #{composer_flags} -d ./update 2>&1"
           else
             puts "\e[0;31m    Warning: ./update dir does not exist in repository!\n\e[0m\n"
           end

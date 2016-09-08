@@ -28,6 +28,8 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency 'capistrano', '~> 3.1'
+
+  # TODO explore removing these from gemspec per issue #19
   spec.add_dependency 'terminal-notifier', '~> 1.6'
   spec.add_dependency 'capistrano-pending', '~> 0.1'
 

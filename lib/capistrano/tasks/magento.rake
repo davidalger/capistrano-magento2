@@ -162,6 +162,8 @@ namespace :magento do
             else
               execute :magento, 'setup:di:compile'
             end
+
+            # TODO: Add error check for this string "Errors during compilation" - see issue #25
           end
         end
       end

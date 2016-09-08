@@ -190,6 +190,10 @@ namespace :magento do
           # Output is being checked for a success message because this command may easily fail due to customizations
           # and 2.0.x CLI commands do not return error exit codes on failure. See magento/magento2#3060 for details.
           within release_path do
+
+            # Workaround for 2.1 specific issue: https://github.com/magento/magento2/pull/6437
+            execute "touch #{release_path}/pub/static/deployed_version.txt"
+
             output = capture :magento,
               "setup:static-content:deploy #{deploy_languages}#{deploy_themes} | stdbuf -o0 tr -d .",
               verbosity: Logger::INFO

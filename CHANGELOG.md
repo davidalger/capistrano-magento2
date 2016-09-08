@@ -6,6 +6,7 @@ UNRELEASED
 * Added ability to only deploy specific themes via the new `:magento_deploy_themes` array
 * Added `:magento_deploy_confim` setting which requires user confirmation of deployment to specific capistrano stages
 * Added call to pre-generate secure RequireJS config (issue #21)
+* Added workaround for Magento 2.1 specific bug where lack of a deployed_version.txt file would fail static asset deploy
 * Updated formatting of pending deployment messaging
 * Updated composer calls to specify --no-dev and --optimize-autoloader when `:magento_deploy_production` is not set (issue #22, #23)
 * Fixed bug causing maintenance mode to be enabled on deploy even when `:magento_deploy_maintenance` was set to false

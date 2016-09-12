@@ -9,9 +9,9 @@
 
 require 'capistrano-pending'
 
+before :deploy, 'deploy:pending:check_changes'
 namespace :deploy do
-  before :starting, 'deploy:pending:check_changes'
-
+    
   namespace :pending do
     # Check for pending changes and notify user of incoming changes or warn them that there are no changes
     task :check_changes => :setup do

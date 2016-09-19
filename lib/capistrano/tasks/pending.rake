@@ -14,10 +14,11 @@ namespace :deploy do
 
   namespace :pending do
     # Check for pending changes and notify user of incoming changes or warn them that there are no changes
-    task :check_changes => :setup do
+    task :check_changes do
       on roles fetch(:capistrano_pending_role, :app) do |host|
         # check for pending changes only if REVISION file exists to prevent error
         if test "[ -f #{current_path}/REVISION ]"
+          invoke 'deploy:pending:setup'
           from = fetch(:revision)
           to = fetch(:branch)
 

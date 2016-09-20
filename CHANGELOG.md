@@ -1,5 +1,12 @@
 # Capistrano::Magento2 Change Log
 
+0.5.1
+==========
+
+* Fixed usability regression causing deploy confirmation to occur prior to display of `capistrano/magento2/pending` output when in use (issue #28)
+* Fixed "REVISION file doesn't exist" error when deploying for the first time when `capistrano/magento2/pending` is loaded
+* Fixed issue breaking initial deploy when `:magento_deploy_maintenance` is set to true
+
 0.5.0
 ==========
 

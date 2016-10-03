@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+0.5.2
+==========
+
+* Added ability to configure permissions set on each deploy (issue #32). See README for details.
+
 0.5.1
 ==========
 

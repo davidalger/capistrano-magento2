@@ -155,10 +155,12 @@ namespace :magento do
     task :permissions do
       on release_roles :all do
         within release_path do
-          execute :find, release_path, '-type d -exec chmod 770 {} +'
-          execute :find, release_path, '-type f -exec chmod 660 {} +'
-          execute :chmod, '-R g+s', release_path
-          execute :chmod, '+x ./bin/magento'
+          execute :find, release_path, "-type d -exec chmod #{fetch(:magento_deploy_chmod_d).to_i} {} +"
+          execute :find, release_path, "-type f -exec chmod #{fetch(:magento_deploy_chmod_f).to_i} {} +"
+          
+          fetch(:magento_deploy_chmod_x).each() do |file|
+            execute :chmod, "+x #{release_path}/#{file}"
+          end
         end
       end
       Rake::Task['magento:setup:permissions'].reenable  ## make task perpetually callable
@@ -356,5 +358,8 @@ namespace :load do
 
     set :magento_deploy_languages, fetch(:magento_deploy_languages, ['en_US'])
     set :magento_deploy_themes, fetch(:magento_deploy_themes, [])
+    set :magento_deploy_chmod_d, fetch(:magento_deploy_chmod_d, '2770')
+    set :magento_deploy_chmod_f, fetch(:magento_deploy_chmod_f, '0660')
+    set :magento_deploy_chmod_x, fetch(:magento_deploy_chmod_x, ['bin/magento'])
   end
 end

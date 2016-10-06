@@ -12,7 +12,7 @@ namespace :magento do
   namespace :cache do
     desc 'Flush Magento cache storage'
     task :flush do
-      on release_roles :all do
+      on primary fetch(:magento_deploy_setup_role) do
         within release_path do
           execute :magento, 'cache:flush'
         end
@@ -21,7 +21,7 @@ namespace :magento do
     
     desc 'Clean Magento cache by types'
     task :clean do
-      on release_roles :all do
+      on primary fetch(:magento_deploy_setup_role) do
         within release_path do
           execute :magento, 'cache:clean'
         end
@@ -30,7 +30,7 @@ namespace :magento do
     
     desc 'Enable Magento cache'
     task :enable do
-      on release_roles :all do
+      on primary fetch(:magento_deploy_setup_role) do
         within release_path do
           execute :magento, 'cache:enable'
         end
@@ -39,7 +39,7 @@ namespace :magento do
     
     desc 'Disable Magento cache'
     task :disable do
-      on release_roles :all do
+      on primary fetch(:magento_deploy_setup_role) do
         within release_path do
           execute :magento, 'cache:disable'
         end
@@ -48,7 +48,7 @@ namespace :magento do
     
     desc 'Check Magento cache enabled status'
     task :status do
-      on release_roles :all do
+      on primary fetch(:magento_deploy_setup_role) do
         within release_path do
           execute :magento, 'cache:status'
         end
@@ -59,7 +59,7 @@ namespace :magento do
       # TODO: Document what the magento:cache:varnish:ban task is for and how to use it. See also magento/magento2#4106
       desc 'Add ban to Varnish for url(s)'
       task :ban do
-        on release_roles :all do
+        on primary fetch(:magento_deploy_setup_role) do
           # TODO: Document use of :ban_pools and :varnish_cache_hosts in project config file
           next unless any? :ban_pools
           next unless any? :varnish_cache_hosts
@@ -147,7 +147,7 @@ namespace :magento do
   namespace :setup do
     desc 'Run the Magento upgrade process'
     task :upgrade do
-      on release_roles :all do
+      on primary fetch(:magento_deploy_setup_role) do
         within release_path do
           execute :magento, 'setup:upgrade --keep-generated'
         end
@@ -283,7 +283,7 @@ namespace :magento do
   namespace :indexer do
     desc 'Reindex data by all indexers'
     task :reindex do
-      on release_roles :all do
+      on primary fetch(:magento_deploy_setup_role) do
         within release_path do
           execute :magento, 'indexer:reindex'
         end
@@ -292,7 +292,7 @@ namespace :magento do
 
     desc 'Shows allowed indexers'
     task :info do
-      on release_roles :all do
+      on primary fetch(:magento_deploy_setup_role) do
         within release_path do
           execute :magento, 'indexer:info'
         end
@@ -301,7 +301,7 @@ namespace :magento do
 
     desc 'Shows status of all indexers'
     task :status do
-      on release_roles :all do
+      on primary fetch(:magento_deploy_setup_role) do
         within release_path do
           execute :magento, 'indexer:status'
         end
@@ -310,7 +310,7 @@ namespace :magento do
 
     desc 'Shows mode of all indexers'
     task 'show-mode', :index do |t, args|
-      on release_roles :all do
+      on primary fetch(:magento_deploy_setup_role) do
         within release_path do
           execute :magento, 'indexer:show-mode', args[:index]
         end
@@ -319,14 +319,13 @@ namespace :magento do
 
     desc 'Sets mode of all indexers'
     task 'set-mode', :mode, :index do |t, args|
-      on release_roles :all do
+      on primary fetch(:magento_deploy_setup_role) do
         within release_path do
           execute :magento, 'indexer:set-mode', args[:mode], args[:index]
         end
       end
     end
   end
-
 end
 
 namespace :load do
@@ -359,6 +358,7 @@ namespace :load do
       'var/tmp'
     )
 
+    set :magento_deploy_setup_role, fetch(:magento_deploy_setup_role, :all)
     set :magento_deploy_languages, fetch(:magento_deploy_languages, ['en_US'])
     set :magento_deploy_themes, fetch(:magento_deploy_themes, [])
     set :magento_deploy_chmod_d, fetch(:magento_deploy_chmod_d, '2770')

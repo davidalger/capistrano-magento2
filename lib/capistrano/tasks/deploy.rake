@@ -20,37 +20,35 @@ namespace :deploy do
 
   task :updated do
     invoke 'magento:deploy:verify'
+    invoke 'magento:composer:install' if fetch(:magento_deploy_composer)
+    invoke 'magento:setup:permissions'
+    if fetch(:magento_deploy_production)
+      invoke 'magento:setup:static-content:deploy'
+      invoke 'magento:setup:di:compile'
+    end
+    invoke 'magento:setup:permissions'
+    invoke 'magento:maintenance:enable' if fetch(:magento_deploy_maintenance)
+
     on release_roles :all do
-      invoke 'magento:composer:install' if fetch(:magento_deploy_composer)
-      invoke 'magento:setup:permissions'
-      if fetch(:magento_deploy_production)
-        invoke 'magento:setup:static-content:deploy'
-        invoke 'magento:setup:di:compile'
-      end
-      invoke 'magento:setup:permissions'
-      invoke 'magento:maintenance:enable' if fetch(:magento_deploy_maintenance)
       if test "[ -f #{current_path}/bin/magento ]"
         within current_path do
           execute :magento, 'maintenance:enable' if fetch(:magento_deploy_maintenance)
         end
       end
-      invoke 'magento:setup:upgrade'
     end
+
+    invoke 'magento:setup:upgrade'
   end
 
   task :published do
-    on release_roles :all do
-      invoke 'magento:cache:flush'
-      invoke 'magento:cache:varnish:ban'
-      invoke 'magento:maintenance:disable' if fetch(:magento_deploy_maintenance)
-    end
+    invoke 'magento:cache:flush'
+    invoke 'magento:cache:varnish:ban'
+    invoke 'magento:maintenance:disable' if fetch(:magento_deploy_maintenance)
   end
 
   task :reverted do
-    on release_roles :all do
-      invoke 'magento:maintenance:disable' if fetch(:magento_deploy_maintenance)
-      invoke 'magento:cache:flush'
-      invoke 'magento:cache:varnish:ban'
-    end
+    invoke 'magento:maintenance:disable' if fetch(:magento_deploy_maintenance)
+    invoke 'magento:cache:flush'
+    invoke 'magento:cache:varnish:ban'
   end
 end

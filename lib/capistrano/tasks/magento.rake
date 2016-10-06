@@ -358,11 +358,15 @@ namespace :load do
       'var/tmp'
     )
 
-    set :magento_deploy_setup_role, fetch(:magento_deploy_setup_role, :all)
-    set :magento_deploy_languages, fetch(:magento_deploy_languages, ['en_US'])
-    set :magento_deploy_themes, fetch(:magento_deploy_themes, [])
     set :magento_deploy_chmod_d, fetch(:magento_deploy_chmod_d, '2770')
     set :magento_deploy_chmod_f, fetch(:magento_deploy_chmod_f, '0660')
     set :magento_deploy_chmod_x, fetch(:magento_deploy_chmod_x, ['bin/magento'])
+    set :magento_deploy_composer, fetch(:magento_deploy_composer, true)
+    set :magento_deploy_confirm, fetch(:magento_deploy_confirm, [])
+    set :magento_deploy_languages, fetch(:magento_deploy_languages, ['en_US'])
+    set :magento_deploy_maintenance, fetch(:magento_deploy_maintenance, true)
+    set :magento_deploy_production, fetch(:magento_deploy_production, true)
+    set :magento_deploy_setup_role, fetch(:magento_deploy_setup_role, :all)
+    set :magento_deploy_themes, fetch(:magento_deploy_themes, [])
   end
 end

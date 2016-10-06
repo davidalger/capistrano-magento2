@@ -54,12 +54,3 @@ namespace :deploy do
     end
   end
 end
-
-namespace :load do
-  task :defaults do
-    set :magento_deploy_composer, fetch(:magento_deploy_composer, true)
-    set :magento_deploy_confirm, fetch(:magento_deploy_confirm, [])
-    set :magento_deploy_maintenance, fetch(:magento_deploy_maintenance, true)
-    set :magento_deploy_production, fetch(:magento_deploy_production, true)
-  end
-end

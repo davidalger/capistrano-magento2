@@ -11,11 +11,12 @@ require 'capistrano-pending'
 
 before :deploy, 'deploy:pending:check_changes'
 namespace :deploy do
-    
+
+  # Check for pending changes on the primary node and then notify user of any incoming
+  # changes and/or warn that there is nothing to deploy
   namespace :pending do
-    # Check for pending changes and notify user of incoming changes or warn them that there are no changes
     task :check_changes do
-      on roles fetch(:capistrano_pending_role, :app) do |host|
+      on primary fetch(:magento_deploy_setup_role) do
         # check for pending changes only if REVISION file exists to prevent error
         if test "[ -f #{current_path}/REVISION ]"
           invoke 'deploy:pending:setup'

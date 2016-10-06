@@ -1,5 +1,12 @@
 # Capistrano::Magento2 Change Log
 
+UNRELEASED
+==========
+
+* Fixed magento setup, cache, index commands to only run on primary node (issue #33).
+* Fixed capistrano-pending support to play nicely with multiple hosts. Now only performs check on a single host.
+* Updated `magento:deploy:verify` output with host specific messaging on configuration errors.
+
 0.5.2
 ==========
 

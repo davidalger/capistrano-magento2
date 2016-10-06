@@ -124,20 +124,23 @@ namespace :magento do
     end
 
     task :verify do
+      is_err = false
       on release_roles :all do
         unless test "[ -f #{release_path}/app/etc/config.php ]"
-          error "The repository is missing app/etc/config.php. Please install the application and retry!"
-          exit 1
+          error "\e[0;31mThe repository is missing app/etc/config.php. Please install the application and retry!\e[0m"
+          exit 1  # only need to check the repo once, so we immediately exit
         end
 
         unless test %Q[#{SSHKit.config.command_map[:php]} -r '
               $cfg = include "#{release_path}/app/etc/env.php";
               exit((int)!isset($cfg["install"]["date"]));
           ']
-          error "No environment configuration could be found. Please configure app/etc/env.php and retry!"
-          exit 1
+          error "\e[0;31mError on #{host}:\e[0m No environment configuration could be found." +
+                " Please configure app/etc/env.php and retry!"
+          is_err = true
         end
       end
+      exit 1 if is_err
     end
   end
 

@@ -19,8 +19,8 @@ namespace :deploy do
   end
 
   task :updated do
+    invoke 'magento:deploy:verify'
     on release_roles :all do
-      invoke 'magento:deploy:verify'
       invoke 'magento:composer:install' if fetch(:magento_deploy_composer)
       invoke 'magento:setup:permissions'
       if fetch(:magento_deploy_production)

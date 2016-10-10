@@ -7,4 +7,12 @@
  # http://davidalger.com/contact/
  ##
 
+module Capistrano
+  class Magento2
+    def self.cache_hosts
+      return fetch(:magento_deploy_cache_shared) ? (primary fetch :magento_deploy_setup_role) : (release_roles :all)
+    end
+  end
+end
+
 load File.expand_path('../tasks/magento.rake', __FILE__)

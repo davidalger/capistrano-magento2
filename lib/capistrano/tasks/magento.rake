@@ -12,7 +12,7 @@ namespace :magento do
   namespace :cache do
     desc 'Flush Magento cache storage'
     task :flush do
-      on primary fetch(:magento_deploy_setup_role) do
+      on Capistrano::Magento2.cache_hosts do
         within release_path do
           execute :magento, 'cache:flush'
         end
@@ -21,7 +21,7 @@ namespace :magento do
     
     desc 'Clean Magento cache by types'
     task :clean do
-      on primary fetch(:magento_deploy_setup_role) do
+      on Capistrano::Magento2.cache_hosts do
         within release_path do
           execute :magento, 'cache:clean'
         end
@@ -30,7 +30,7 @@ namespace :magento do
     
     desc 'Enable Magento cache'
     task :enable do
-      on primary fetch(:magento_deploy_setup_role) do
+      on Capistrano::Magento2.cache_hosts do
         within release_path do
           execute :magento, 'cache:enable'
         end
@@ -39,7 +39,7 @@ namespace :magento do
     
     desc 'Disable Magento cache'
     task :disable do
-      on primary fetch(:magento_deploy_setup_role) do
+      on Capistrano::Magento2.cache_hosts do
         within release_path do
           execute :magento, 'cache:disable'
         end
@@ -48,7 +48,7 @@ namespace :magento do
     
     desc 'Check Magento cache enabled status'
     task :status do
-      on primary fetch(:magento_deploy_setup_role) do
+      on Capistrano::Magento2.cache_hosts do
         within release_path do
           execute :magento, 'cache:status'
         end
@@ -358,15 +358,21 @@ namespace :load do
       'var/tmp'
     )
 
+    # deploy permissions defaults
     set :magento_deploy_chmod_d, fetch(:magento_deploy_chmod_d, '2770')
     set :magento_deploy_chmod_f, fetch(:magento_deploy_chmod_f, '0660')
     set :magento_deploy_chmod_x, fetch(:magento_deploy_chmod_x, ['bin/magento'])
+
+    # deploy configuration defaults
     set :magento_deploy_composer, fetch(:magento_deploy_composer, true)
     set :magento_deploy_confirm, fetch(:magento_deploy_confirm, [])
     set :magento_deploy_languages, fetch(:magento_deploy_languages, ['en_US'])
     set :magento_deploy_maintenance, fetch(:magento_deploy_maintenance, true)
     set :magento_deploy_production, fetch(:magento_deploy_production, true)
-    set :magento_deploy_setup_role, fetch(:magento_deploy_setup_role, :all)
     set :magento_deploy_themes, fetch(:magento_deploy_themes, [])
+
+    # deploy targetting defaults
+    set :magento_deploy_setup_role, fetch(:magento_deploy_setup_role, :all)
+    set :magento_deploy_cache_shared, fetch(:magento_deploy_cache_shared, true)
   end
 end

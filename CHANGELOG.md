@@ -3,7 +3,9 @@
 UNRELEASED
 ==========
 
-* Fixed magento setup, cache, index commands to only run on primary node (issue #33).
+* Added setting `:magento_deploy_cache_shared` for targeting cache related tasks (issue #33)
+* Added setting `:magento_deploy_setup_role` for targeting setup related tasks (issue #33)
+* Fixed magento setup, cache, index commands to only run on appropriate node(s) in multi-node deploys (issue #33).
 * Fixed capistrano-pending support to play nicely with multiple hosts. Now only performs check on a single host.
 * Updated `magento:deploy:verify` output with host specific messaging on configuration errors.
 

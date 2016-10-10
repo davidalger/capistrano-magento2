@@ -7,6 +7,8 @@
  # http://davidalger.com/contact/
  ##
 
+SSHKit.config.command_map[:magento] = "/usr/bin/env php -f bin/magento --"
+
 module Capistrano
   module Magento2
     module Helpers
@@ -18,3 +20,9 @@ module Capistrano
 end
 
 load File.expand_path('../tasks/magento.rake', __FILE__)
+
+namespace :load do
+  task :defaults do
+    load 'capistrano/magento2/defaults.rb'
+  end
+end

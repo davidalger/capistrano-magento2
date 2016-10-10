@@ -1,6 +1,6 @@
 # Capistrano::Magento2 Change Log
 
-UNRELEASED
+0.5.3
 ==========
 
 * Added setting `:magento_deploy_cache_shared` for targeting cache related tasks (issue #33)

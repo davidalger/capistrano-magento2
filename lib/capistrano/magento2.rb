@@ -8,9 +8,11 @@
  ##
 
 module Capistrano
-  class Magento2
-    def self.cache_hosts
-      return fetch(:magento_deploy_cache_shared) ? (primary fetch :magento_deploy_setup_role) : (release_roles :all)
+  module Magento2
+    module Helpers
+      def cache_hosts
+        return fetch(:magento_deploy_cache_shared) ? (primary fetch :magento_deploy_setup_role) : (release_roles :all)
+      end
     end
   end
 end

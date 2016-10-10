@@ -7,12 +7,14 @@
  # http://davidalger.com/contact/
  ##
 
+include Capistrano::Magento2::Helpers
+
 namespace :magento do
   
   namespace :cache do
     desc 'Flush Magento cache storage'
     task :flush do
-      on Capistrano::Magento2.cache_hosts do
+      on cache_hosts do
         within release_path do
           execute :magento, 'cache:flush'
         end
@@ -21,7 +23,7 @@ namespace :magento do
     
     desc 'Clean Magento cache by types'
     task :clean do
-      on Capistrano::Magento2.cache_hosts do
+      on cache_hosts do
         within release_path do
           execute :magento, 'cache:clean'
         end
@@ -30,7 +32,7 @@ namespace :magento do
     
     desc 'Enable Magento cache'
     task :enable do
-      on Capistrano::Magento2.cache_hosts do
+      on cache_hosts do
         within release_path do
           execute :magento, 'cache:enable'
         end
@@ -39,7 +41,7 @@ namespace :magento do
     
     desc 'Disable Magento cache'
     task :disable do
-      on Capistrano::Magento2.cache_hosts do
+      on cache_hosts do
         within release_path do
           execute :magento, 'cache:disable'
         end
@@ -48,7 +50,7 @@ namespace :magento do
     
     desc 'Check Magento cache enabled status'
     task :status do
-      on Capistrano::Magento2.cache_hosts do
+      on cache_hosts do
         within release_path do
           execute :magento, 'cache:status'
         end

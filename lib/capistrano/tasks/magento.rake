@@ -144,10 +144,13 @@ namespace :magento do
   end
 
   namespace :setup do
-    desc 'Run the Magento upgrade process'
+    desc 'Updates the module load sequence and upgrades database schemas and data fixtures'
     task :upgrade do
       on primary fetch(:magento_deploy_setup_role) do
         within release_path do
+          warn "\e[0;31mWarning: Use of magento:setup:upgrade on production systems is discouraged." +
+               " See https://github.com/davidalger/capistrano-magento2/issues/34 for details.\e[0m\n"
+
           execute :magento, 'setup:upgrade --keep-generated'
         end
       end

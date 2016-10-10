@@ -12,7 +12,7 @@ namespace :magento do
   namespace :cache do
     desc 'Flush Magento cache storage'
     task :flush do
-      on release_roles :all do
+      on Capistrano::Magento2.cache_hosts do
         within release_path do
           execute :magento, 'cache:flush'
         end
@@ -21,7 +21,7 @@ namespace :magento do
     
     desc 'Clean Magento cache by types'
     task :clean do
-      on release_roles :all do
+      on Capistrano::Magento2.cache_hosts do
         within release_path do
           execute :magento, 'cache:clean'
         end
@@ -30,7 +30,7 @@ namespace :magento do
     
     desc 'Enable Magento cache'
     task :enable do
-      on release_roles :all do
+      on Capistrano::Magento2.cache_hosts do
         within release_path do
           execute :magento, 'cache:enable'
         end
@@ -39,7 +39,7 @@ namespace :magento do
     
     desc 'Disable Magento cache'
     task :disable do
-      on release_roles :all do
+      on Capistrano::Magento2.cache_hosts do
         within release_path do
           execute :magento, 'cache:disable'
         end
@@ -48,7 +48,7 @@ namespace :magento do
     
     desc 'Check Magento cache enabled status'
     task :status do
-      on release_roles :all do
+      on Capistrano::Magento2.cache_hosts do
         within release_path do
           execute :magento, 'cache:status'
         end
@@ -59,7 +59,7 @@ namespace :magento do
       # TODO: Document what the magento:cache:varnish:ban task is for and how to use it. See also magento/magento2#4106
       desc 'Add ban to Varnish for url(s)'
       task :ban do
-        on release_roles :all do
+        on primary fetch(:magento_deploy_setup_role) do
           # TODO: Document use of :ban_pools and :varnish_cache_hosts in project config file
           next unless any? :ban_pools
           next unless any? :varnish_cache_hosts
@@ -124,27 +124,30 @@ namespace :magento do
     end
 
     task :verify do
+      is_err = false
       on release_roles :all do
         unless test "[ -f #{release_path}/app/etc/config.php ]"
-          error "The repository is missing app/etc/config.php. Please install the application and retry!"
-          exit 1
+          error "\e[0;31mThe repository is missing app/etc/config.php. Please install the application and retry!\e[0m"
+          exit 1  # only need to check the repo once, so we immediately exit
         end
 
         unless test %Q[#{SSHKit.config.command_map[:php]} -r '
               $cfg = include "#{release_path}/app/etc/env.php";
               exit((int)!isset($cfg["install"]["date"]));
           ']
-          error "No environment configuration could be found. Please configure app/etc/env.php and retry!"
-          exit 1
+          error "\e[0;31mError on #{host}:\e[0m No environment configuration could be found." +
+                " Please configure app/etc/env.php and retry!"
+          is_err = true
         end
       end
+      exit 1 if is_err
     end
   end
 
   namespace :setup do
     desc 'Run the Magento upgrade process'
     task :upgrade do
-      on release_roles :all do
+      on primary fetch(:magento_deploy_setup_role) do
         within release_path do
           execute :magento, 'setup:upgrade --keep-generated'
         end
@@ -280,7 +283,7 @@ namespace :magento do
   namespace :indexer do
     desc 'Reindex data by all indexers'
     task :reindex do
-      on release_roles :all do
+      on primary fetch(:magento_deploy_setup_role) do
         within release_path do
           execute :magento, 'indexer:reindex'
         end
@@ -289,7 +292,7 @@ namespace :magento do
 
     desc 'Shows allowed indexers'
     task :info do
-      on release_roles :all do
+      on primary fetch(:magento_deploy_setup_role) do
         within release_path do
           execute :magento, 'indexer:info'
         end
@@ -298,7 +301,7 @@ namespace :magento do
 
     desc 'Shows status of all indexers'
     task :status do
-      on release_roles :all do
+      on primary fetch(:magento_deploy_setup_role) do
         within release_path do
           execute :magento, 'indexer:status'
         end
@@ -307,7 +310,7 @@ namespace :magento do
 
     desc 'Shows mode of all indexers'
     task 'show-mode', :index do |t, args|
-      on release_roles :all do
+      on primary fetch(:magento_deploy_setup_role) do
         within release_path do
           execute :magento, 'indexer:show-mode', args[:index]
         end
@@ -316,14 +319,13 @@ namespace :magento do
 
     desc 'Sets mode of all indexers'
     task 'set-mode', :mode, :index do |t, args|
-      on release_roles :all do
+      on primary fetch(:magento_deploy_setup_role) do
         within release_path do
           execute :magento, 'indexer:set-mode', args[:mode], args[:index]
         end
       end
     end
   end
-
 end
 
 namespace :load do
@@ -356,10 +358,21 @@ namespace :load do
       'var/tmp'
     )
 
-    set :magento_deploy_languages, fetch(:magento_deploy_languages, ['en_US'])
-    set :magento_deploy_themes, fetch(:magento_deploy_themes, [])
+    # deploy permissions defaults
     set :magento_deploy_chmod_d, fetch(:magento_deploy_chmod_d, '2770')
     set :magento_deploy_chmod_f, fetch(:magento_deploy_chmod_f, '0660')
     set :magento_deploy_chmod_x, fetch(:magento_deploy_chmod_x, ['bin/magento'])
+
+    # deploy configuration defaults
+    set :magento_deploy_composer, fetch(:magento_deploy_composer, true)
+    set :magento_deploy_confirm, fetch(:magento_deploy_confirm, [])
+    set :magento_deploy_languages, fetch(:magento_deploy_languages, ['en_US'])
+    set :magento_deploy_maintenance, fetch(:magento_deploy_maintenance, true)
+    set :magento_deploy_production, fetch(:magento_deploy_production, true)
+    set :magento_deploy_themes, fetch(:magento_deploy_themes, [])
+
+    # deploy targetting defaults
+    set :magento_deploy_setup_role, fetch(:magento_deploy_setup_role, :all)
+    set :magento_deploy_cache_shared, fetch(:magento_deploy_cache_shared, true)
   end
 end

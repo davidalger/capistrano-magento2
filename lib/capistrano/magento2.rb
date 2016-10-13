@@ -13,11 +13,9 @@ module Capistrano
   module Magento2
     module Helpers
       def magento_version
-        within release_path do
-          return (capture :magento, '-V').split(' ').pop.to_f
-        end
+        return (capture "/usr/bin/env php -f #{release_path}/bin/magento -- -V").split(' ').pop.to_f
       end
-      
+
       def cache_hosts
         return fetch(:magento_deploy_cache_shared) ? (primary fetch :magento_deploy_setup_role) : (release_roles :all)
       end

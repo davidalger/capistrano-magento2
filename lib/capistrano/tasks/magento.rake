@@ -93,13 +93,9 @@ namespace :magento do
 
           execute :composer, "install #{composer_flags} 2>&1"
 
-          if fetch(:magento_deploy_production)
-            feature_version = capture :magento, "-V | cut -d' ' -f4 | cut -d. -f1-2"
-            
-            if feature_version.to_f > 2.0
-              composer_flags += ' --no-dev'
-              execute :composer, "install #{composer_flags} 2>&1" # removes require-dev components from prev command
-            end
+          if fetch(:magento_deploy_production) and magento_version > 2.0
+            composer_flags += ' --no-dev'
+            execute :composer, "install #{composer_flags} 2>&1" # removes require-dev components from prev command
           end
 
           if test "[ -d #{release_path}/update ]"   # can't count on this, but emit warning if not present
@@ -203,7 +199,7 @@ namespace :magento do
           deploy_languages = fetch(:magento_deploy_languages).join(' ')
           deploy_themes = fetch(:magento_deploy_themes)
 
-          if deploy_themes.count() > 0 && _magento_version >= 2.1
+          if deploy_themes.count() > 0 and _magento_version >= 2.1
             deploy_themes = deploy_themes.join(' -t ').prepend(' -t ')
           elsif deploy_themes.count() > 0
             warn "\e[0;31mWarning: Magento 2.0 does not support :magento_deploy_themes setting (ignoring value)\e[0m"

@@ -12,8 +12,32 @@ SSHKit.config.command_map[:magento] = "/usr/bin/env php -f bin/magento --"
 module Capistrano
   module Magento2
     module Helpers
+      def magento_version
+        within release_path do
+          return (capture :magento, '-V').split(' ').pop.to_f
+        end
+      end
+      
       def cache_hosts
         return fetch(:magento_deploy_cache_shared) ? (primary fetch :magento_deploy_setup_role) : (release_roles :all)
+      end
+    end
+    
+    module Setup
+      def static_content_deploy params
+        output = capture :magento,
+          "setup:static-content:deploy #{params} | stdbuf -o0 tr -d .",
+          verbosity: Logger::INFO
+
+        if not output.to_s.include? 'New version of deployed files'
+          raise Exception, "\e[0;31mFailed to compile static assets\e[0m"
+        end
+
+        output.to_s.each_line { |line|
+          if line.split('errors: ', 2).pop.to_i > 0
+            raise Exception, "\e[0;31mFailed to compile static assets\e[0m"
+          end
+        }
       end
     end
   end

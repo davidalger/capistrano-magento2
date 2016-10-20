@@ -8,6 +8,7 @@
  ##
 
 include Capistrano::Magento2::Helpers
+include Capistrano::Magento2::Setup
 
 namespace :magento do
   
@@ -92,13 +93,9 @@ namespace :magento do
 
           execute :composer, "install #{composer_flags} 2>&1"
 
-          if fetch(:magento_deploy_production)
-            feature_version = capture :magento, "-V | cut -d' ' -f4 | cut -d. -f1-2"
-            
-            if feature_version.to_f > 2.0
-              composer_flags += ' --no-dev'
-              execute :composer, "install #{composer_flags} 2>&1" # removes require-dev components from prev command
-            end
+          if fetch(:magento_deploy_production) and magento_version > 2.0
+            composer_flags += ' --no-dev'
+            execute :composer, "install #{composer_flags} 2>&1" # removes require-dev components from prev command
           end
 
           if test "[ -d #{release_path}/update ]"   # can't count on this, but emit warning if not present
@@ -197,13 +194,18 @@ namespace :magento do
       desc 'Deploys static view files'
       task :deploy do
         on release_roles :all do
+          _magento_version = magento_version
+
           deploy_languages = fetch(:magento_deploy_languages).join(' ')
           deploy_themes = fetch(:magento_deploy_themes)
 
-          if deploy_themes.count() > 0
-            deploy_themes = ' -t ' + deploy_themes.join(' -t ')   # prepare value for cli command if theme(s) specified
+          if deploy_themes.count() > 0 and _magento_version >= 2.1
+            deploy_themes = deploy_themes.join(' -t ').prepend(' -t ')
+          elsif deploy_themes.count() > 0
+            warn "\e[0;31mWarning: Magento 2.0 does not support :magento_deploy_themes setting (ignoring value)\e[0m"
+            deploy_themes = nil
           else
-            deploy_themes = ''
+            deploy_themes = nil
           end
 
           # Output is being checked for a success message because this command may easily fail due to customizations
@@ -213,32 +215,20 @@ namespace :magento do
             # Workaround for 2.1 specific issue: https://github.com/magento/magento2/pull/6437
             execute "touch #{release_path}/pub/static/deployed_version.txt"
 
-            output = capture :magento,
-              "setup:static-content:deploy #{deploy_languages}#{deploy_themes} | stdbuf -o0 tr -d .",
-              verbosity: Logger::INFO
-
-            if not output.to_s.include? 'New version of deployed files'
-              raise Exception, 'Failed to compile static assets'
-            end
-
-            with(https: 'on') {
-              deploy_flags = ''
-
-              # Magento 2.0 does not have these flags, so only way to generate secure files is to do all of them :/
-              if test :magento, 'setup:static-content:deploy --help | grep -- --theme'
-                deploy_flags = " --no-javascript --no-css --no-less --no-images" \
-                  + " --no-fonts --no-html --no-misc --no-html-minify"
-              end
-
-              output = capture :magento,
-                "setup:static-content:deploy #{deploy_languages}#{deploy_themes}#{deploy_flags} | stdbuf -o0 tr -d .",
-                verbosity: Logger::INFO
-
-              if not output.to_s.include? 'New version of deployed files'
-                raise Exception, 'Failed to compile (secure) static assets'
-              end
-            }
+            # Generates all but the secure versions of RequireJS configs
+            static_content_deploy "#{deploy_languages}#{deploy_themes}"
           end
+
+          # Run again with HTTPS env var set to 'on' to pre-generate secure versions of RequireJS configs
+          deploy_flags = ['javascript', 'css', 'less', 'images', 'fonts', 'html', 'misc', 'html-minify']
+            .join(' --no-').prepend(' --no-');
+
+          # Magento 2.0 does not have these flags, so only way to generate secure files is to do all of them :/
+          deploy_flags = nil if _magento_version <= 2.0
+
+          within release_path do with(https: 'on') {
+            static_content_deploy "#{deploy_languages}#{deploy_themes}#{deploy_flags}"
+          } end
         end
       end
     end

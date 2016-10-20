@@ -1,6 +1,6 @@
 # Capistrano::Magento2 Change Log
 
-UNRELEASED
+0.5.4
 ==========
 
 * Fixed issue causing failed releases when there are CSS compilation errors in setup:static-content:deploy task

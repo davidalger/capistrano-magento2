@@ -7,12 +7,15 @@
  # http://davidalger.com/contact/
  ##
 
+include Capistrano::Magento2::Helpers
+include Capistrano::Magento2::Setup
+
 namespace :magento do
   
   namespace :cache do
     desc 'Flush Magento cache storage'
     task :flush do
-      on Capistrano::Magento2.cache_hosts do
+      on cache_hosts do
         within release_path do
           execute :magento, 'cache:flush'
         end
@@ -21,7 +24,7 @@ namespace :magento do
     
     desc 'Clean Magento cache by types'
     task :clean do
-      on Capistrano::Magento2.cache_hosts do
+      on cache_hosts do
         within release_path do
           execute :magento, 'cache:clean'
         end
@@ -30,7 +33,7 @@ namespace :magento do
     
     desc 'Enable Magento cache'
     task :enable do
-      on Capistrano::Magento2.cache_hosts do
+      on cache_hosts do
         within release_path do
           execute :magento, 'cache:enable'
         end
@@ -39,7 +42,7 @@ namespace :magento do
     
     desc 'Disable Magento cache'
     task :disable do
-      on Capistrano::Magento2.cache_hosts do
+      on cache_hosts do
         within release_path do
           execute :magento, 'cache:disable'
         end
@@ -48,7 +51,7 @@ namespace :magento do
     
     desc 'Check Magento cache enabled status'
     task :status do
-      on Capistrano::Magento2.cache_hosts do
+      on cache_hosts do
         within release_path do
           execute :magento, 'cache:status'
         end
@@ -90,13 +93,9 @@ namespace :magento do
 
           execute :composer, "install #{composer_flags} 2>&1"
 
-          if fetch(:magento_deploy_production)
-            feature_version = capture :magento, "-V | cut -d' ' -f4 | cut -d. -f1-2"
-            
-            if feature_version.to_f > 2.0
-              composer_flags += ' --no-dev'
-              execute :composer, "install #{composer_flags} 2>&1" # removes require-dev components from prev command
-            end
+          if fetch(:magento_deploy_production) and magento_version > 2.0
+            composer_flags += ' --no-dev'
+            execute :composer, "install #{composer_flags} 2>&1" # removes require-dev components from prev command
           end
 
           if test "[ -d #{release_path}/update ]"   # can't count on this, but emit warning if not present
@@ -195,13 +194,18 @@ namespace :magento do
       desc 'Deploys static view files'
       task :deploy do
         on release_roles :all do
+          _magento_version = magento_version
+
           deploy_languages = fetch(:magento_deploy_languages).join(' ')
           deploy_themes = fetch(:magento_deploy_themes)
 
-          if deploy_themes.count() > 0
-            deploy_themes = ' -t ' + deploy_themes.join(' -t ')   # prepare value for cli command if theme(s) specified
+          if deploy_themes.count() > 0 and _magento_version >= 2.1
+            deploy_themes = deploy_themes.join(' -t ').prepend(' -t ')
+          elsif deploy_themes.count() > 0
+            warn "\e[0;31mWarning: Magento 2.0 does not support :magento_deploy_themes setting (ignoring value)\e[0m"
+            deploy_themes = nil
           else
-            deploy_themes = ''
+            deploy_themes = nil
           end
 
           # Output is being checked for a success message because this command may easily fail due to customizations
@@ -211,32 +215,20 @@ namespace :magento do
             # Workaround for 2.1 specific issue: https://github.com/magento/magento2/pull/6437
             execute "touch #{release_path}/pub/static/deployed_version.txt"
 
-            output = capture :magento,
-              "setup:static-content:deploy #{deploy_languages}#{deploy_themes} | stdbuf -o0 tr -d .",
-              verbosity: Logger::INFO
-
-            if not output.to_s.include? 'New version of deployed files'
-              raise Exception, 'Failed to compile static assets'
-            end
-
-            with(https: 'on') {
-              deploy_flags = ''
-
-              # Magento 2.0 does not have these flags, so only way to generate secure files is to do all of them :/
-              if test :magento, 'setup:static-content:deploy --help | grep -- --theme'
-                deploy_flags = " --no-javascript --no-css --no-less --no-images" \
-                  + " --no-fonts --no-html --no-misc --no-html-minify"
-              end
-
-              output = capture :magento,
-                "setup:static-content:deploy #{deploy_languages}#{deploy_themes}#{deploy_flags} | stdbuf -o0 tr -d .",
-                verbosity: Logger::INFO
-
-              if not output.to_s.include? 'New version of deployed files'
-                raise Exception, 'Failed to compile (secure) static assets'
-              end
-            }
+            # Generates all but the secure versions of RequireJS configs
+            static_content_deploy "#{deploy_languages}#{deploy_themes}"
           end
+
+          # Run again with HTTPS env var set to 'on' to pre-generate secure versions of RequireJS configs
+          deploy_flags = ['javascript', 'css', 'less', 'images', 'fonts', 'html', 'misc', 'html-minify']
+            .join(' --no-').prepend(' --no-');
+
+          # Magento 2.0 does not have these flags, so only way to generate secure files is to do all of them :/
+          deploy_flags = nil if _magento_version <= 2.0
+
+          within release_path do with(https: 'on') {
+            static_content_deploy "#{deploy_languages}#{deploy_themes}#{deploy_flags}"
+          } end
         end
       end
     end
@@ -325,54 +317,5 @@ namespace :magento do
         end
       end
     end
-  end
-end
-
-namespace :load do
-  task :defaults do
-
-    SSHKit.config.command_map[:magento] = "/usr/bin/env php -f bin/magento --"
-
-    set :linked_files, fetch(:linked_files, []).push(
-      'app/etc/env.php',
-      'var/.setup_cronjob_status',
-      'var/.update_cronjob_status',
-      'pub/sitemap.xml'
-    )
-
-    set :linked_files_touch, fetch(:linked_files_touch, []).push(
-      'app/etc/env.php',
-      'var/.setup_cronjob_status',
-      'var/.update_cronjob_status',
-      'pub/sitemap.xml'
-    )
-
-    set :linked_dirs, fetch(:linked_dirs, []).push(
-      'pub/media', 
-      'var/backups', 
-      'var/composer_home', 
-      'var/importexport', 
-      'var/import_history', 
-      'var/log',
-      'var/session', 
-      'var/tmp'
-    )
-
-    # deploy permissions defaults
-    set :magento_deploy_chmod_d, fetch(:magento_deploy_chmod_d, '2770')
-    set :magento_deploy_chmod_f, fetch(:magento_deploy_chmod_f, '0660')
-    set :magento_deploy_chmod_x, fetch(:magento_deploy_chmod_x, ['bin/magento'])
-
-    # deploy configuration defaults
-    set :magento_deploy_composer, fetch(:magento_deploy_composer, true)
-    set :magento_deploy_confirm, fetch(:magento_deploy_confirm, [])
-    set :magento_deploy_languages, fetch(:magento_deploy_languages, ['en_US'])
-    set :magento_deploy_maintenance, fetch(:magento_deploy_maintenance, true)
-    set :magento_deploy_production, fetch(:magento_deploy_production, true)
-    set :magento_deploy_themes, fetch(:magento_deploy_themes, [])
-
-    # deploy targetting defaults
-    set :magento_deploy_setup_role, fetch(:magento_deploy_setup_role, :all)
-    set :magento_deploy_cache_shared, fetch(:magento_deploy_cache_shared, true)
   end
 end

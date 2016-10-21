@@ -1,5 +1,11 @@
 # Capistrano::Magento2 Change Log
 
+0.5.4
+==========
+
+* Fixed issue causing failed releases when there are CSS compilation errors in setup:static-content:deploy task
+* Updated static content deployment to ignore `:magento_deploy_themes` when deploying 2.0 and issue a warning message.
+
 0.5.3
 ==========
 

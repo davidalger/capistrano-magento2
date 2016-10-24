@@ -16,6 +16,16 @@ module Capistrano
         return (capture "/usr/bin/env php -f #{release_path}/bin/magento -- -V").split(' ').pop.to_f
       end
 
+      def disabled_modules
+        output = capture :magento, 'module:status'
+        output = output.split("disabled modules:\n", 2)[1]
+
+        if output == nil or output.strip == "None"
+          return []
+        end
+        return output.split("\n")
+      end
+
       def cache_hosts
         return fetch(:magento_deploy_cache_shared) ? (primary fetch :magento_deploy_setup_role) : (release_roles :all)
       end

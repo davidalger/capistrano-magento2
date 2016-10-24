@@ -7,6 +7,8 @@
  # http://davidalger.com/contact/
  ##
 
+include Capistrano::Magento2::Helpers
+
 namespace :deploy do
   before 'deploy:check:linked_files', 'magento:deploy:check'
 
@@ -37,18 +39,25 @@ namespace :deploy do
       end
     end
 
-    invoke 'magento:setup:upgrade'
+    invoke 'magento:setup:db:schema:upgrade'
+    invoke 'magento:setup:db:data:upgrade'
+
+    on primary fetch(:magento_deploy_setup_role) do
+      within release_path do
+        _disabled_modules = disabled_modules
+        if _disabled_modules.count > 0
+          info "\nThe following modules are disabled per app/etc/config.php:\n"
+          _disabled_modules.each do |module_name|
+            info '- ' + module_name
+          end
+        end
+      end
+    end
   end
 
   task :published do
     invoke 'magento:cache:flush'
     invoke 'magento:cache:varnish:ban'
     invoke 'magento:maintenance:disable' if fetch(:magento_deploy_maintenance)
-  end
-
-  task :reverted do
-    invoke 'magento:maintenance:disable' if fetch(:magento_deploy_maintenance)
-    invoke 'magento:cache:flush'
-    invoke 'magento:cache:varnish:ban'
   end
 end

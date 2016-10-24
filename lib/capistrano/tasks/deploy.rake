@@ -7,6 +7,8 @@
  # http://davidalger.com/contact/
  ##
 
+include Capistrano::Magento2::Helpers
+
 namespace :deploy do
   before 'deploy:check:linked_files', 'magento:deploy:check'
 
@@ -33,6 +35,18 @@ namespace :deploy do
       if test "[ -f #{current_path}/bin/magento ]"
         within current_path do
           execute :magento, 'maintenance:enable' if fetch(:magento_deploy_maintenance)
+        end
+      end
+    end
+
+    on primary fetch(:magento_deploy_setup_role) do
+      within release_path do
+        _disabled_modules = disabled_modules
+        if _disabled_modules.count > 0
+          info "The following modules are disabled per app/etc/config.php:\n"
+          _disabled_modules.each do |module_name|
+            info '- ' + module_name
+          end
         end
       end
     end

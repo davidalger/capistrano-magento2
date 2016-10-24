@@ -1,6 +1,6 @@
 # Capistrano::Magento2 Change Log
 
-UNRELEASED
+0.5.5
 ==========
 
 * Fixed DI artifact mismatch caused by setup:ugprade overwriting frozen config.php post compilation

@@ -4,6 +4,7 @@ UNRELEASED
 ==========
 
 * Fixed DI artifact mismatch caused by setup:ugprade overwriting frozen config.php post compilation
+* Removed redundant (and non-functional) commands from deploy:reverted task
 
 0.5.4
 ==========

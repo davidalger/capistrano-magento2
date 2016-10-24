@@ -46,10 +46,4 @@ namespace :deploy do
     invoke 'magento:cache:varnish:ban'
     invoke 'magento:maintenance:disable' if fetch(:magento_deploy_maintenance)
   end
-
-  task :reverted do
-    invoke 'magento:maintenance:disable' if fetch(:magento_deploy_maintenance)
-    invoke 'magento:cache:flush'
-    invoke 'magento:cache:varnish:ban'
-  end
 end

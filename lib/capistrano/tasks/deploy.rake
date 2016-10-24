@@ -39,20 +39,20 @@ namespace :deploy do
       end
     end
 
+    invoke 'magento:setup:db:schema:upgrade'
+    invoke 'magento:setup:db:data:upgrade'
+
     on primary fetch(:magento_deploy_setup_role) do
       within release_path do
         _disabled_modules = disabled_modules
         if _disabled_modules.count > 0
-          info "The following modules are disabled per app/etc/config.php:\n"
+          info "\nThe following modules are disabled per app/etc/config.php:\n"
           _disabled_modules.each do |module_name|
             info '- ' + module_name
           end
         end
       end
     end
-
-    invoke 'magento:setup:db:schema:upgrade'
-    invoke 'magento:setup:db:data:upgrade'
   end
 
   task :published do

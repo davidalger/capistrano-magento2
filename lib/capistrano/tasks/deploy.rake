@@ -37,7 +37,8 @@ namespace :deploy do
       end
     end
 
-    invoke 'magento:setup:upgrade'
+    invoke 'magento:setup:db:schema:upgrade'
+    invoke 'magento:setup:db:data:upgrade'
   end
 
   task :published do

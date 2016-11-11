@@ -9,6 +9,6 @@
 
 module Capistrano
   module Magento2
-    VERSION = '0.5.5'
+    VERSION = '0.5.6'
   end
 end

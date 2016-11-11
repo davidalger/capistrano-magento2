@@ -3,7 +3,7 @@
 0.5.6
 ==========
 
-* Fixed issue where setup:di:compile failing to return an exit code caused DI compilation failures to be masked
+* Fixed issue where setup:di:compile failing to return an exit code caused DI compilation failures to be masked (issue #41)
 
 0.5.5
 ==========

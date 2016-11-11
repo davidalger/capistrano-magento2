@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+0.5.6
+==========
+
+* Fixed issue where setup:di:compile failing to return an exit code caused DI compilation failures to be masked
+
 0.5.5
 ==========
 

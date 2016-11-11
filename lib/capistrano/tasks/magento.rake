@@ -223,12 +223,14 @@ namespace :magento do
             # present in the develop mainline, so we are testing for multi-tenant presence for long-term portability.
             if test :magento, 'setup:di:compile-multi-tenant --help >/dev/null 2>&1'
               output = capture :magento, 'setup:di:compile-multi-tenant', verbosity: Logger::INFO
-              
-              if output.to_s.include? 'Errors during compilation'
-                raise Exception, 'setup:di:compile-multi-tenant command execution failed'
-              end
             else
-              execute :magento, 'setup:di:compile'
+              output = capture :magento, 'setup:di:compile', verbosity: Logger::INFO
+            end
+            
+            # 2.0.x never returns a non-zero exit code for errors, so manually check string
+            # 2.1.x doesn't return a non-zero exit code for certain errors (see davidalger/capistrano-magento2#41)
+            if output.to_s.include? 'Errors during compilation'
+              raise Exception, 'DI compilation command execution failed'
             end
           end
         end

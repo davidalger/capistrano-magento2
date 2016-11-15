@@ -34,7 +34,7 @@ module Capistrano
     module Setup
       def static_content_deploy params
         output = capture :magento,
-          "setup:static-content:deploy #{params} | stdbuf -o0 tr -d .",
+          "setup:static-content:deploy #{params} | stdbuf -o0 tr -d .; test ${PIPESTATUS[0]} -eq 0",
           verbosity: Logger::INFO
 
         if not output.to_s.include? 'New version of deployed files'

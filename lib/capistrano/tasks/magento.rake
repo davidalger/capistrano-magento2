@@ -270,8 +270,8 @@ namespace :magento do
           deploy_flags = ['javascript', 'css', 'less', 'images', 'fonts', 'html', 'misc', 'html-minify']
             .join(' --no-').prepend(' --no-');
 
-          # Magento 2.0 does not have these flags, so only way to generate secure files is to do all of them :/
-          deploy_flags = nil if _magento_version <= 2.0
+          # Magento 2.1 does not have these flags, so only way to generate secure files is to do all of them :/
+          deploy_flags = nil if _magento_version <= 2.1
 
           within release_path do with(https: 'on') {
             static_content_deploy "#{deploy_languages}#{deploy_themes}#{deploy_flags}"

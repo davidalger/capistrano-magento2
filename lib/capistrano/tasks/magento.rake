@@ -11,7 +11,7 @@ include Capistrano::Magento2::Helpers
 include Capistrano::Magento2::Setup
 
 namespace :magento do
-  
+
   namespace :cache do
     desc 'Flush Magento cache storage'
     task :flush do
@@ -93,7 +93,7 @@ namespace :magento do
 
           execute :composer, "install #{composer_flags} 2>&1"
 
-          if fetch(:magento_deploy_production) and magento_version > 2.0
+          if fetch(:magento_deploy_production) and magento_version >= Gem::Version.new('2.1')
             composer_flags += ' --no-dev'
             execute :composer, "install #{composer_flags} 2>&1" # removes require-dev components from prev command
           end
@@ -246,10 +246,10 @@ namespace :magento do
           deploy_languages = fetch(:magento_deploy_languages).join(' ')
           deploy_themes = fetch(:magento_deploy_themes)
 
-          if deploy_themes.count() > 0 and _magento_version >= 2.1
+          if deploy_themes.count() > 0 and _magento_version >= Gem::Version.new('2.1.1')
             deploy_themes = deploy_themes.join(' -t ').prepend(' -t ')
           elsif deploy_themes.count() > 0
-            warn "\e[0;31mWarning: Magento 2.0 does not support :magento_deploy_themes setting (ignoring value)\e[0m"
+            warn "\e[0;31mWarning: the :magento_deploy_themes setting is only supported in Magento 2.1.1 and later\e[0m"
             deploy_themes = nil
           else
             deploy_themes = nil
@@ -270,8 +270,8 @@ namespace :magento do
           deploy_flags = ['javascript', 'css', 'less', 'images', 'fonts', 'html', 'misc', 'html-minify']
             .join(' --no-').prepend(' --no-');
 
-          # Magento 2.0 does not have these flags, so only way to generate secure files is to do all of them :/
-          deploy_flags = nil if _magento_version <= 2.0
+          # Magento 2.1.0 and earlier lack support for these flags, so generation of secure files requires full re-run
+          deploy_flags = nil if _magento_version <= Gem::Version.new('2.1.0')
 
           within release_path do with(https: 'on') {
             static_content_deploy "#{deploy_languages}#{deploy_themes}#{deploy_flags}"

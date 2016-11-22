@@ -1,6 +1,6 @@
 # Capistrano::Magento2 Change Log
 
-UNRELEASED
+0.5.7
 ==========
 
 * Fixed failing deploys for Magento 2.1.0 caused by improper version checks on flags added in version 2.1.1 (issue #45)

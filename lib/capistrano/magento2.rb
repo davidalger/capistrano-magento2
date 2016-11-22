@@ -44,16 +44,18 @@ module Capistrano
 
         # Clear the pipefail option from list of prefixes so it won't affect other commands
         SSHKit.config.command_map.prefix[:magento].pop
-
-        if not output.to_s.include? 'New version of deployed files'
-          raise Exception, "\e[0;31mFailed to compile static assets\e[0m"
-        end
-
-        output.to_s.each_line { |line|
-          if line.split('errors: ', 2).pop.to_i > 0
+        
+        if magento_version <= Gem::Version.new('2.1.0')
+          if not output.to_s.include? 'New version of deployed files'
             raise Exception, "\e[0;31mFailed to compile static assets\e[0m"
           end
-        }
+
+          output.to_s.each_line { |line|
+            if line.split('errors: ', 2).pop.to_i > 0
+              raise Exception, "\e[0;31mFailed to compile static assets\e[0m"
+            end
+          }
+        end
       end
     end
   end

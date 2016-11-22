@@ -1,9 +1,15 @@
 # Capistrano::Magento2 Change Log
 
+0.5.7
+==========
+
+* Fixed failing deploys for Magento 2.1.0 caused by improper version checks on flags added in version 2.1.1 (issue #45)
+* Fixed failure to detect error codes Magento 2.1.1 returns on a failed static-content deploy job (issue #44)
+
 0.5.6
 ==========
 
-* Fixed issue where setup:di:compile failing to return an exit code caused DI compilation failures to be masked
+* Fixed issue where setup:di:compile failing to return an exit code caused DI compilation failures to be masked (issue #41)
 
 0.5.5
 ==========

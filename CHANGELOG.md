@@ -4,6 +4,7 @@ UNRELEASED
 ==========
 
 * Fixed failing deploys for Magento 2.1.0 caused by improper version checks on flags added in version 2.1.1 (issue #45)
+* Fixed failure to detect error codes Magento 2.1.1 returns on a failed static-content deploy job (issue #44)
 
 0.5.6
 ==========

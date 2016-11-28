@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+0.5.8
+==========
+
+* Fixed critical failure due to command map being broken in v0.5.7 updates
+
 0.5.7
 ==========
 

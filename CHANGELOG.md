@@ -1,5 +1,9 @@
 # Capistrano::Magento2 Change Log
 
+==========
+
+* Fixed bug causing pipefail option to persist after `Capistrano::Magento2::Setup.static_content_deploy` is called
+ 
 0.5.8
 ==========
 

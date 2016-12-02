@@ -29,24 +29,29 @@ module Capistrano
       def cache_hosts
         return fetch(:magento_deploy_cache_shared) ? (primary fetch :magento_deploy_setup_role) : (release_roles :all)
       end
+
+      # Set pipefail allowing console exit codes in Magento 2.1.1 and later to halt execution when using pipes
+      def Helpers.set_pipefail
+        @@pipefail_less = SSHKit.config.command_map[:magento].dup
+        SSHKit.config.command_map[:magento] = "set -o pipefail; #{@@pipefail_less}"
+      end
+
+      # Reset the command map without prefix, removing pipefail option so it won't affect other commands
+      def Helpers.unset_pipefail
+        SSHKit.config.command_map[:magento] = @@pipefail_less
+      end
     end
     
     module Setup
       def static_content_deploy params
-        # Setting pipefail causes the console exit codes introduced in Magento 2.1.1 to bubble up and halt execution
-        # as is normally expected. Versions which do not return exit codes will fall back on the far less reliable
-        # error checks we're doing on the command output
-        magento_command = SSHKit.config.command_map[:magento]
-        SSHKit.config.command_map[:magento] = "set -o pipefail; #{magento_command}"
-
+        Helpers.set_pipefail
         output = capture :magento,
           "setup:static-content:deploy #{params} | stdbuf -o0 tr -d .",
           verbosity: Logger::INFO
+        Helpers.unset_pipefail
 
-        # Reset the command map without our prefix, removing pipefail option so it won't affect other commands
-        SSHKit.config.command_map[:magento] = magento_command
-
-        # String based error checking is here to catch errors in Magento 2.1.0 and earlier
+        # String based error checking is here to catch errors in Magento 2.1.0 and earlier; later versions will exit
+        # immediately when a console exit code is retruned, never evaluating this code.
         if not output.to_s.include? 'New version of deployed files'
           raise Exception, "\e[0;31mFailed to compile static assets\e[0m"
         end

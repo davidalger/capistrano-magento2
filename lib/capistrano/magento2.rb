@@ -32,8 +32,10 @@ module Capistrano
 
       # Set pipefail allowing console exit codes in Magento 2.1.1 and later to halt execution when using pipes
       def Helpers.set_pipefail
-        @@pipefail_less = SSHKit.config.command_map[:magento].dup
-        SSHKit.config.command_map[:magento] = "set -o pipefail; #{@@pipefail_less}"
+        if not SSHKit.config.command_map[:magento].include? 'set -o pipefail' # avoids trouble on multi-host deploys
+          @@pipefail_less = SSHKit.config.command_map[:magento].dup
+          SSHKit.config.command_map[:magento] = "set -o pipefail; #{@@pipefail_less}"
+        end
       end
 
       # Reset the command map without prefix, removing pipefail option so it won't affect other commands
@@ -41,7 +43,7 @@ module Capistrano
         SSHKit.config.command_map[:magento] = @@pipefail_less
       end
     end
-    
+
     module Setup
       def static_content_deploy params
         Helpers.set_pipefail

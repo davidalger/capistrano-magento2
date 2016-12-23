@@ -44,6 +44,10 @@ _Note: By default, Capistrano creates "staging" and "production" stages. If you 
     # Load Magento deployment tasks
     require 'capistrano/magento2/deploy'
     
+    # Load Git plugin
+    require "capistrano/scm/git"
+    install_plugin Capistrano::SCM::Git
+    
     # Load custom tasks from `lib/capistrano/tasks` if you have any defined
     Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }
     ```

@@ -147,12 +147,12 @@ For the sake of simplicity in new project setups `:linked_dirs` and `:linked_fil
 set :linked_files, [
   'app/etc/env.php',
   'var/.setup_cronjob_status',
-  'var/.update_cronjob_status',
-  'pub/sitemap.xml'
+  'var/.update_cronjob_status'
 ]
 
 set :linked_dirs, [
-  'pub/media', 
+  'pub/media',
+  'pub/sitemaps',
   'var/backups', 
   'var/composer_home', 
   'var/importexport', 
@@ -163,7 +163,11 @@ set :linked_dirs, [
 ]
 ```
 
-If you would like to customize the linked files or directories for your project, you can copy either one or both of the above arrays into the `config/deploy.rb` or `config/deploy/*.rb` files and tweak them to fit your project's needs.
+If you would like to customize the linked files or directories for your project, you can copy either one or both of the above arrays into the `config/deploy.rb` or `config/deploy/*.rb` files and tweak them to fit your project's needs. Alternatively, you can add a single linked dir (or file) using `append` like this:
+
+```ruby
+append :linked_dirs, 'path/to/link'
+```
 
 ### Magento 2 Deploy Routine
 

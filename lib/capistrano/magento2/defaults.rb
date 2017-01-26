@@ -10,19 +10,18 @@
 set :linked_files, fetch(:linked_files, []).push(
   'app/etc/env.php',
   'var/.setup_cronjob_status',
-  'var/.update_cronjob_status',
-  'pub/sitemap.xml'
+  'var/.update_cronjob_status'
 )
 
 set :linked_files_touch, fetch(:linked_files_touch, []).push(
   'app/etc/env.php',
   'var/.setup_cronjob_status',
-  'var/.update_cronjob_status',
-  'pub/sitemap.xml'
+  'var/.update_cronjob_status'
 )
 
 set :linked_dirs, fetch(:linked_dirs, []).push(
-  'pub/media', 
+  'pub/media',
+  'pub/sitemaps',
   'var/backups', 
   'var/composer_home', 
   'var/importexport', 

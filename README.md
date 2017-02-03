@@ -159,7 +159,15 @@ set :linked_dirs, [
 ]
 ```
 
-If you would like to customize the linked files or directories for your project, you can copy either one or both of the above arrays into the `config/deploy.rb` or `config/deploy/*.rb` files and tweak them to fit your project's needs.
+If you would like to add/remove linked files or directories for your project, you can add code like the following to `config/deploy.rb` or `config/deploy/*.rb` (see [Capistrano documentation](http://capistranorb.com/documentation/getting-started/configuration/#access)):
+
+````
+append :linked_files, "example_file2", "example_file2"
+append :linked_dirs, "example_directory1", "example_directory12"
+
+remove :linked_files, "pub/sitemap.xml", "var/.setup_cronjob_status"
+remove :linked_dirs, "var/tmp", "var/log"
+````
 
 ### Magento 2 Deploy Routine
 

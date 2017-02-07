@@ -1,7 +1,11 @@
 # Capistrano::Magento2 Change Log
 
+0.5.9
 ==========
 
+* Updated README with Capistrano 3.7 setup information
+* Updated `linked_dirs` to link `pub/sitemaps` by default in similar fashion to the Magento1 deployment gem
+* Updated README with guidance on adding a path to the list of `linked_dirs` without copying the entire configuration forward
 * Fixed bug causing pipefail option to persist after `Capistrano::Magento2::Setup.static_content_deploy` is called
  
 0.5.8

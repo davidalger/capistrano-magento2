@@ -1,12 +1,21 @@
 # Capistrano::Magento2 Change Log
 
+0.5.9
+==========
+
+* Updated README with Capistrano 3.7 setup information
+* Updated `linked_dirs` to link `pub/sitemaps` by default in similar fashion to the Magento1 deployment gem
+* Updated README with guidance on adding a path to the list of `linked_dirs` without copying the entire configuration forward
+* Fixed bug causing pipefail option to persist after `Capistrano::Magento2::Setup.static_content_deploy` is called
+ 
 0.5.8
 ==========
 
-* Fixed critical failure due to command map being broken in v0.5.7 updates
+* Fixed critical failure due to command map being broken in v0.5.7 updates (issue #50, issue #51)
 
 0.5.7
 ==========
+_Note: This release was yanked from RubyGems due to a critical failure in the deploy routine._
 
 * Fixed failing deploys for Magento 2.1.0 caused by improper version checks on flags added in version 2.1.1 (issue #45)
 * Fixed failure to detect error codes Magento 2.1.1 returns on a failed static-content deploy job (issue #44)

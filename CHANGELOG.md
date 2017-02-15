@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+UNRELEASED
+==========
+
+* Updated README to reflect removing the `terminal-notifier` gem as a hard dependency (issue #19)
+
 0.5.9
 ==========
 

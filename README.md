@@ -74,13 +74,14 @@ Before you can use Capistrano to deploy, you must configure the `config/deploy.r
 
 1. Configuring `config/deploy.rb`
     
-    Update the `:application` and `:repo_url` values in `config/deploy.rb`:
+    Update the `:application` and `:repo_url` and `:app_path` values in `config/deploy.rb`:
     
     ```ruby
     # Something unique such as the website or company name
     set :application, 'example'
-    # The repository that hosts the Magento 2 application (Magento should live in the root of the repo)
     set :repo_url, 'git@github.com:acme/example-com.git'
+    # The repository that hosts the Magento 2 application (Magento should live in the root of the repo but you can specify app_path for subfolders)
+    set :app_path, 'code'
     ```
 
 2. Configuring `config/deploy/*.rb` files

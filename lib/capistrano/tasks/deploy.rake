@@ -33,7 +33,7 @@ namespace :deploy do
 
     on release_roles :all do
       if test "[ -f #{current_path}/bin/magento ]"
-        within current_path do
+        within current_path.join(fetch(:app_path)) do
           execute :magento, 'maintenance:enable' if fetch(:magento_deploy_maintenance)
         end
       end
@@ -43,7 +43,7 @@ namespace :deploy do
     invoke 'magento:setup:db:data:upgrade'
 
     on primary fetch(:magento_deploy_setup_role) do
-      within release_path do
+      within release_path.join(fetch(:app_path)) do
         _disabled_modules = disabled_modules
         if _disabled_modules.count > 0
           info "\nThe following modules are disabled per app/etc/config.php:\n"

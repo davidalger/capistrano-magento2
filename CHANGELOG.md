@@ -3,6 +3,7 @@
 UNRELEASED
 ==========
 
+* Fixed inability to set PATH in capistrano configuration vs `.bashrc` file (issue #62)
 * Updated README to reflect removing the `terminal-notifier` gem as a hard dependency (issue #19)
 
 0.5.9

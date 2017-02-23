@@ -16,7 +16,7 @@ namespace :deploy do
   # changes and/or warn that there is nothing to deploy
   namespace :pending do
     task :check_changes do
-      on primary fetch(:magento_deploy_setup_role) do
+      on primary fetch(:capistrano_pending_role) do
         # check for pending changes only if REVISION file exists to prevent error
         if test "[ -f #{current_path}/REVISION ]"
           invoke 'deploy:pending:setup'

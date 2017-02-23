@@ -234,6 +234,15 @@ To add the `capistrano-pending` gem's enhanced functionality to you project, add
 require 'capistrano/magento2/pending'
 ```
 
+In order to make the `capistrano-pending` gem fully compatible with this gem out of the box, the `:capistrano_pending_role` setting has been configured to default to the value of `:magento_deploy_setup_role`. The `capistrano-pending` gem by default looks only at the `:db` role, breaking things if a project does not have code deployed to servers under the `:db` role, as would be the case when using a server configuration similar to the following:
+
+```ruby
+role :app, %w{
+  www-data@web1
+  www-data@web2
+}
+```
+
 ## Development
 
 After checking out the repo, run `bundle install` to install dependencies. Make the necessary changes, then run `bundle exec rake install` to install a modified version of the gem on your local system.

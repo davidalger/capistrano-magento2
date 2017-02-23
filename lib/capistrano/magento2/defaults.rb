@@ -47,3 +47,6 @@ set :magento_deploy_themes, fetch(:magento_deploy_themes, [])
 # deploy targetting defaults
 set :magento_deploy_setup_role, fetch(:magento_deploy_setup_role, :all)
 set :magento_deploy_cache_shared, fetch(:magento_deploy_cache_shared, true)
+
+# set capistrano-pending defaults to match this gem's expectations
+set :capistrano_pending_role, fetch(:magento_deploy_setup_role)

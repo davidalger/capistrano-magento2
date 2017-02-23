@@ -4,6 +4,7 @@ UNRELEASED
 ==========
 
 * Fixed inability to set PATH in capistrano configuration vs `.bashrc` file (issue #62)
+* Fixed potential incompatibility with `capistrano-pending` default deployment settings (issue #58)
 * Updated README to reflect removing the `terminal-notifier` gem as a hard dependency (issue #19)
 
 0.5.9

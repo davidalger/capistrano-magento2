@@ -21,14 +21,16 @@ namespace :deploy do
         need_warning = true
 
         on roles fetch(:magento_deploy_pending_role) do |host|
-          ensure_revision do
-            if from_rev != to_rev
-              need_warning = false
-            end
+          has_revision = ensure_revision do
+            # if any host has a change in revision, do not warn user
+            need_warning = false if from_rev != to_rev
           end
+
+          # if a host does not have a revision, do not warn user
+          need_warning = false if not has_revision
         end
 
-        # if there is nothing to deploy on any node, prompt user for confirmation
+        # if there is nothing to deploy on any host, prompt user for confirmation
         if need_warning
           print "      Are you sure you want to continue? [y/n] \e[0m"
 
@@ -50,12 +52,29 @@ namespace :deploy do
           from = from_rev
           to = to_rev
 
-          # output prettified log of changes between from and to commits
+          # if there is nothing to deploy on this host, inform the user
           if from == to
             info "\e[0;31mNo changes to deploy on #{host} (from and to are the same: #{from} -> #{to})\e[0m"
           else
-            info "\e[0;90mChanges pending deployment on #{host} (#{from} -> #{to}):\e[0m"
-            log_pending(from, to)
+            run_locally do
+              header = "\e[0;90mChanges pending deployment on #{host} (#{from} -> #{to}):\e[0m\n"
+
+              # capture log of commits between current revision and revision for deploy
+              output = capture :git, :log, "#{from}..#{to}", fetch(:magento_deploy_pending_format)
+
+              # if we get no results, flip refs to look at reverse log in case of rollback deployments
+              if output.to_s.strip.empty?
+                output = capture :git, :log, "#{to}..#{from}", fetch(:magento_deploy_pending_format)
+                if not output.to_s.strip.empty?
+                  header += "\e[0;31mWarning: It appears you may be going backwards in time on #{host} with this deployment!\e[0m\n"
+                end
+              end
+
+              # write pending changes log
+              (header + output).each_line do |line|
+                info line
+              end
+            end
           end
         end
       end

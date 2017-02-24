@@ -8,6 +8,7 @@
  ##
 
 require 'capistrano/deploy'
+require 'capistrano/magento2'
 
 module Capistrano
   module Magento2
@@ -15,9 +16,11 @@ module Capistrano
       def ensure_revision inform_user = false
         if test "[ -f #{current_path}/REVISION ]"
           yield
-        elsif inform_user
-          warn "\e[0;31mSkipping pending changes check on #{host} (no REVISION file found)\e[0m"
+        else
+          warn "\e[0;31mSkipping pending changes check on #{host} (no REVISION file found)\e[0m" if inform_user
+          return false
         end
+        return true
       end
 
       def from_rev
@@ -41,24 +44,6 @@ module Capistrano
 
           # find symbolic name for revision
           to = capture(:git, "name-rev --always --name-only #{to}")
-        end
-      end
-
-
-      def log_pending(from, to)
-        run_locally do
-          output = capture :git, :log, "#{from}..#{to}", fetch(:magento_deploy_pending_format)
-
-          if output.to_s.strip.empty?
-            output = capture :git, :log, "#{to}..#{from}", fetch(:magento_deploy_pending_format)
-            if not output.to_s.strip.empty?
-              output += "\n\e[0;31mWarning: It appears you may be going backwards in time with this deployment!\e[0m"
-            end
-          end
-
-          output.each_line do |line|
-            info line
-          end
         end
       end
     end

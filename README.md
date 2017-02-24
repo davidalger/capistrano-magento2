@@ -233,7 +233,7 @@ No changes to deploy on web2 (from and to are the same: 2.1 -> 2.1)
 Are you sure you want to continue? [y/n]
 ```
 
-This conformational warning can be disabled by including the following in your project's configuration:
+This confirmational warning can be disabled by including the following in your project's configuration:
 
 ```ruby
 set :magento_deploy_pending_warn, false

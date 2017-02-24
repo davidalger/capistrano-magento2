@@ -8,45 +8,56 @@
  ##
 
 require 'capistrano/deploy'
-require 'capistrano/pending/scm/base'
 
 module Capistrano
-  module Pending
-    module SCM
-      class Git < Base
+  module Magento2
+    module Pending
+      def ensure_revision inform_user = false
+        if test "[ -f #{current_path}/REVISION ]"
+          yield
+        elsif inform_user
+          warn "\e[0;31mSkipping pending changes check on #{host} (no REVISION file found)\e[0m"
+        end
+      end
 
-        # Enhance capistrano-pending gem's native deploy:pending:log command by updating repository and then
-        # showing the actual changes that will be deployed. Also changes log output to oneline for easy reading
-        #
-        # Params:
-        # +from+            - commit-ish to compare from
-        # +to+              - commit-ish to compare to
-        # +returnOutput+    - whether to return or print the output
-        #
-        def log(from, to, returnOutput=false)
+      def from_rev
+        within current_path do
+          current_revision = capture(:cat, "REVISION")
+
           run_locally do
-            execute :git, :fetch, :origin   # update repository to ensure accuracy of pending changes report
+            return capture(:git, "name-rev --always --name-only #{current_revision}") # find symbolic name for ref
+          end
+        end
+      end
 
-            # Since the :branch to deploy from may be behind the upstream branch, get name of upstream branch
-            # and use it for comparison. We are using the test command in case the :branch is set to a specific
-            # commit hash, in which case there is no upstream branch.
+      def to_rev
+        run_locally do
+          to = fetch(:branch)
 
-            if test(:git, 'rev-parse', '--abbrev-ref', '--symbolic-full-name', to + '@{u}')
-              to = capture(:git, 'rev-parse', '--abbrev-ref', '--symbolic-full-name',  to + '@{u}')
+          # get target branch upstream if there is one
+          if test(:git, "rev-parse --abbrev-ref --symbolic-full-name #{to}@{u}")
+            to = capture(:git, "rev-parse --abbrev-ref --symbolic-full-name #{to}@{u}")
+          end
+
+          # find symbolic name for revision
+          to = capture(:git, "name-rev --always --name-only #{to}")
+        end
+      end
+
+
+      def log_pending(from, to)
+        run_locally do
+          output = capture :git, :log, "#{from}..#{to}", fetch(:magento_deploy_pending_format)
+
+          if output.to_s.strip.empty?
+            output = capture :git, :log, "#{to}..#{from}", fetch(:magento_deploy_pending_format)
+            if not output.to_s.strip.empty?
+              output += "\n\e[0;31mWarning: It appears you may be going backwards in time with this deployment!\e[0m"
             end
+          end
 
-            output = capture(
-              :git,
-              :log,
-              "#{from}..#{to}",
-              '--pretty="format:%C(yellow)%h %Cblue%>(12)%ad %Cgreen%<(7)%aN%Cred%d %Creset%s"'
-            )
-
-            if returnOutput
-              return output
-            else
-              puts output
-            end
+          output.each_line do |line|
+            info line
           end
         end
       end

@@ -48,5 +48,10 @@ set :magento_deploy_themes, fetch(:magento_deploy_themes, [])
 set :magento_deploy_setup_role, fetch(:magento_deploy_setup_role, :all)
 set :magento_deploy_cache_shared, fetch(:magento_deploy_cache_shared, true)
 
-# set capistrano-pending defaults to match this gem's expectations
-set :capistrano_pending_role, fetch(:magento_deploy_setup_role)
+# pending deploy check defaults
+set :magento_deploy_pending_role, fetch(:magento_deploy_pending_role, :all)
+set :magento_deploy_pending_warn, fetch(:magento_deploy_pending_warn, true)
+set :magento_deploy_pending_format, fetch(
+  :magento_deploy_pending_format,
+  '--pretty="format:%C(yellow)%h %Cblue%>(12)%ad %Cgreen%<(7)%aN%Cred%d %Creset%s"'
+)

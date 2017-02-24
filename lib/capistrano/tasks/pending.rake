@@ -7,34 +7,55 @@
  # http://davidalger.com/contact/
  ##
 
-require 'capistrano-pending'
+include Capistrano::Magento2::Pending
 
-before :deploy, 'deploy:pending:check_changes'
+before :deploy, 'deploy:pending:warn'
+
 namespace :deploy do
+  desc "Displays a summary of commits pending deployment"
+  task :pending => 'deploy:pending:log'
 
-  # Check for pending changes on the primary node and then notify user of any incoming
-  # changes and/or warn that there is nothing to deploy
   namespace :pending do
-    task :check_changes do
-      on primary fetch(:capistrano_pending_role) do
-        # check for pending changes only if REVISION file exists to prevent error
-        if test "[ -f #{current_path}/REVISION ]"
-          invoke 'deploy:pending:setup'
-          from = fetch(:revision)
-          to = fetch(:branch)
+    task :warn => :log do
+      if fetch(:magento_deploy_pending_warn)
+        need_warning = true
 
-          output = _scm.log(from, to, true)
-          if output.to_s.strip.empty?
-            puts "\e[0;31m      No changes to deploy (from and to are the same: #{from}..#{to})"
-            print "      Are you sure you want to continue? [y/n] \e[0m"
-
-            proceed = STDIN.gets[0..0] rescue nil
-            exit unless proceed == 'y' || proceed == 'Y'
-          else
-            puts "\e[0;90m      Deploying changes #{from}..#{to}:\e[0m"
-            output.each_line do |s|
-              puts "      " + s
+        on roles fetch(:magento_deploy_pending_role) do |host|
+          ensure_revision do
+            if from_rev != to_rev
+              need_warning = false
             end
+          end
+        end
+
+        # if there is nothing to deploy on any node, prompt user for confirmation
+        if need_warning
+          print "      Are you sure you want to continue? [y/n] \e[0m"
+
+          proceed = STDIN.gets[0..0] rescue nil
+          exit unless proceed == 'y' || proceed == 'Y'
+        end
+      end
+    end
+
+    task :log do
+      on roles fetch(:magento_deploy_pending_role) do |host|
+        ensure_revision true do
+          # update local repository to ensure accuracy of report
+          run_locally do
+            execute :git, :fetch, :origin
+          end
+
+          # fetch current revision and revision to be deployed
+          from = from_rev
+          to = to_rev
+
+          # output prettified log of changes between from and to commits
+          if from == to
+            info "\e[0;31mNo changes to deploy on #{host} (from and to are the same: #{from} -> #{to})\e[0m"
+          else
+            info "\e[0;90mChanges pending deployment on #{host} (#{from} -> #{to}):\e[0m"
+            log_pending(from, to)
           end
         end
       end

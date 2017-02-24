@@ -1,5 +1,13 @@
 # Capistrano::Magento2 Change Log
 
+0.6.0
+==========
+
+* Added full-featured pending change logging functionality. See README for details (issue #58)
+* Fixed inability to set PATH in capistrano configuration vs `.bashrc` file (issue #62)
+* Updated README to reflect removing the `terminal-notifier` gem as a hard dependency (issue #19)
+* Removed `capistrano-pending` as a dependency (issue #58)
+
 0.5.9
 ==========
 

@@ -8,46 +8,42 @@
  ##
 
 require 'capistrano/deploy'
-require 'capistrano/pending/scm/base'
+require 'capistrano/magento2'
 
 module Capistrano
-  module Pending
-    module SCM
-      class Git < Base
+  module Magento2
+    module Pending
+      def ensure_revision inform_user = false
+        if test "[ -f #{current_path}/REVISION ]"
+          yield
+        else
+          warn "\e[0;31mSkipping pending changes check on #{host} (no REVISION file found)\e[0m" if inform_user
+          return false
+        end
+        return true
+      end
 
-        # Enhance capistrano-pending gem's native deploy:pending:log command by updating repository and then
-        # showing the actual changes that will be deployed. Also changes log output to oneline for easy reading
-        #
-        # Params:
-        # +from+            - commit-ish to compare from
-        # +to+              - commit-ish to compare to
-        # +returnOutput+    - whether to return or print the output
-        #
-        def log(from, to, returnOutput=false)
+      def from_rev
+        within current_path do
+          current_revision = capture(:cat, "REVISION")
+
           run_locally do
-            execute :git, :fetch, :origin   # update repository to ensure accuracy of pending changes report
-
-            # Since the :branch to deploy from may be behind the upstream branch, get name of upstream branch
-            # and use it for comparison. We are using the test command in case the :branch is set to a specific
-            # commit hash, in which case there is no upstream branch.
-
-            if test(:git, 'rev-parse', '--abbrev-ref', '--symbolic-full-name', to + '@{u}')
-              to = capture(:git, 'rev-parse', '--abbrev-ref', '--symbolic-full-name',  to + '@{u}')
-            end
-
-            output = capture(
-              :git,
-              :log,
-              "#{from}..#{to}",
-              '--pretty="format:%C(yellow)%h %Cblue%>(12)%ad %Cgreen%<(7)%aN%Cred%d %Creset%s"'
-            )
-
-            if returnOutput
-              return output
-            else
-              puts output
-            end
+            return capture(:git, "name-rev --always --name-only #{current_revision}") # find symbolic name for ref
           end
+        end
+      end
+
+      def to_rev
+        run_locally do
+          to = fetch(:branch)
+
+          # get target branch upstream if there is one
+          if test(:git, "rev-parse --abbrev-ref --symbolic-full-name #{to}@{u}")
+            to = capture(:git, "rev-parse --abbrev-ref --symbolic-full-name #{to}@{u}")
+          end
+
+          # find symbolic name for revision
+          to = capture(:git, "name-rev --always --name-only #{to}")
         end
       end
     end

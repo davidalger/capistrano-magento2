@@ -170,6 +170,19 @@ If you would like to customize the linked files or directories for your project,
 append :linked_dirs, 'path/to/link'
 ```
 
+### Composer Auth Credentials
+
+Magento 2's composer repository requires auth credentials to install. These can be set on target servers in a global composer `auth.json` file, the project's `composer.json` or by setting them in your deployment configuration using the following two settings:
+
+```ruby
+set :magento_auth_public_key, '<your_public_key_here>'
+set :magento_auth_private_key, '<your_prviate_key_here>'
+```
+
+To obtain these credentials, reference the official documentation on DevDocs: [Get your authentication keys](http://devdocs.magento.com/guides/v2.0/install-gde/prereq/connect-auth.html)
+
+**Caution:** When using these settings, the values will be logged to the `log/capistrano.log` file by SSHKit. They will not, however, be included in the general command output by default.
+
 ### Magento 2 Deploy Routine
 
 A pre-built deploy routine is available out-of-the-box. This can be overriden on a per-project basis by including only the Magento 2 specific tasks and defining your own `deploy.rake` file under `lib/capistrano/tasks` in your projects Capistrano install location.

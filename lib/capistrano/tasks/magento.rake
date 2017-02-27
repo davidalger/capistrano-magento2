@@ -81,7 +81,7 @@ namespace :magento do
   
   namespace :composer do
     desc 'Run composer install'
-    task :install do
+    task :install => :auth_config do
 
       on release_roles :all do
         within release_path do
@@ -102,6 +102,20 @@ namespace :magento do
             execute :composer, "install #{composer_flags} -d ./update 2>&1"
           else
             puts "\e[0;31m    Warning: ./update dir does not exist in repository!\n\e[0m\n"
+          end
+        end
+      end
+    end
+
+    task :auth_config do
+      on release_roles :all do
+        within release_path do
+          if fetch(:magento_auth_public_key) and fetch(:magento_auth_private_key)
+            execute :composer, :config, '-q',
+              fetch(:magento_auth_repo_name),
+              fetch(:magento_auth_public_key),
+              fetch(:magento_auth_private_key),
+              verbosity: Logger::DEBUG
           end
         end
       end

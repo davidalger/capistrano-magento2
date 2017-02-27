@@ -2,6 +2,7 @@
 
 UNRELEASED
 
+* Added ability to configure Magento's composer authentication keys. See README for details (PR #56)
 * Changed pending change log to hook into before `deploy:check` (previously hooked before `deploy`)
 
 0.6.0

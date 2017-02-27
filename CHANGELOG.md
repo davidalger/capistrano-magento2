@@ -1,5 +1,9 @@
 # Capistrano::Magento2 Change Log
 
+UNRELEASED
+
+* Changed pending change log to hook into before `deploy:check` (previously hooked before `deploy`)
+
 0.6.0
 ==========
 

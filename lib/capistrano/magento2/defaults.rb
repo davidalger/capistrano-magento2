@@ -31,9 +31,10 @@ set :linked_dirs, fetch(:linked_dirs, []).push(
   'var/tmp'
 )
 
-# deploy auth defaults
-set :magento_auth_public_key, fetch(:magento_auth_public_key, '')
-set :magento_auth_private_key, fetch(:magento_auth_private_key, '')
+# magento composer repository auth credentials
+set :magento_auth_repo_name, fetch(:magento_auth_repo_name, 'http-basic.repo.magento.com')
+set :magento_auth_public_key, fetch(:magento_auth_public_key, false)
+set :magento_auth_private_key, fetch(:magento_auth_private_key, false)
 
 # deploy permissions defaults
 set :magento_deploy_chmod_d, fetch(:magento_deploy_chmod_d, '2770')

@@ -31,6 +31,10 @@ set :linked_dirs, fetch(:linked_dirs, []).push(
   'var/tmp'
 )
 
+# deploy auth defaults
+set :magento_auth_public_key, fetch(:magento_auth_public_key, '')
+set :magento_auth_private_key, fetch(:magento_auth_private_key, '')
+
 # deploy permissions defaults
 set :magento_deploy_chmod_d, fetch(:magento_deploy_chmod_d, '2770')
 set :magento_deploy_chmod_f, fetch(:magento_deploy_chmod_f, '0660')

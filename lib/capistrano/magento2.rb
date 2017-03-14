@@ -1,9 +1,9 @@
 ##
  # Copyright © 2016 by David Alger. All rights reserved
- # 
+ #
  # Licensed under the Open Software License 3.0 (OSL-3.0)
  # See included LICENSE file for full text of OSL-3.0
- # 
+ #
  # http://davidalger.com/contact/
  ##
 
@@ -13,7 +13,8 @@ module Capistrano
   module Magento2
     module Helpers
       def magento_version
-        return Gem::Version::new((capture :php, "-f #{release_path}/bin/magento -- -V").split(' ').pop)
+        version = (capture :php, "-f #{release_path}/bin/magento -- -V").split(' ').pop.gsub(/\e\[(\d+)m/, '')
+        return Gem::Version::new(version)
       end
 
       def disabled_modules

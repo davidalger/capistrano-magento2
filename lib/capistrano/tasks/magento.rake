@@ -1,9 +1,9 @@
 ##
  # Copyright © 2016 by David Alger. All rights reserved
- # 
+ #
  # Licensed under the Open Software License 3.0 (OSL-3.0)
  # See included LICENSE file for full text of OSL-3.0
- # 
+ #
  # http://davidalger.com/contact/
  ##
 
@@ -21,7 +21,7 @@ namespace :magento do
         end
       end
     end
-    
+
     desc 'Clean Magento cache by types'
     task :clean do
       on cache_hosts do
@@ -30,7 +30,7 @@ namespace :magento do
         end
       end
     end
-    
+
     desc 'Enable Magento cache'
     task :enable do
       on cache_hosts do
@@ -39,7 +39,7 @@ namespace :magento do
         end
       end
     end
-    
+
     desc 'Disable Magento cache'
     task :disable do
       on cache_hosts do
@@ -48,7 +48,7 @@ namespace :magento do
         end
       end
     end
-    
+
     desc 'Check Magento cache enabled status'
     task :status do
       on cache_hosts do
@@ -57,7 +57,7 @@ namespace :magento do
         end
       end
     end
-  
+
     namespace :varnish do
       # TODO: Document what the magento:cache:varnish:ban task is for and how to use it. See also magento/magento2#4106
       desc 'Add ban to Varnish for url(s)'
@@ -66,7 +66,7 @@ namespace :magento do
           # TODO: Document use of :ban_pools and :varnish_cache_hosts in project config file
           next unless any? :ban_pools
           next unless any? :varnish_cache_hosts
-          
+
           within release_path do
             for pool in fetch(:ban_pools) do
               for cache_host in fetch(:varnish_cache_hosts) do
@@ -78,7 +78,7 @@ namespace :magento do
       end
     end
   end
-  
+
   namespace :composer do
     desc 'Run composer install'
     task :install do
@@ -155,7 +155,7 @@ namespace :magento do
         end
       end
     end
-    
+
     namespace :db do
       desc 'Checks if database schema and/or data require upgrading'
       task :status do
@@ -165,12 +165,12 @@ namespace :magento do
           end
         end
       end
-      
+
       task :upgrade do
         on primary fetch(:magento_deploy_setup_role) do
           within release_path do
             db_status = capture :magento, 'setup:db:status', verbosity: Logger::INFO
-            
+
             if not db_status.to_s.include? 'All modules are up to date'
               execute :magento, 'setup:db-schema:upgrade'
               execute :magento, 'setup:db-data:upgrade'
@@ -178,7 +178,7 @@ namespace :magento do
           end
         end
       end
-      
+
       desc 'Upgrades data fixtures'
       task 'schema:upgrade' do
         on primary fetch(:magento_deploy_setup_role) do
@@ -187,7 +187,7 @@ namespace :magento do
           end
         end
       end
-      
+
       desc 'Upgrades database schema'
       task 'data:upgrade' do
         on primary fetch(:magento_deploy_setup_role) do
@@ -197,14 +197,14 @@ namespace :magento do
         end
       end
     end
-    
+
     desc 'Sets proper permissions on application'
     task :permissions do
       on release_roles :all do
         within release_path do
           execute :find, release_path, "-type d -exec chmod #{fetch(:magento_deploy_chmod_d).to_i} {} +"
           execute :find, release_path, "-type f -exec chmod #{fetch(:magento_deploy_chmod_f).to_i} {} +"
-          
+
           fetch(:magento_deploy_chmod_x).each() do |file|
             execute :chmod, "+x #{release_path}/#{file}"
           end
@@ -212,7 +212,7 @@ namespace :magento do
       end
       Rake::Task['magento:setup:permissions'].reenable  ## make task perpetually callable
     end
-    
+
     namespace :di do
       desc 'Runs dependency injection compilation routine'
       task :compile do
@@ -226,7 +226,7 @@ namespace :magento do
             else
               output = capture :magento, 'setup:di:compile', verbosity: Logger::INFO
             end
-            
+
             # 2.0.x never returns a non-zero exit code for errors, so manually check string
             # 2.1.x doesn't return a non-zero exit code for certain errors (see davidalger/capistrano-magento2#41)
             if output.to_s.include? 'Errors during compilation'
@@ -236,7 +236,7 @@ namespace :magento do
         end
       end
     end
-    
+
     namespace 'static-content' do
       desc 'Deploys static view files'
       task :deploy do
@@ -280,7 +280,7 @@ namespace :magento do
       end
     end
   end
-  
+
   namespace :maintenance do
     desc 'Enable maintenance mode'
     task :enable do
@@ -290,7 +290,7 @@ namespace :magento do
         end
       end
     end
-    
+
     desc 'Disable maintenance mode'
     task :disable do
       on release_roles :all do

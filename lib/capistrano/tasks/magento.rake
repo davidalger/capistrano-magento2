@@ -98,10 +98,15 @@ namespace :magento do
             execute :composer, "install #{composer_flags} 2>&1" # removes require-dev components from prev command
           end
 
-          if test "[ -d #{release_path}/update ]"   # can't count on this, but emit warning if not present
-            execute :composer, "install #{composer_flags} -d ./update 2>&1"
+          if test "[ -d #{release_path}/update]"   # can't count on this, but emit warning if not present
+
+            if test "[ -f #{release_path}/update/composer.json]"
+              execute :composer, "install #{composer_flags} -d ./update 2>&1"
+            else
+              info "\e[0;31m    Warning: ./update/composer.json file does not exist in the repository\n\e[0m\n"
+            end
           else
-            puts "\e[0;31m    Warning: ./update dir does not exist in repository!\n\e[0m\n"
+            info "\e[0;31m    Warning: ./update dir does not exist in repository!\n\e[0m\n"
           end
         end
       end

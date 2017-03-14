@@ -13,7 +13,8 @@ module Capistrano
   module Magento2
     module Helpers
       def magento_version
-        return Gem::Version::new((capture :php, "-f #{release_path}/bin/magento -- -V").split(' ').pop)
+        version = (capture :php, "-f #{release_path}/bin/magento -- -V").split(' ').pop.gsub(/\e\[(\d+)m/, '')
+        return Gem::Version::new(version)
       end
 
       def disabled_modules

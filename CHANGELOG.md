@@ -1,6 +1,7 @@
 # Capistrano::Magento2 Change Log
 
-UNRELEASED
+0.6.1
+==========
 
 * Fixed Magento version check failing on some servers due to ansi output in non-interactive shells (issue #64)
 * Added ability to configure Magento's composer authentication keys. See README for details (PR #56)

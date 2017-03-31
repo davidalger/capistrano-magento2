@@ -9,7 +9,7 @@
 
 include Capistrano::Magento2::Pending
 
-before :deploy, 'deploy:pending:warn'
+before 'deploy:check', 'deploy:pending:warn'
 
 namespace :deploy do
   desc "Displays a summary of commits pending deployment"

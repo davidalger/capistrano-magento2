@@ -246,7 +246,7 @@ No changes to deploy on web2 (from and to are the same: 2.1 -> 2.1)
 Are you sure you want to continue? [y/n]
 ```
 
-This conformational warning can be disabled by including the following in your project's configuration:
+This confirmational warning can be disabled by including the following in your project's configuration:
 
 ```ruby
 set :magento_deploy_pending_warn, false
@@ -256,9 +256,9 @@ set :magento_deploy_pending_warn, false
 
 | setting                          | what it does
 | -------------------------------- | ------- | ---
-| `:magento_deploy_pending_role`   | Roles to check for pending changes on. This defaults to `:all`
-| `:magento_deploy_pending_warn`   | Set this to `false` to disable the conformational warning on zero-change deployment
-| `:magento_deploy_pending_format` | Can be used to set a custom change log format. See `defaults.rb` for example.
+| `:magento_deploy_pending_role`   | Role to check for pending changes on; defaults to `:all`
+| `:magento_deploy_pending_warn`   | Set this to `false` to disable confirmational warning on zero-change deployments
+| `:magento_deploy_pending_format` | Can be used to set a custom change log format; refer to `defaults.rb` for example
 
 ### Pending Changes Tasks
 

@@ -3,6 +3,7 @@
 UNRELEASED
 ==========
 
+* Added setting `:magento_deploy_jobs` to support configuring number of parallel static content deployment tasks
 * Fixed issue where ./update dir may exist without a composer.json file, causing deployment failure
 * Updated uses of bin/magento where output is parsed to include `--no-ansi` to eliminate potential failures
 * Improved error reporting on static content deployment failure

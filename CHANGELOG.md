@@ -1,6 +1,6 @@
 # Capistrano::Magento2 Change Log
 
-UNRELEASED
+0.6.2
 ==========
 
 * Added setting `:magento_deploy_jobs` to support configuring number of parallel static content deployment tasks

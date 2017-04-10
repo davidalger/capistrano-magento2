@@ -5,6 +5,7 @@ UNRELEASED
 
 * Fixed issue where ./update dir may exist without a composer.json file, causing deployment failure
 * Updated uses of bin/magento where output is parsed to include `--no-ansi` to eliminate potential failures
+* Improved error reporting on static content deployment failure
 
 0.6.1
 ==========

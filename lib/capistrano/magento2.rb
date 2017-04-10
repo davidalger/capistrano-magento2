@@ -55,12 +55,12 @@ module Capistrano
         # String based error checking is here to catch errors in Magento 2.1.0 and earlier; later versions will exit
         # immediately when a console exit code is retruned, never evaluating this code.
         if not output.to_s.include? 'New version of deployed files'
-          raise Exception, "\e[0;31mFailed to compile static assets\e[0m"
+          raise Exception, "\e[0;31mFailed to compile static assets. No new version found in command output!\e[0m"
         end
 
         output.to_s.each_line { |line|
           if line.split('errors: ', 2).pop.to_i > 0
-            raise Exception, "\e[0;31mFailed to compile static assets\e[0m"
+            raise Exception, "\e[0;31mFailed to compile static assets. Errors found in command output: #{line}\e[0m"
           end
         }
       end

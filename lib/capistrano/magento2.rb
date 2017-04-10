@@ -17,7 +17,7 @@ module Capistrano
       end
 
       def disabled_modules
-        output = capture :magento, 'module:status'
+        output = capture :magento, 'module:status --no-ansi'
         output = output.split("disabled modules:\n", 2)[1]
 
         if output == nil or output.strip == "None"
@@ -48,7 +48,7 @@ module Capistrano
       def static_content_deploy params
         Helpers.set_pipefail
         output = capture :magento,
-          "setup:static-content:deploy #{params} | stdbuf -o0 tr -d .",
+          "setup:static-content:deploy --no-ansi #{params} | stdbuf -o0 tr -d .",
           verbosity: Logger::INFO
         Helpers.unset_pipefail
 

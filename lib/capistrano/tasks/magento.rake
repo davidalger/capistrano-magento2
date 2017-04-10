@@ -183,7 +183,7 @@ namespace :magento do
       task :upgrade do
         on primary fetch(:magento_deploy_setup_role) do
           within release_path do
-            db_status = capture :magento, 'setup:db:status', verbosity: Logger::INFO
+            db_status = capture :magento, 'setup:db:status --no-ansi', verbosity: Logger::INFO
             
             if not db_status.to_s.include? 'All modules are up to date'
               execute :magento, 'setup:db-schema:upgrade'
@@ -236,9 +236,9 @@ namespace :magento do
             # we have to use multi-tenant currently. However, the multi-tenant is being dropped in 2.1 and is no longer
             # present in the develop mainline, so we are testing for multi-tenant presence for long-term portability.
             if test :magento, 'setup:di:compile-multi-tenant --help >/dev/null 2>&1'
-              output = capture :magento, 'setup:di:compile-multi-tenant', verbosity: Logger::INFO
+              output = capture :magento, 'setup:di:compile-multi-tenant --no-ansi', verbosity: Logger::INFO
             else
-              output = capture :magento, 'setup:di:compile', verbosity: Logger::INFO
+              output = capture :magento, 'setup:di:compile --no-ansi', verbosity: Logger::INFO
             end
             
             # 2.0.x never returns a non-zero exit code for errors, so manually check string

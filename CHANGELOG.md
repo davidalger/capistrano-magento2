@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+UNRELEASED
+==========
+
+* Fixed issue where ./update dir may exist without a composer.json file, causing deployment failure
+
 0.6.1
 ==========
 

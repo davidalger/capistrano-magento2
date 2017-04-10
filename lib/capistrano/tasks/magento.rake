@@ -98,10 +98,10 @@ namespace :magento do
             execute :composer, "install #{composer_flags} 2>&1" # removes require-dev components from prev command
           end
 
-          if test "[ -d #{release_path}/update ]"   # can't count on this, but emit warning if not present
+          if test "[ -f #{release_path}/update/composer.json ]"   # can't count on this, but emit warning if not present
             execute :composer, "install #{composer_flags} -d ./update 2>&1"
           else
-            puts "\e[0;31m    Warning: ./update dir does not exist in repository!\n\e[0m\n"
+            puts "\e[0;31m    Warning: ./update/composer.json does not exist in repository!\n\e[0m\n"
           end
         end
       end
@@ -183,7 +183,7 @@ namespace :magento do
       task :upgrade do
         on primary fetch(:magento_deploy_setup_role) do
           within release_path do
-            db_status = capture :magento, 'setup:db:status', verbosity: Logger::INFO
+            db_status = capture :magento, 'setup:db:status --no-ansi', verbosity: Logger::INFO
             
             if not db_status.to_s.include? 'All modules are up to date'
               execute :magento, 'setup:db-schema:upgrade'
@@ -236,9 +236,9 @@ namespace :magento do
             # we have to use multi-tenant currently. However, the multi-tenant is being dropped in 2.1 and is no longer
             # present in the develop mainline, so we are testing for multi-tenant presence for long-term portability.
             if test :magento, 'setup:di:compile-multi-tenant --help >/dev/null 2>&1'
-              output = capture :magento, 'setup:di:compile-multi-tenant', verbosity: Logger::INFO
+              output = capture :magento, 'setup:di:compile-multi-tenant --no-ansi', verbosity: Logger::INFO
             else
-              output = capture :magento, 'setup:di:compile', verbosity: Logger::INFO
+              output = capture :magento, 'setup:di:compile --no-ansi', verbosity: Logger::INFO
             end
             
             # 2.0.x never returns a non-zero exit code for errors, so manually check string
@@ -259,6 +259,7 @@ namespace :magento do
 
           deploy_languages = fetch(:magento_deploy_languages).join(' ')
           deploy_themes = fetch(:magento_deploy_themes)
+          deploy_jobs = fetch(:magento_deploy_jobs)
 
           if deploy_themes.count() > 0 and _magento_version >= Gem::Version.new('2.1.1')
             deploy_themes = deploy_themes.join(' -t ').prepend(' -t ')
@@ -269,6 +270,15 @@ namespace :magento do
             deploy_themes = nil
           end
 
+          if deploy_jobs and _magento_version >= Gem::Version.new('2.1.1')
+            deploy_jobs = "--jobs #{deploy_jobs} "
+          elsif deploy_jobs
+            warn "\e[0;31mWarning: the :magento_deploy_jobs setting is only supported in Magento 2.1.1 and later\e[0m"
+            deploy_jobs = nil
+          else
+            deploy_jobs = nil
+          end
+
           # Output is being checked for a success message because this command may easily fail due to customizations
           # and 2.0.x CLI commands do not return error exit codes on failure. See magento/magento2#3060 for details.
           within release_path do
@@ -277,7 +287,7 @@ namespace :magento do
             execute "touch #{release_path}/pub/static/deployed_version.txt"
 
             # Generates all but the secure versions of RequireJS configs
-            static_content_deploy "#{deploy_languages}#{deploy_themes}"
+            static_content_deploy "#{deploy_jobs}#{deploy_languages}#{deploy_themes}"
           end
 
           # Run again with HTTPS env var set to 'on' to pre-generate secure versions of RequireJS configs
@@ -288,7 +298,7 @@ namespace :magento do
           deploy_flags = nil if _magento_version <= Gem::Version.new('2.1.0')
 
           within release_path do with(https: 'on') {
-            static_content_deploy "#{deploy_languages}#{deploy_themes}#{deploy_flags}"
+            static_content_deploy "#{deploy_jobs}#{deploy_languages}#{deploy_themes}#{deploy_flags}"
           } end
         end
       end

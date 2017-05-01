@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+0.6.3
+==========
+
+* Fixed deployment to multiple hosts resulting in disparate static content versions across target hosts
+
 0.6.2
 ==========
 

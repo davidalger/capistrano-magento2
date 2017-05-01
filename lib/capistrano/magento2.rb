@@ -64,6 +64,15 @@ module Capistrano
           end
         }
       end
+
+      def deployed_version
+        # Generate a static content version string, but only if one has not already been set on a previous call
+        if not fetch(:magento_static_deployed_version)
+          set :magento_static_deployed_version, DateTime.now.strftime("%s")
+          info "Static content version: #{fetch(:magento_static_deployed_version)}"
+        end
+        return fetch(:magento_static_deployed_version)
+      end
     end
   end
 end

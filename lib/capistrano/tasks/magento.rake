@@ -300,6 +300,9 @@ namespace :magento do
           within release_path do with(https: 'on') {
             static_content_deploy "#{deploy_jobs}#{deploy_languages}#{deploy_themes}#{deploy_flags}"
           } end
+
+          # Set the deployed_version of static content to ensure it matches across all hosts
+          upload!(StringIO.new(deployed_version), "#{release_path}/pub/static/deployed_version.txt")
         end
       end
     end

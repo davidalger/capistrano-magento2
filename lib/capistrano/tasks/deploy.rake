@@ -11,6 +11,7 @@ include Capistrano::Magento2::Helpers
 
 namespace :deploy do
   before 'deploy:check:linked_files', 'magento:deploy:check'
+  before 'deploy:symlink:linked_files', 'magento:deploy:local_config'
 
   before :starting, :confirm_action do
     if fetch(:magento_deploy_confirm).include? fetch(:stage).to_s

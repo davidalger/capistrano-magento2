@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+0.6.4
+==========
+
+* Added support for the config.local.php file found in Magento 2.1.6 and later
+
 0.6.3
 ==========
 

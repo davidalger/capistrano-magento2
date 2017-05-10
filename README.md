@@ -148,6 +148,7 @@ For the sake of simplicity in new project setups `:linked_dirs` and `:linked_fil
 ```ruby
 set :linked_files, [
   'app/etc/env.php',
+  'app/etc/config.local.php',
   'var/.setup_cronjob_status',
   'var/.update_cronjob_status'
 ]
@@ -170,6 +171,8 @@ If you would like to customize the linked files or directories for your project,
 ```ruby
 append :linked_dirs, 'path/to/link'
 ```
+
+Support for a `app/etc/config.local.php` configuration file was added to Magento 2.1.6. This file will be linked in from the `shared/app/etc` directory as of v0.6.4 of this gem. If this file is present in the project repository, the file will not be linked.
 
 ### Composer Auth Credentials
 

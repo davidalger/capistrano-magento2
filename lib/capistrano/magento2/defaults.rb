@@ -9,12 +9,14 @@
 
 set :linked_files, fetch(:linked_files, []).push(
   'app/etc/env.php',
+  'app/etc/config.local.php',
   'var/.setup_cronjob_status',
   'var/.update_cronjob_status'
 )
 
 set :linked_files_touch, fetch(:linked_files_touch, []).push(
   'app/etc/env.php',
+  'app/etc/config.local.php',
   'var/.setup_cronjob_status',
   'var/.update_cronjob_status'
 )

@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+0.6.5
+==========
+
+* FIX: Allowed memory size exhausted error while compile or deploy assets on low servers resources
+
 0.6.4
 ==========
 

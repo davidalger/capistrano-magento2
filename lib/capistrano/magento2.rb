@@ -7,7 +7,7 @@
  # http://davidalger.com/contact/
  ##
 
-SSHKit.config.command_map[:magento] = "/usr/bin/env php -f bin/magento --"
+SSHKit.config.command_map[:magento] = "/usr/bin/env php -d set_time_limit=-1 -d memory_limit=-1 -f bin/magento --"
 
 module Capistrano
   module Magento2

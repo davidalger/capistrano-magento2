@@ -268,7 +268,6 @@ namespace :magento do
         on release_roles :all do
           _magento_version = magento_version
 
-          deploy_languages = fetch(:magento_deploy_languages).join(' ')
           deploy_themes = fetch(:magento_deploy_themes)
           deploy_jobs = fetch(:magento_deploy_jobs)
 
@@ -298,7 +297,9 @@ namespace :magento do
             execute "touch #{release_path}/pub/static/deployed_version.txt"
 
             # Generates all but the secure versions of RequireJS configs
-            static_content_deploy "#{deploy_jobs}#{deploy_languages}#{deploy_themes}"
+            for deploy_language in fetch(:magento_deploy_languages)
+              static_content_deploy "#{deploy_jobs}#{deploy_language}#{deploy_themes}"
+            end
           end
 
           # Run again with HTTPS env var set to 'on' to pre-generate secure versions of RequireJS configs
@@ -309,7 +310,9 @@ namespace :magento do
           deploy_flags = nil if _magento_version <= Gem::Version.new('2.1.0')
 
           within release_path do with(https: 'on') {
-            static_content_deploy "#{deploy_jobs}#{deploy_languages}#{deploy_themes}#{deploy_flags}"
+            for deploy_language in fetch(:magento_deploy_languages)
+              static_content_deploy "#{deploy_jobs}#{deploy_language}#{deploy_themes}#{deploy_flags}"
+            end
           } end
 
           # Set the deployed_version of static content to ensure it matches across all hosts

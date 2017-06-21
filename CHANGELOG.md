@@ -1,6 +1,6 @@
 # Capistrano::Magento2 Change Log
 
-UNRELEASED
+0.6.5
 ==========
 
 * Added workaround for Magento 2.1.3 bug causing multi-lingual static-content deployment failure (issue #72)

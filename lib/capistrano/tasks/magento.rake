@@ -268,7 +268,6 @@ namespace :magento do
         on release_roles :all do
           _magento_version = magento_version
 
-          deploy_languages = fetch(:magento_deploy_languages).join(' ')
           deploy_themes = fetch(:magento_deploy_themes)
           deploy_jobs = fetch(:magento_deploy_jobs)
 
@@ -290,6 +289,14 @@ namespace :magento do
             deploy_jobs = nil
           end
 
+          # Workaround core-bug with multi-lingual deployments on Magento 2.1.3 and newer. In 2.1.3 and later each
+          # languages must be iterated individuall. See issue #72 for details
+          if _magento_version >= Gem::Version.new('2.1.3')
+            deploy_languages = fetch(:magento_deploy_languages)
+          else
+            deploy_languages = [fetch(:magento_deploy_languages).join(' ')]
+          end
+
           # Output is being checked for a success message because this command may easily fail due to customizations
           # and 2.0.x CLI commands do not return error exit codes on failure. See magento/magento2#3060 for details.
           within release_path do
@@ -298,7 +305,7 @@ namespace :magento do
             execute "touch #{release_path}/pub/static/deployed_version.txt"
 
             # Generates all but the secure versions of RequireJS configs
-            static_content_deploy "#{deploy_jobs}#{deploy_languages}#{deploy_themes}"
+            deploy_languages.each {|lang| static_content_deploy "#{deploy_jobs}#{lang}#{deploy_themes}"}
           end
 
           # Run again with HTTPS env var set to 'on' to pre-generate secure versions of RequireJS configs
@@ -309,7 +316,7 @@ namespace :magento do
           deploy_flags = nil if _magento_version <= Gem::Version.new('2.1.0')
 
           within release_path do with(https: 'on') {
-            static_content_deploy "#{deploy_jobs}#{deploy_languages}#{deploy_themes}#{deploy_flags}"
+            deploy_languages.each {|lang| static_content_deploy "#{deploy_jobs}#{lang}#{deploy_themes}#{deploy_flags}"}
           } end
 
           # Set the deployed_version of static content to ensure it matches across all hosts
@@ -318,7 +325,7 @@ namespace :magento do
       end
     end
   end
-  
+
   namespace :maintenance do
     desc 'Enable maintenance mode'
     task :enable do

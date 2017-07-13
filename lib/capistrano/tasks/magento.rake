@@ -313,7 +313,7 @@ namespace :magento do
           
           # As of Magento 2.1.3, it became necessary to exclude "--no-javacript" in order for secure versions of 
           # RequireJs configs to be generated
-          if _magento_version <= Gem::Version.new('2.1.3')
+          if _magento_version < Gem::Version.new('2.1.3')
             deploy_flags.push('javascript')
           end
           

@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+UNRELEASED
+==========
+
+* Updated date formatting of pending change log output for enhanced readability (PR #73)
+
 0.6.5
 ==========
 

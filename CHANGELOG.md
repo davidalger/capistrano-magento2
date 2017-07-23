@@ -1,5 +1,11 @@
 # Capistrano::Magento2 Change Log
 
+0.6.6
+==========
+
+* Updated date formatting of pending change log output for enhanced readability (PR #73)
+* Fixed bug in static content deploy resulting from a change in behaviour in Magento 2.1.3 and later (PR #74)
+
 0.6.5
 ==========
 

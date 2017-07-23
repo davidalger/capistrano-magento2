@@ -309,8 +309,15 @@ namespace :magento do
           end
 
           # Run again with HTTPS env var set to 'on' to pre-generate secure versions of RequireJS configs
-          deploy_flags = ['javascript', 'css', 'less', 'images', 'fonts', 'html', 'misc', 'html-minify']
-            .join(' --no-').prepend(' --no-');
+          deploy_flags = ['css', 'less', 'images', 'fonts', 'html', 'misc', 'html-minify']
+          
+          # As of Magento 2.1.3, it became necessary to exclude "--no-javacript" in order for secure versions of 
+          # RequireJs configs to be generated
+          if _magento_version < Gem::Version.new('2.1.3')
+            deploy_flags.push('javascript')
+          end
+          
+          deploy_flags = deploy_flags.join(' --no-').prepend(' --no-');
 
           # Magento 2.1.0 and earlier lack support for these flags, so generation of secure files requires full re-run
           deploy_flags = nil if _magento_version <= Gem::Version.new('2.1.0')

@@ -121,9 +121,10 @@ namespace :magento do
     task :version_check do
       on release_roles :all do
         within release_path do
-          unless magento_version >= Gem::Version.new('2.1.1')
+          _magento_version = magento_version
+          unless _magento_version >= Gem::Version.new('2.1.1')
             error "\e[0;31mVersion 0.7.0 and later of this gem only support deployment of Magento 2.1.1 or newer; " +
-              "attempted to deploy v" + magento_version.to_s + ". Please try again using an earlier version of this gem!\e[0m"
+              "attempted to deploy v" + _magento_version.to_s + ". Please try again using an earlier version of this gem!\e[0m"
             exit 1  # only need to check a single server, exit immediately
           end
         end

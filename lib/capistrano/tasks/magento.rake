@@ -296,9 +296,9 @@ namespace :magento do
             deploy_jobs = nil
           end
 
-          # Workaround core-bug with multi-lingual deployments on Magento 2.1.3 and newer. In 2.1.3 and later each
-          # languages must be iterated individuall. See issue #72 for details
-          if _magento_version >= Gem::Version.new('2.1.3')
+          # Workaround core-bug with multi-lingual deployments on Magento 2.1.3 through 2.1.7. In these versions each
+          # language must be iterated individuall. See issue #72 for details. Fixed in 2.1.8: http://bit.ly/2fSF8w5
+          if _magento_version >= Gem::Version.new('2.1.3') and _magento_version <= Gem::Version.new('2.1.7')
             deploy_languages = fetch(:magento_deploy_languages)
           else
             deploy_languages = [fetch(:magento_deploy_languages).join(' ')]

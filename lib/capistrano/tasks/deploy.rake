@@ -24,6 +24,7 @@ namespace :deploy do
   task :updated do
     invoke 'magento:deploy:verify'
     invoke 'magento:composer:install' if fetch(:magento_deploy_composer)
+    invoke 'magento:deploy:version_check'
     invoke 'magento:setup:permissions'
     if fetch(:magento_deploy_production)
       invoke 'magento:setup:static-content:deploy'

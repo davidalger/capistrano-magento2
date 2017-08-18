@@ -278,20 +278,14 @@ namespace :magento do
           deploy_themes = fetch(:magento_deploy_themes)
           deploy_jobs = fetch(:magento_deploy_jobs)
 
-          if deploy_themes.count() > 0 and _magento_version >= Gem::Version.new('2.1.1')
+          if deploy_themes.count() > 0
             deploy_themes = deploy_themes.join(' -t ').prepend(' -t ')
-          elsif deploy_themes.count() > 0
-            warn "\e[0;31mWarning: the :magento_deploy_themes setting is only supported in Magento 2.1.1 and later\e[0m"
-            deploy_themes = nil
           else
             deploy_themes = nil
           end
 
-          if deploy_jobs and _magento_version >= Gem::Version.new('2.1.1')
+          if deploy_jobs
             deploy_jobs = "--jobs #{deploy_jobs} "
-          elsif deploy_jobs
-            warn "\e[0;31mWarning: the :magento_deploy_jobs setting is only supported in Magento 2.1.1 and later\e[0m"
-            deploy_jobs = nil
           else
             deploy_jobs = nil
           end
@@ -304,11 +298,7 @@ namespace :magento do
             deploy_languages = [fetch(:magento_deploy_languages).join(' ')]
           end
 
-          # Output is being checked for a success message because this command may easily fail due to customizations
-          # and 2.0.x CLI commands do not return error exit codes on failure. See magento/magento2#3060 for details.
           within release_path do
-
-            # Workaround for 2.1 specific issue: https://github.com/magento/magento2/pull/6437
             execute "touch #{release_path}/pub/static/deployed_version.txt"
 
             # Generates all but the secure versions of RequireJS configs
@@ -320,14 +310,9 @@ namespace :magento do
           
           # As of Magento 2.1.3, it became necessary to exclude "--no-javacript" in order for secure versions of 
           # RequireJs configs to be generated
-          if _magento_version < Gem::Version.new('2.1.3')
-            deploy_flags.push('javascript')
-          end
-          
-          deploy_flags = deploy_flags.join(' --no-').prepend(' --no-');
+          deploy_flags.push('javascript') if _magento_version < Gem::Version.new('2.1.3')
 
-          # Magento 2.1.0 and earlier lack support for these flags, so generation of secure files requires full re-run
-          deploy_flags = nil if _magento_version <= Gem::Version.new('2.1.0')
+          deploy_flags = deploy_flags.join(' --no-').prepend(' --no-');
 
           within release_path do with(https: 'on') {
             deploy_languages.each {|lang| static_content_deploy "#{deploy_jobs}#{lang}#{deploy_themes}#{deploy_flags}"}

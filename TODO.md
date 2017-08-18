@@ -5,6 +5,7 @@
 - [ ] Verify 2.1.1 and newer deployment ability
 - [ ] Verify 2.2-RC2.0 deployment ability
 - [ ] Verify 2.1.0 and older throw version check error and halt deployment
+- [ ] Ensure static content deploy is correctly deploying both secure and insecure versions of require js config file (preferably eliminate double runs here)
 - [ ] Update README to reflect new minimum version requirement for Magento
 
 ## v0.7.1 Dev Checklist

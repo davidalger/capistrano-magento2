@@ -1,7 +1,7 @@
 ## v0.7.0 Dev Checklist
 
 - [ ] Resolve issues failing static-content deploy on 2.2.0-rc deployment (use -f for 2.2 and newer; rely only on exit codes for errors; possibly set MAGE_MODE env var)
-- [ ] Remove duplicate composer install command (2.1 and newer support deployment using --no-dev); see davidalger/capistrano-magento2#76
+- [x] Remove duplicate composer install command (2.1 and newer support deployment using --no-dev); see davidalger/capistrano-magento2#76
 - [ ] Verify 2.1.1 and newer deployment ability
 - [ ] Verify 2.2-RC2.0 deployment ability
 - [ ] Verify 2.1.0 and older throw version check error and halt deployment

@@ -1,5 +1,15 @@
 # Capistrano::Magento2 Change Log
 
+UNRELEASED
+==========
+
+* Added support for Magento 2.2.0 release candidates
+* Removed support for deployment of Magento versions older than 2.1.1
+* Updated and optimized static content deployment for upcoming Magento 2.2.0 release
+* Updated composer install routine; --no-dev is now used indiscriminately since Magento 2.1.1 and later support it; no more duplicate composer install commands (issue #76)
+* Updated multi-lingual site deployment workaround to apply only to versions 2.1.3 through 2.1.7 as per 2.1.8 release notes the underlying issue has been resolved (issue #72)
+* Added tasks to set production mode and show current mode (magento:deploy:mode:production and magento:deploy:mode:show)
+
 0.6.6
 ==========
 

@@ -251,16 +251,8 @@ namespace :magento do
       task :compile do
         on release_roles :all do
           within release_path do
-            # Due to a bug in the single-tenant compiler released in 2.0 (see here for details: http://bit.ly/21eMPtt)
-            # we have to use multi-tenant currently. However, the multi-tenant is being dropped in 2.1 and is no longer
-            # present in the develop mainline, so we are testing for multi-tenant presence for long-term portability.
-            if test :magento, 'setup:di:compile-multi-tenant --help >/dev/null 2>&1'
-              output = capture :magento, 'setup:di:compile-multi-tenant --no-ansi', verbosity: Logger::INFO
-            else
-              output = capture :magento, 'setup:di:compile --no-ansi', verbosity: Logger::INFO
-            end
-            
-            # 2.0.x never returns a non-zero exit code for errors, so manually check string
+            output = capture :magento, 'setup:di:compile --no-ansi', verbosity: Logger::INFO
+
             # 2.1.x doesn't return a non-zero exit code for certain errors (see davidalger/capistrano-magento2#41)
             if output.to_s.include? 'Errors during compilation'
               raise Exception, 'DI compilation command execution failed'

@@ -302,17 +302,25 @@ namespace :magento do
           within release_path do
             execute "touch #{release_path}/pub/static/deployed_version.txt"
 
-            # Generates all but the secure versions of RequireJS configs
-            deploy_languages.each {|lang| static_content_deploy "#{deploy_jobs}#{lang}#{deploy_themes}"}
+            # This loop exists to support deploy on 2.1.3 thru 2.1.7 where each language must be deployed seperately
+            deploy_languages.each do |lang|
+              static_content_deploy "#{deploy_jobs}#{lang}#{deploy_themes}"
+            end
           end
 
           # Run again with HTTPS env var set to 'on' to pre-generate secure versions of RequireJS configs
-          deploy_flags = ['css', 'less', 'images', 'fonts', 'html', 'misc', 'html-minify']
-            .join(' --no-').prepend(' --no-');
+          # A single run on Magento 2.1 will fail to generate the secure requirejs-config.js file; 2.2 there is no diff
+          if _magento_version < Gem::Version.new('2.2.0-rc')
+            deploy_flags = ['css', 'less', 'images', 'fonts', 'html', 'misc', 'html-minify']
+              .join(' --no-').prepend(' --no-');
 
-          within release_path do with(https: 'on') {
-            deploy_languages.each {|lang| static_content_deploy "#{deploy_jobs}#{lang}#{deploy_themes}#{deploy_flags}"}
-          } end
+            within release_path do with(https: 'on') {
+              # This loop exists to support deploy on 2.1.3 thru 2.1.7 where each language must be deployed seperately
+              deploy_languages.each do |lang|
+                static_content_deploy "#{deploy_jobs}#{lang}#{deploy_themes}#{deploy_flags}"
+              end
+            } end
+          end
 
           # Set the deployed_version of static content to ensure it matches across all hosts
           upload!(StringIO.new(deployed_version), "#{release_path}/pub/static/deployed_version.txt")

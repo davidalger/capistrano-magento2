@@ -34,7 +34,7 @@ module Capistrano
     module Setup
       def static_content_deploy params
         if magento_version >= Gem::Version.new('2.2.0-rc')
-          execute :magento, "setup:static-content:deploy -f --no-ansi #{params}"
+          execute :magento, "setup:static-content:deploy -f #{params}"
         else
           # Sets pipefail option in shell allowing command exit codes to halt execution when piping command output
           if not SSHKit.config.command_map[:magento].include? 'set -o pipefail' # avoids trouble on multi-host deploys
@@ -42,7 +42,7 @@ module Capistrano
             SSHKit.config.command_map[:magento] = "set -o pipefail; #{@@pipefail_less}"
           end
 
-          execute :magento, "setup:static-content:deploy --no-ansi #{params} | stdbuf -o0 tr -d ."
+          execute :magento, "setup:static-content:deploy #{params} | stdbuf -o0 tr -d ."
 
           # Unsets pipefail option in shell so it won't affect future command executions
           SSHKit.config.command_map[:magento] = @@pipefail_less

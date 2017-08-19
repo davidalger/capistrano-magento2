@@ -1,6 +1,6 @@
 # Capistrano::Magento2 Change Log
 
-UNRELEASED
+0.7.0
 ==========
 
 * Added support for Magento 2.2.0 release candidates

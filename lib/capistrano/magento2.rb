@@ -34,6 +34,7 @@ module Capistrano
     module Setup
       def static_content_deploy params
         if magento_version >= Gem::Version.new('2.2.0-rc')
+          # Using -f here just in case MAGE_MODE environment variable in shell is set to something other than production
           execute :magento, "setup:static-content:deploy -f #{params}"
         else
           # Sets pipefail option in shell allowing command exit codes to halt execution when piping command output

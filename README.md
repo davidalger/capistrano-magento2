@@ -216,6 +216,8 @@ All Magento 2 tasks used by the built-in `deploy.rake` file as well as some addi
 | magento:cache:status                  | Check Magento cache enabled status                 |
 | magento:cache:varnish:ban             | Add ban to Varnish for url(s)                      |
 | magento:composer:install              | Run composer install                               |
+| magento:deploy:mode:production        | Enables production mode                            |
+| magento:deploy:mode:show              | Displays current application mode                  |
 | magento:indexer:info                  | Shows allowed indexers                             |
 | magento:indexer:reindex               | Reindex data by all indexers                       |
 | magento:indexer:set-mode[mode,index]  | Sets mode of all indexers                          |

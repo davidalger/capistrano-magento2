@@ -118,6 +118,26 @@ namespace :magento do
   end
 
   namespace :deploy do
+    namespace :mode do
+      desc "Enables production mode"
+      task :production do
+        on release_roles :all do
+          within release_path do
+            execute :magento, "deploy:mode:set production --skip-compilation"
+          end
+        end
+      end
+      
+      desc "Displays current application mode"
+      task :show do
+        on release_roles :all do
+          within release_path do
+            execute :magento, "deploy:mode:show"
+          end
+        end
+      end
+    end
+
     task :version_check do
       on release_roles :all do
         within release_path do

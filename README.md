@@ -4,6 +4,10 @@
 
 A Capistrano extension for Magento 2 deployments. Takes care of specific Magento 2 requirements and adds tasks specific to the Magento 2 application.
 
+## Supported Magento Versions
+
+**As of version 0.7.0 this gem only supports deployment of Magento 2.1.1 or later; please use an earlier version to deploy older releases of Magento 2**
+
 ## Installation
 
 ### Standalone Installation
@@ -119,8 +123,8 @@ Before you can use Capistrano to deploy, you must configure the `config/deploy.r
 | `:magento_deploy_setup_role`   | `:all`  | Role from which primary host is chosen to run things like setup:upgrade on
 | `:magento_deploy_cache_shared` | `true`  | If true, cache operations are restricted to the primary node in setup role
 | `:magento_deploy_languages`    | `['en_US']` | Array of languages passed to static content deploy routine
-| `:magento_deploy_themes`       | `[]`   | Array of themes passed to static content deploy (Magento 2.1.1 and later)
-| `:magento_deploy_jobs`         | `4`    | Number of threads to use for static content deploy (Magento 2.1.1 and later)
+| `:magento_deploy_themes`       | `[]`   | Array of themes passed to static content deploy
+| `:magento_deploy_jobs`         | `4`    | Number of threads to use for static content deploy
 | `:magento_deploy_composer`     | `true` | Enables composer install behaviour in the built-in deploy routine
 | `:magento_deploy_production`   | `true` | Enables production specific DI compilation and static content generation
 | `:magento_deploy_maintenance`  | `true` | Enables use of maintenance mode while magento:setup:upgrade runs

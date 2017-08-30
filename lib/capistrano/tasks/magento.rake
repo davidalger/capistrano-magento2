@@ -321,9 +321,9 @@ namespace :magento do
             end
           end
 
-          # Run again with HTTPS env var set to 'on' to pre-generate secure versions of RequireJS configs
-          # A single run on Magento 2.1 will fail to generate the secure requirejs-config.js file; 2.2 there is no diff
-          if _magento_version < Gem::Version.new('2.2.0-rc')
+          # Run again with HTTPS env var set to 'on' to pre-generate secure versions of RequireJS configs. A
+          # single run on these Magento versions will fail to generate the secure requirejs-config.js file.
+          if _magento_version < Gem::Version.new('2.1.8')
             deploy_flags = ['css', 'less', 'images', 'fonts', 'html', 'misc', 'html-minify']
               .join(' --no-').prepend(' --no-');
 

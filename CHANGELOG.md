@@ -5,6 +5,7 @@ UNRELEASED
 
 * Fixed deploy routine so production mode is no longer enabled automatically when `:magento_deploy_production` is false
 * Fixed regression in multi-lingual deployment (reverted boxing workaround with 2.1.7 upper limit; release notes are wrong and the issue persists in 2.1.8)
+* Updated double run of static content deploy to only apply to versions prior to 2.1.8 (underling issue was resolved in 2.1.8)
 
 0.7.0
 ==========

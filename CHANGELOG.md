@@ -1,6 +1,6 @@
 # Capistrano::Magento2 Change Log
 
-UNRELEASED
+0.7.1
 ==========
 
 * Fixed deploy routine so production mode is no longer enabled automatically when `:magento_deploy_production` is false

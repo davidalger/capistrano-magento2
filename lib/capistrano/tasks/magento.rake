@@ -303,9 +303,9 @@ namespace :magento do
             deploy_jobs = nil
           end
 
-          # Workaround core-bug with multi-lingual deployments on Magento 2.1.3 through 2.1.7. In these versions each
-          # language must be iterated individuall. See issue #72 for details. Fixed in 2.1.8: http://bit.ly/2fSF8w5
-          if _magento_version >= Gem::Version.new('2.1.3') and _magento_version <= Gem::Version.new('2.1.7')
+          # Workaround core-bug with multi-lingual deployments on Magento 2.1.3 and greater. In these versions each
+          # language must be iterated individually. See issue #72 for details.
+          if _magento_version >= Gem::Version.new('2.1.3')
             deploy_languages = fetch(:magento_deploy_languages)
           else
             deploy_languages = [fetch(:magento_deploy_languages).join(' ')]
@@ -328,7 +328,7 @@ namespace :magento do
               .join(' --no-').prepend(' --no-');
 
             within release_path do with(https: 'on') {
-              # This loop exists to support deploy on 2.1.3 thru 2.1.7 where each language must be deployed seperately
+              # This loop exists to support deploy on versions where each language must be deployed seperately
               deploy_languages.each do |lang|
                 static_content_deploy "#{deploy_jobs}#{lang}#{deploy_themes}#{deploy_flags}"
               end

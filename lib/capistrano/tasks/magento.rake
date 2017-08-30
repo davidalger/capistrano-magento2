@@ -315,7 +315,7 @@ namespace :magento do
             # Magento 2.1 will fail to deploy if this file does not exist and static asset signing is enabled
             execute "touch #{release_path}/pub/static/deployed_version.txt"
 
-            # This loop exists to support deploy on 2.1.3 thru 2.1.7 where each language must be deployed seperately
+            # This loop exists to support deploy on versions where each language must be deployed seperately
             deploy_languages.each do |lang|
               static_content_deploy "#{deploy_jobs}#{lang}#{deploy_themes}"
             end

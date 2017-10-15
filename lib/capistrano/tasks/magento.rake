@@ -12,6 +12,28 @@ include Capistrano::Magento2::Setup
 
 namespace :magento do
 
+  namespace :app do
+    namespace :config do
+      desc 'Create dump of application config'
+      task :dump do
+        on primary fetch(:magento_deploy_setup_role) do
+          within release_path do
+            execute :magento, 'app:config:dump'
+          end
+        end
+      end
+      
+      desc 'Import data from shared config files'
+      task :import do
+        on primary fetch(:magento_deploy_setup_role) do
+          within release_path do
+            execute :magento, 'app:config:import'
+          end
+        end
+      end
+    end
+  end
+
   namespace :cache do
     desc 'Flush Magento cache storage'
     task :flush do

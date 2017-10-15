@@ -12,6 +12,28 @@ include Capistrano::Magento2::Setup
 
 namespace :magento do
 
+  namespace :app do
+    namespace :config do
+      desc 'Create dump of application config'
+      task :dump do
+        on primary fetch(:magento_deploy_setup_role) do
+          within release_path do
+            execute :magento, 'app:config:dump'
+          end
+        end
+      end
+      
+      desc 'Import data from shared config files'
+      task :import do
+        on primary fetch(:magento_deploy_setup_role) do
+          within release_path do
+            execute :magento, 'app:config:import'
+          end
+        end
+      end
+    end
+  end
+
   namespace :cache do
     desc 'Flush Magento cache storage'
     task :flush do
@@ -311,13 +333,22 @@ namespace :magento do
             deploy_languages = [fetch(:magento_deploy_languages).join(' ')]
           end
 
+          # Magento 2.2 introduced static content compilation strategies that can be one of the following:
+          # quick (default), standard (like previous versions) or compact
+          compilation_strategy = fetch(:magento_deploy_strategy)
+          if compilation_strategy and _magento_version >= Gem::Version.new('2.2.0')
+            compilation_strategy =  "-s #{compilation_strategy} "
+          else
+            compilation_strategy = nil
+          end
+
           within release_path do
             # Magento 2.1 will fail to deploy if this file does not exist and static asset signing is enabled
             execute "touch #{release_path}/pub/static/deployed_version.txt"
 
             # This loop exists to support deploy on versions where each language must be deployed seperately
             deploy_languages.each do |lang|
-              static_content_deploy "#{deploy_jobs}#{lang}#{deploy_themes}"
+              static_content_deploy "#{compilation_strategy}#{deploy_jobs}#{lang}#{deploy_themes}"
             end
           end
 
@@ -330,7 +361,7 @@ namespace :magento do
             within release_path do with(https: 'on') {
               # This loop exists to support deploy on versions where each language must be deployed seperately
               deploy_languages.each do |lang|
-                static_content_deploy "#{deploy_jobs}#{lang}#{deploy_themes}#{deploy_flags}"
+                static_content_deploy "#{compilation_strategy}#{deploy_jobs}#{lang}#{deploy_themes}#{deploy_flags}"
               end
             } end
           end

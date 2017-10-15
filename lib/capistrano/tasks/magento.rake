@@ -333,13 +333,24 @@ namespace :magento do
             deploy_languages = [fetch(:magento_deploy_languages).join(' ')]
           end
 
+					# Magento 2.2 introduces static content compilation strategies that can be one of the following:
+					# quick (default), standard (like previous versions) or compact
+					if _magento_version >= Gem::Version.new('2.2.0')
+						compilation_strategy = fetch(:magento_deploy_static_content_strategy)
+						unless compilation_strategy.empty?
+							compilation_strategy =  " -s #{compilation_strategy} "
+						end
+					else
+						compilation_strategy = ''
+					end
+
           within release_path do
             # Magento 2.1 will fail to deploy if this file does not exist and static asset signing is enabled
             execute "touch #{release_path}/pub/static/deployed_version.txt"
 
             # This loop exists to support deploy on versions where each language must be deployed seperately
             deploy_languages.each do |lang|
-              static_content_deploy "#{deploy_jobs}#{lang}#{deploy_themes}"
+              static_content_deploy "#{compilation_strategy}#{deploy_jobs}#{lang}#{deploy_themes}"
             end
           end
 
@@ -352,7 +363,7 @@ namespace :magento do
             within release_path do with(https: 'on') {
               # This loop exists to support deploy on versions where each language must be deployed seperately
               deploy_languages.each do |lang|
-                static_content_deploy "#{deploy_jobs}#{lang}#{deploy_themes}#{deploy_flags}"
+                static_content_deploy "#{compilation_strategy}#{deploy_jobs}#{lang}#{deploy_themes}#{deploy_flags}"
               end
             } end
           end

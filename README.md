@@ -132,7 +132,7 @@ Before you can use Capistrano to deploy, you must configure the `config/deploy.r
 | `:magento_deploy_chmod_d`      | `2770` | Default permissions applied to all directories in the release path
 | `:magento_deploy_chmod_f`      | `0660` | Default permissions applied to all non-executable files in the release path
 | `:magento_deploy_chmod_x`      | `['bin/magento']` | Default list of files in release path to set executable bit on
-| `:magento_deploy_static_content_strategy`         | empty  | Magento >= 2.2 static content deploy strategy (can be `quick`, `standard` or `compact`)
+| `:magento_deploy_strategy`     | `nil`  | Can be `quick`, `standard` or `compact`; supported by Magento 2.2 or later
 
 #### Example Usage
 

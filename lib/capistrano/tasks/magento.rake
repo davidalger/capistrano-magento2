@@ -333,16 +333,14 @@ namespace :magento do
             deploy_languages = [fetch(:magento_deploy_languages).join(' ')]
           end
 
-					# Magento 2.2 introduces static content compilation strategies that can be one of the following:
-					# quick (default), standard (like previous versions) or compact
-					if _magento_version >= Gem::Version.new('2.2.0')
-						compilation_strategy = fetch(:magento_deploy_static_content_strategy)
-						unless compilation_strategy.empty?
-							compilation_strategy =  " -s #{compilation_strategy} "
-						end
-					else
-						compilation_strategy = ''
-					end
+          # Magento 2.2 introduced static content compilation strategies that can be one of the following:
+          # quick (default), standard (like previous versions) or compact
+          compilation_strategy = fetch(:magento_deploy_strategy)
+          if compilation_strategy and _magento_version >= Gem::Version.new('2.2.0')
+              compilation_strategy =  "-s #{compilation_strategy} "
+          else
+            compilation_strategy = nil
+          end
 
           within release_path do
             # Magento 2.1 will fail to deploy if this file does not exist and static asset signing is enabled

@@ -337,7 +337,7 @@ namespace :magento do
           # quick (default), standard (like previous versions) or compact
           compilation_strategy = fetch(:magento_deploy_strategy)
           if compilation_strategy and _magento_version >= Gem::Version.new('2.2.0')
-              compilation_strategy =  "-s #{compilation_strategy} "
+            compilation_strategy =  "-s #{compilation_strategy} "
           else
             compilation_strategy = nil
           end

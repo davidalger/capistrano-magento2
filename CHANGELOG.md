@@ -1,7 +1,7 @@
 # Capistrano::Magento2 Change Log
 
-==========
 0.7.2
+==========
 
 * Added support for Magento 2.2 [static content deploy strategies](http://bit.ly/2yhMvVv) (PR #85)
 * Added support for Magento 2.2 [shared application config files](http://bit.ly/2gF8Ouu)

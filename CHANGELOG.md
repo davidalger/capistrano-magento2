@@ -1,5 +1,11 @@
 # Capistrano::Magento2 Change Log
 
+0.7.3
+==========
+
+* Optimized set permissions operation (PR #89)
+* Fixed `uninitialized constant Capistrano::Magento2::Setup::DateTime` error (PR #93, issue #92)
+
 0.7.2
 ==========
 

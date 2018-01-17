@@ -1,10 +1,16 @@
 # Capistrano::Magento2 Change Log
 
+0.7.3
 ==========
+
+* Optimized set permissions operation (PR #89)
+* Fixed `uninitialized constant Capistrano::Magento2::Setup::DateTime` error (PR #93, issue #92)
+
 0.7.2
+==========
 
 * Added support for Magento 2.2 [static content deploy strategies](http://bit.ly/2yhMvVv) (PR #85)
-* Added support for Magento 2.2 [shared application config files](http://bit.ly/2gF8Ouu)
+* Added support for Magento 2.2 [shared application config files](http://bit.ly/2gF8Ouu) (issue #83)
 
 0.7.1
 ==========

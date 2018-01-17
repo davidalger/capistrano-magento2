@@ -277,8 +277,8 @@ namespace :magento do
     task :permissions do
       on release_roles :all do
         within release_path do
-          execute :find, release_path, "-type d -exec chmod #{fetch(:magento_deploy_chmod_d).to_i} {} +"
-          execute :find, release_path, "-type f -exec chmod #{fetch(:magento_deploy_chmod_f).to_i} {} +"
+          execute :find, release_path, "-type d ! -perm #{fetch(:magento_deploy_chmod_d).to_i} -exec chmod #{fetch(:magento_deploy_chmod_d).to_i} {} +"
+          execute :find, release_path, "-type f ! -perm #{fetch(:magento_deploy_chmod_f).to_i} -exec chmod #{fetch(:magento_deploy_chmod_f).to_i} {} +"
           
           fetch(:magento_deploy_chmod_x).each() do |file|
             execute :chmod, "+x #{release_path}/#{file}"

@@ -7,6 +7,8 @@
  # http://davidalger.com/contact/
  ##
 
+require 'date'
+
 SSHKit.config.command_map[:magento] = "/usr/bin/env php -f bin/magento --"
 
 module Capistrano

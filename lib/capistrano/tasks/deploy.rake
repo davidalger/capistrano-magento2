@@ -32,6 +32,7 @@ namespace :deploy do
       invoke 'magento:setup:di:compile'
     end
     invoke 'magento:setup:permissions'
+    invoke 'magento:maintenance:check'
     invoke 'magento:maintenance:enable' if fetch(:magento_deploy_maintenance)
 
     on release_roles :all do

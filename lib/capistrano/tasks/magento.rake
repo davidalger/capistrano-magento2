@@ -382,7 +382,23 @@ namespace :magento do
         end
       end
     end
-    
+
+    desc 'Check if maintenance mode is neeeded'
+    task :check do
+      on release_roles :all do
+        within release_path do
+          #check for setup:db:status command which is available since 2.2.2
+          if test :magento, 'setup:db:status --help >/dev/null 2>&1'
+            maintenance_needed  = capture :magento, 'setup:db:status', verbosity: Logger::INFO
+            if maintenance_needed.to_s.include? 'All modules are up to date.'
+              set :magento_deploy_maintenance, false
+              puts "Enabling of maintenance is not needed, this is a zero downtime deployment!"
+            end
+          end
+        end
+      end
+    end
+
     desc 'Disable maintenance mode'
     task :disable do
       on release_roles :all do

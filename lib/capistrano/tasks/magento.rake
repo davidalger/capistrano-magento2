@@ -392,10 +392,29 @@ namespace :magento do
           #puts maintenance_needed
           if maintenance_needed.to_s.include? 'All modules are up to date.'
             set :magento_deploy_maintenance, false
-            puts "Enabling of maintenance is not needed, this is a zero downtime deployment!"
-          else
-             puts "Enabling maintenance is needed."
-            end
+          end
+
+           hash = capture :md5sum, "app/etc/config.php"
+           set :hash_new, hash
+        end
+
+        within current_path do
+            hash = capture :md5sum, "app/etc/config.php"
+            set :hash_current, hash
+        end
+
+        #compare the current with the new releaseing md5sum of app/etc/config.php
+        if fetch(:hash_current) == fetch(:hash_new)
+          set :magento_deploy_maintenance, false
+          puts "The new version of app/etc/config.php is equal to the current released version, maintenance is not needed"
+        else
+            set :magento_deploy_maintenance, true
+        end
+
+        if :magento_deploy_maintenance == false
+          puts "Enabling of maintenance is not needed, this is a zero downtime deployment!"
+        else
+          puts "Enabling maintenance is needed."
         end
       end
     end

@@ -388,16 +388,14 @@ namespace :magento do
       on release_roles :all do
         within release_path do
           #check for setup:db:status command which is available since 2.2.2
-          if test :magento, 'setup:db:status', raise_on_non_zero_exit: false
-            maintenance_needed  = capture :magento, 'setup:db:status', raise_on_non_zero_exit: false
-            #puts maintenance_needed
-            if maintenance_needed.to_s.include? 'All modules are up to date.'
-                set :magento_deploy_maintenance, false
-                puts "Enabling of maintenance is not needed, this is a zero downtime deployment!"
-            else
-                puts "Enabling maintenance is needed."
+          maintenance_needed  = capture :magento, 'setup:db:status', raise_on_non_zero_exit: false
+          #puts maintenance_needed
+          if maintenance_needed.to_s.include? 'All modules are up to date.'
+            set :magento_deploy_maintenance, false
+            puts "Enabling of maintenance is not needed, this is a zero downtime deployment!"
+          else
+             puts "Enabling maintenance is needed."
             end
-          end
         end
       end
     end

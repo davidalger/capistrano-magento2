@@ -266,7 +266,7 @@ set :magento_deploy_pending_warn, false
 ### Pending Changes Configuration
 
 | setting                          | what it does
-| -------------------------------- | ------- | ---
+| -------------------------------- | ----------
 | `:magento_deploy_pending_role`   | Role to check for pending changes on; defaults to `:all`
 | `:magento_deploy_pending_warn`   | Set this to `false` to disable confirmational warning on zero-change deployments
 | `:magento_deploy_pending_format` | Can be used to set a custom change log format; refer to `defaults.rb` for example

@@ -382,7 +382,43 @@ namespace :magento do
         end
       end
     end
-    
+
+    desc 'Check if maintenance mode is neeeded'
+    task :check do
+      on release_roles :all do
+        within release_path do
+          #check for setup:db:status command which is available since 2.2.2
+          maintenance_needed  = capture :magento, 'setup:db:status', raise_on_non_zero_exit: false
+          #puts maintenance_needed
+          if maintenance_needed.to_s.include? 'All modules are up to date.'
+            set :magento_deploy_maintenance, false
+          end
+
+           hash = capture :md5sum, "app/etc/config.php"
+           set :hash_new, hash
+        end
+
+        within current_path do
+            hash = capture :md5sum, "app/etc/config.php"
+            set :hash_current, hash
+        end
+
+        #compare the current with the new releaseing md5sum of app/etc/config.php
+        if fetch(:hash_current) == fetch(:hash_new)
+          set :magento_deploy_maintenance, false
+          puts "The new version of app/etc/config.php is equal to the current released version, maintenance is not needed"
+        else
+            set :magento_deploy_maintenance, true
+        end
+
+        if :magento_deploy_maintenance == false
+          puts "Enabling of maintenance is not needed, this is a zero downtime deployment!"
+        else
+          puts "Enabling maintenance is needed."
+        end
+      end
+    end
+
     desc 'Disable maintenance mode'
     task :disable do
       on release_roles :all do

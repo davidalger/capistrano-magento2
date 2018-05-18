@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+0.8.0
+==========
+
+* Introduces zero-down deployments!!! (PR #104; thanks @roman204!)
+
 0.7.3
 ==========
 

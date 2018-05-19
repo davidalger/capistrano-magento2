@@ -383,7 +383,7 @@ namespace :magento do
       end
     end
 
-    desc 'Check if maintenance mode is neeeded'
+    # Internal command used to check if maintenance mode is neeeded and disable when zero-down deploy is possible
     task :check do
       on primary fetch(:magento_deploy_setup_role) do
         within release_path do

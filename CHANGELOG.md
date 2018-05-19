@@ -1,5 +1,11 @@
 # Capistrano::Magento2 Change Log
 
+0.8.0
+==========
+
+* Added support for zero-down deployment (PR #104, issue #34)
+* Added call to "composer dump-autoload --no-dev --optimize" following DI compliation (issue #102)
+
 0.7.3
 ==========
 

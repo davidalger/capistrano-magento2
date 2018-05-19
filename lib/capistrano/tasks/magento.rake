@@ -385,7 +385,7 @@ namespace :magento do
 
     desc 'Check if maintenance mode is neeeded'
     task :check do
-      on release_roles :all do
+      on primary fetch(:magento_deploy_setup_role) do
         within release_path do
           #check for setup:db:status command which is available since 2.2.2
           maintenance_needed  = capture :magento, 'setup:db:status', raise_on_non_zero_exit: false

@@ -124,6 +124,22 @@ namespace :magento do
       end
     end
 
+    desc 'Run composer dump-autoload'
+    task 'dump-autoload' do
+
+      on release_roles :all do
+        within release_path do
+          composer_flags = '--no-dev --no-interaction'
+
+          if fetch(:magento_deploy_production)
+            composer_flags += ' --optimize'
+          end
+
+          execute :composer, "dump-autoload #{composer_flags} 2>&1"
+        end
+      end
+    end
+
     task :auth_config do
       on release_roles :all do
         within release_path do

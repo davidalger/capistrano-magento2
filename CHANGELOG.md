@@ -3,7 +3,7 @@
 0.8.0
 ==========
 
-* Introduces zero-down deployments!!! (PR #104; thanks @roman204!)
+* Added support for zero-down deployment (PR #104, issue #34)
 
 0.7.3
 ==========

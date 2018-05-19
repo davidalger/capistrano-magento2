@@ -387,34 +387,51 @@ namespace :magento do
     task :check do
       on primary fetch(:magento_deploy_setup_role) do
         within release_path do
-          #check for setup:db:status command which is available since 2.2.2
-          maintenance_needed  = capture :magento, 'setup:db:status', raise_on_non_zero_exit: false
-          #puts maintenance_needed
-          if maintenance_needed.to_s.include? 'All modules are up to date.'
-            set :magento_deploy_maintenance, false
+          # Do not disable maintenance mode by default; require a postive id on database status output
+          disable_maintenance = false
+
+          # The setup:db:status command is only available in Magento 2.2.2 and later
+          if not test :magento, 'setup:db:status --help >/dev/null 2>&1'
+            info "Magento CLI command setup:db:status is not available. Maintenance mode will be used by default."
+          else
+            info "Checking database status..."
+            # Check setup:db:status output and disable maintenance mode if all modules are up-to-date
+            database_status = capture :magento, 'setup:db:status' , raise_on_non_zero_exit: false
+
+            if database_status.to_s.include? 'All modules are up to date'
+              info "All modules are up to date. No database updates should occur during this release."
+              puts ""
+              disable_maintenance = true
+            else
+              puts "      #{database_status.gsub("\n", "\n      ").sub("Run 'setup:upgrade' to update your DB schema and data.", "")}"
+            end
+
+            # Gather md5sums of app/etc/config.php on current and new release
+            config_hash_release = capture :md5sum, "#{release_path}/app/etc/config.php"
+            if test "[ -f #{current_path}/app/etc/config.php ]"
+              config_hash_current = capture :md5sum, "#{current_path}/app/etc/config.php"
+            else
+              config_hash_current = ("%-34s" % "n/a") + "#{current_path}/app/etc/config.php"
+            end
+
+            # Output some informational messages showing the config.php hash values
+            info "<release_path>/app/etc/config.php hash: #{config_hash_release.split(" ")[0]}"
+            info "<current_path>/app/etc/config.php hash: #{config_hash_current.split(" ")[0]}"
+            info ""
+
+            # If hashes differ, maintenance mode should not be disabled even if there are no database changes.
+            if config_hash_release.split(" ")[0] != config_hash_current.split(" ")[0]
+              info "Configuration hashes do not match. Maintenance mode will be used by default."
+              disable_maintenance = false
+            end
+
+            if disable_maintenance
+              info "Disabling use of maintenance mode for a zero-down deployment."
+              set :magento_deploy_maintenance, false
+            else
+              info "Maintenance mode usage will be enforced per :magento_deploy_maintenance (enabled by default)"
+            end
           end
-
-           hash = capture :md5sum, "app/etc/config.php"
-           set :hash_new, hash
-        end
-
-        within current_path do
-            hash = capture :md5sum, "app/etc/config.php"
-            set :hash_current, hash
-        end
-
-        #compare the current with the new releaseing md5sum of app/etc/config.php
-        if fetch(:hash_current) == fetch(:hash_new)
-          set :magento_deploy_maintenance, false
-          puts "The new version of app/etc/config.php is equal to the current released version, maintenance is not needed"
-        else
-            set :magento_deploy_maintenance, true
-        end
-
-        if :magento_deploy_maintenance == false
-          puts "Enabling of maintenance is not needed, this is a zero downtime deployment!"
-        else
-          puts "Enabling maintenance is needed."
         end
       end
     end

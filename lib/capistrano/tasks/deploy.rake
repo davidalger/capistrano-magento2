@@ -32,6 +32,7 @@ namespace :deploy do
       invoke 'magento:setup:di:compile'
     end
     invoke 'magento:setup:permissions'
+    invoke 'magento:maintenance:check'
     invoke 'magento:maintenance:enable' if fetch(:magento_deploy_maintenance)
 
     on release_roles :all do
@@ -49,7 +50,9 @@ namespace :deploy do
     on primary fetch(:magento_deploy_setup_role) do
       within release_path do
         if test :magento, 'app:config:import --help >/dev/null 2>&1'
-          invoke 'magento:app:config:import'
+          if fetch(:magento_deploy_maintenance)
+            invoke 'magento:app:config:import'
+          end
         end
       end
     end

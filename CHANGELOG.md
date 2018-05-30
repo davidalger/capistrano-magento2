@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+UNRELASED
+==========
+
+* Fixed issue causing deployment to disable maintenance mode when manually enabled prior to deployment (issue #16)
+
 0.8.0
 ==========
 

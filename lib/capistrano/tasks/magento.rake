@@ -399,20 +399,48 @@ namespace :magento do
       end
     end
 
-    # Internal command used to check if maintenance mode is neeeded and disable when zero-down deploy is possible
+    # Internal command used to check if maintenance mode is neeeded and disable when zero-down deploy is
+    # possible or when maintenance mode was previously enabled on the deploy target
     task :check do
       on primary fetch(:magento_deploy_setup_role) do
-        within release_path do
-          # Do not disable maintenance mode by default; require a postive id on database status output
-          disable_maintenance = false
+        maintenance_enabled = nil
+        disable_maintenance = false     # Do not disable maintenance mode in absence of positive release checks
 
+        within current_path do
+          # If maintenance mode is already enabled, enable maintenance mode on new release and disable management to
+          # avoid disabling maintenance mode in the event it was manually enabled prior to deployment
+          info "Checking maintenance status..."
+          maintenance_status = capture :magento, 'maintenance:status', raise_on_non_zero_exit: false
+
+          if maintenance_status.to_s.include? 'maintenance mode is active'
+            info "Maintenance mode is currently active."
+            maintenance_enabled = true
+          else
+            info "Maintenance mode is currently inactive."
+            maintenance_enabled = false
+          end
+          puts ""
+        end
+
+        # If maintenance is currently active, enable it on the newly deployed release
+        if maintenance_enabled
+          info "Enabling maintenance mode on new release to match active status of current release."
+          on release_roles :all do
+            within release_path do
+              execute :magento, 'maintenance:enable'
+            end
+          end
+          puts ""
+        end
+
+        within release_path do
           # The setup:db:status command is only available in Magento 2.2.2 and later
           if not test :magento, 'setup:db:status --help >/dev/null 2>&1'
             info "Magento CLI command setup:db:status is not available. Maintenance mode will be used by default."
           else
             info "Checking database status..."
             # Check setup:db:status output and disable maintenance mode if all modules are up-to-date
-            database_status = capture :magento, 'setup:db:status' , raise_on_non_zero_exit: false
+            database_status = capture :magento, 'setup:db:status', raise_on_non_zero_exit: false
 
             if database_status.to_s.include? 'All modules are up to date'
               info "All modules are up to date. No database updates should occur during this release."
@@ -440,13 +468,20 @@ namespace :magento do
               info "Configuration hashes do not match. Maintenance mode will be used by default."
               disable_maintenance = false
             end
+          end
 
-            if disable_maintenance
-              info "Disabling use of maintenance mode for a zero-down deployment."
-              set :magento_deploy_maintenance, false
-            else
-              info "Maintenance mode usage will be enforced per :magento_deploy_maintenance (enabled by default)"
-            end
+          if maintenance_enabled or disable_maintenance
+            info "Disabling maintenance mode management..."
+          end
+
+          if maintenance_enabled
+            info "Maintenance mode was already active prior to deploy."
+            set :magento_deploy_maintenance, false
+          elsif disable_maintenance
+            info "There are no database updates or config changes. This is a zero-down deployment."
+            set :magento_deploy_maintenance, false
+          else
+            info "Maintenance mode usage will be enforced per :magento_deploy_maintenance (setting is #{fetch(:magento_deploy_maintenance).to_s})"
           end
         end
       end

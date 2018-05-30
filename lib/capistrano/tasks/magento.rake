@@ -419,7 +419,7 @@ namespace :magento do
             info "Maintenance mode is currently inactive."
             maintenance_enabled = false
           end
-          puts ""
+          info ""
         end
 
         # If maintenance is currently active, enable it on the newly deployed release
@@ -430,7 +430,7 @@ namespace :magento do
               execute :magento, 'maintenance:enable'
             end
           end
-          puts ""
+          info ""
         end
 
         within release_path do
@@ -444,13 +444,14 @@ namespace :magento do
 
             if database_status.to_s.include? 'All modules are up to date'
               info "All modules are up to date. No database updates should occur during this release."
-              puts ""
+              info ""
               disable_maintenance = true
             else
               puts "      #{database_status.gsub("\n", "\n      ").sub("Run 'setup:upgrade' to update your DB schema and data.", "")}"
             end
 
             # Gather md5sums of app/etc/config.php on current and new release
+            info "Checking config status..."
             config_hash_release = capture :md5sum, "#{release_path}/app/etc/config.php"
             if test "[ -f #{current_path}/app/etc/config.php ]"
               config_hash_current = capture :md5sum, "#{current_path}/app/etc/config.php"
@@ -461,13 +462,13 @@ namespace :magento do
             # Output some informational messages showing the config.php hash values
             info "<release_path>/app/etc/config.php hash: #{config_hash_release.split(" ")[0]}"
             info "<current_path>/app/etc/config.php hash: #{config_hash_current.split(" ")[0]}"
-            info ""
 
             # If hashes differ, maintenance mode should not be disabled even if there are no database changes.
             if config_hash_release.split(" ")[0] != config_hash_current.split(" ")[0]
-              info "Configuration hashes do not match. Maintenance mode will be used by default."
+              info "Maintenance mode will not be disabled (config hashes differ)."
               disable_maintenance = false
             end
+            info ""
           end
 
           if maintenance_enabled or disable_maintenance

@@ -406,20 +406,22 @@ namespace :magento do
         maintenance_enabled = nil
         disable_maintenance = false     # Do not disable maintenance mode in absence of positive release checks
 
-        within current_path do
-          # If maintenance mode is already enabled, enable maintenance mode on new release and disable management to
-          # avoid disabling maintenance mode in the event it was manually enabled prior to deployment
-          info "Checking maintenance status..."
-          maintenance_status = capture :magento, 'maintenance:status', raise_on_non_zero_exit: false
+        if test "[ -d #{current_path} ]"
+          within current_path do
+            # If maintenance mode is already enabled, enable maintenance mode on new release and disable management to
+            # avoid disabling maintenance mode in the event it was manually enabled prior to deployment
+            info "Checking maintenance status..."
+            maintenance_status = capture :magento, 'maintenance:status', raise_on_non_zero_exit: false
 
-          if maintenance_status.to_s.include? 'maintenance mode is active'
-            info "Maintenance mode is currently active."
-            maintenance_enabled = true
-          else
-            info "Maintenance mode is currently inactive."
-            maintenance_enabled = false
+            if maintenance_status.to_s.include? 'maintenance mode is active'
+              info "Maintenance mode is currently active."
+              maintenance_enabled = true
+            else
+              info "Maintenance mode is currently inactive."
+              maintenance_enabled = false
+            end
+            info ""
           end
-          info ""
         end
 
         # If maintenance is currently active, enable it on the newly deployed release

@@ -204,6 +204,21 @@ To see what process the built-in routine runs, take a look at the included rake 
 
 Before deploying with Capistrano, you must update each of your web servers to point to the `current` directory inside of the configured `:deploy_to` directory. For example: `/var/www/html/current/pub` Refer to the [Capistrano Structure](http://capistranorb.com/documentation/getting-started/structure/) to learn more about Capistrano's folder structure.
 
+### PHP Opcache Reset
+
+When doing atomic deployments with php-opcache installed on a server, the cache will reach a full state after which application performance will degrade as a result of the opcache not being able to do it's job. To work nicely with this, there is support included for automatically resetting the php-opcache after a release is published.
+
+To use this, include `require 'capistrano/magento2/cachetool'` in your `Capfile` and make sure there is an `/etc/cachetool.yml` or `/var/www/html/.cachetool.yml` (assuming `:deploy_to` points at `/var/www/html`) file configured with contents like the following:
+
+    adapter: fastcgi
+    fastcgi: /var/run/php-fpm/www-data.sock
+    temp_dir: /dev/shm/cachetool
+    extensions: [ opcache ]
+
+With this configuration in place, be sure cachetool ([available from here](http://gordalina.github.io/cachetool/)) has already been installed on the server and is available in `$PATH`.
+
+Congratulations! You should now begin to see the pre-deployemnt opcache status information when running a deployment followed immediately be the `cachetool opcache:reset` command used to keep things humming nicely along.
+
 ## Magento Specific Tasks
 
 All Magento 2 tasks used by the built-in `deploy.rake` file as well as some additional commands are implemented and exposed to the end-user for use directly via the cap tool. You can also see this list by running `cap -T` from your shell.

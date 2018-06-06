@@ -1,5 +1,12 @@
 # Capistrano::Magento2 Change Log
 
+0.8.1
+==========
+
+* Added `require 'capistrano/magento2/cachetool'` which may be used to enable flushing the php-opcache when [cachetool](http://gordalina.github.io/cachetool/) is installed on the server
+* Added `cachetool:opcache:status` and `cachetool:opcache:reset` commands (use `require 'capistrano/magento2/cachetool'` to enable them)
+* Fixed issue causing deployment to disable maintenance mode when manually enabled prior to deployment (issue #16)
+
 0.8.0
 ==========
 

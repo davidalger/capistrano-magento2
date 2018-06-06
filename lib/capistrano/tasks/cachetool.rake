@@ -23,7 +23,8 @@ namespace :cachetool do
 
    desc "Show information about the php-opcode cache"
    task :status do
-     on release_roles :all do
+     # Due to nature of the output, run this in sequence vs in parallel (the default) with shortest possible wait time
+     on release_roles(:all), in: :sequence, wait: 1 do
        within release_path do
          execute :cachetool, 'opcache:status'
        end

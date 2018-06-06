@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+0.8.2
+==========
+
+* Added `var/export` to default list of :linked_dirs to support bundled `dotmailer/dotmailer-magento2-extension` package
+
 0.8.1
 ==========
 

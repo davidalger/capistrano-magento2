@@ -24,10 +24,11 @@ set :linked_files_touch, fetch(:linked_files_touch, []).push(
 set :linked_dirs, fetch(:linked_dirs, []).push(
   'pub/media',
   'pub/sitemaps',
-  'var/backups', 
-  'var/composer_home', 
-  'var/importexport', 
-  'var/import_history', 
+  'var/backups',
+  'var/composer_home',
+  'var/importexport',
+  'var/import_history',
+  'var/export',
   'var/log',
   'var/session', 
   'var/tmp'

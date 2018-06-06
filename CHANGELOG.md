@@ -1,6 +1,6 @@
 # Capistrano::Magento2 Change Log
 
-UNRELASED
+0.8.1
 ==========
 
 * Added `require 'capistrano/magento2/cachetool'` which may be used to enable flushing the php-opcache when [cachetool](http://gordalina.github.io/cachetool/) is installed on the server

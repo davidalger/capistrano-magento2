@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+0.8.3
+==========
+
+* Fixed regression failing deployment when `:magento_deploy_composer` is set to `false` (PR #106)
+
 0.8.2
 ==========
 

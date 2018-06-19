@@ -30,7 +30,7 @@ namespace :deploy do
       invoke 'magento:deploy:mode:production'
       invoke 'magento:setup:static-content:deploy'
       invoke 'magento:setup:di:compile'
-      invoke 'magento:composer:dump-autoload'
+      invoke 'magento:composer:dump-autoload' if fetch(:magento_deploy_composer)
     end
     invoke 'magento:setup:permissions'
     invoke 'magento:maintenance:check'

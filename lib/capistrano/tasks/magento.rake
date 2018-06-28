@@ -159,7 +159,7 @@ namespace :magento do
     namespace :mode do
       desc "Enables production mode"
       task :production do
-        on release_roles :all do
+        on release_roles(:all), in: :sequence, wait: 1 do
           within release_path do
             execute :magento, "deploy:mode:set production --skip-compilation"
           end
@@ -482,7 +482,8 @@ namespace :magento do
             set :magento_deploy_maintenance, false
           elsif disable_maintenance
             info "There are no database updates or config changes. This is a zero-down deployment."
-            set :magento_deploy_maintenance, false
+            set :magento_internal_zero_down_flag, true # Set internal flag to stop db schema/data upgrades from running
+            set :magento_deploy_maintenance, false     # Disable maintenance mode management since it is not neccessary
           else
             info "Maintenance mode usage will be enforced per :magento_deploy_maintenance (setting is #{fetch(:magento_deploy_maintenance).to_s})"
           end

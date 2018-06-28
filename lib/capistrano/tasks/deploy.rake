@@ -44,14 +44,14 @@ namespace :deploy do
       end
     end
 
-    invoke 'magento:setup:db:schema:upgrade'
-    invoke 'magento:setup:db:data:upgrade'
-    
+    invoke 'magento:setup:db:schema:upgrade' if not fetch(:magento_internal_zero_down_flag)
+    invoke 'magento:setup:db:data:upgrade' if not fetch(:magento_internal_zero_down_flag)
+
     # The app:config:import command was introduced in 2.2.0; check if it exists before invoking it
     on primary fetch(:magento_deploy_setup_role) do
       within release_path do
         if test :magento, 'app:config:import --help >/dev/null 2>&1'
-          if fetch(:magento_deploy_maintenance)
+          if not fetch(:magento_internal_zero_down_flag)
             invoke 'magento:app:config:import'
           end
         end

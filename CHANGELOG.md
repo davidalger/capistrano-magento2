@@ -3,6 +3,8 @@
 0.8.4
 ==========
 
+* Disabled call to `magento:setup:db:schema:upgrade` when running a zero-down deployment
+* Disabled call to `magento:setup:db:data:upgrade` when running a zero-down deployment
 * Fixed possible race condition in `magento:deploy:mode:production` when `app/etc/env.php` resides on an NFS share
 
 0.8.3

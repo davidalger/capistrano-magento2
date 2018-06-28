@@ -159,7 +159,7 @@ namespace :magento do
     namespace :mode do
       desc "Enables production mode"
       task :production do
-        on release_roles :all do
+        on release_roles(:all), in: :sequence, wait: 1 do
           within release_path do
             execute :magento, "deploy:mode:set production --skip-compilation"
           end

@@ -107,7 +107,11 @@ namespace :magento do
 
       on release_roles :all do
         within release_path do
-          composer_flags = '--no-dev --prefer-dist --no-interaction'
+          composer_flags = '--prefer-dist --no-interaction'
+
+          if fetch(:magento_deploy_no_dev)
+            composer_flags += ' --no-dev'
+          end
 
           if fetch(:magento_deploy_production)
             composer_flags += ' --optimize-autoloader'
@@ -129,7 +133,11 @@ namespace :magento do
 
       on release_roles :all do
         within release_path do
-          composer_flags = '--no-dev --no-interaction'
+          composer_flags = '--no-interaction'
+
+          if fetch(:magento_deploy_no_dev)
+            composer_flags += ' --no-dev'
+          end
 
           if fetch(:magento_deploy_production)
             composer_flags += ' --optimize'

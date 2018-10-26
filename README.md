@@ -127,6 +127,7 @@ Before you can use Capistrano to deploy, you must configure the `config/deploy.r
 | `:magento_deploy_jobs`         | `4`    | Number of threads to use for static content deploy
 | `:magento_deploy_composer`     | `true` | Enables composer install behaviour in the built-in deploy routine
 | `:magento_deploy_production`   | `true` | Enables production specific DI compilation and static content generation
+| `:magento_deploy_no_dev`       | `true` | Enables use of --no-dev flag on composer install
 | `:magento_deploy_maintenance`  | `true` | Enables use of maintenance mode while magento:setup:upgrade runs
 | `:magento_deploy_confirm`      | `[]`   | Used to require confirmation of deployment to a set of capistrano stages
 | `:magento_deploy_chmod_d`      | `2770` | Default permissions applied to all directories in the release path

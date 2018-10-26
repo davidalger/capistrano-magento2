@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+0.8.5
+==========
+
+* Added ability to override flags sent to `composer install` to workaround issue in Magento 2.3 beta preventing deploy
+
 0.8.4
 ==========
 

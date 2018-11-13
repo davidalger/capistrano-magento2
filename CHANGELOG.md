@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+0.8.6
+==========
+
+* Fixed possible race condition in `magento:deploy:version_check` when `app/etc/env.php` resides on an NFS share
+
 0.8.5
 ==========
 

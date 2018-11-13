@@ -185,7 +185,7 @@ namespace :magento do
     end
 
     task :version_check do
-      on release_roles :all do
+      on release_roles(:all), in: :sequence, wait: 1 do
         within release_path do
           _magento_version = magento_version
           unless _magento_version >= Gem::Version.new('2.1.1')

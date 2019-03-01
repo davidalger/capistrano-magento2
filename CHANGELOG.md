@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+0.8.7
+==========
+
+* Updated use of `touch` to run such that SSHKit prefixes may be used (PR #110)
+
 0.8.6
 ==========
 

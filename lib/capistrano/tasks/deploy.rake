@@ -78,4 +78,15 @@ namespace :deploy do
     invoke 'magento:cache:varnish:ban'
     invoke 'magento:maintenance:disable' if fetch(:magento_deploy_maintenance)
   end
+
+  task :reverted do
+    if fetch(:db_backup_path)
+      ask(:restore, "Do you want to roll back to DB  #{fetch(:db_backup_path)}/#{fetch(:rollback_timestamp)}.sql.gz? [y/n]")
+
+      if fetch(:restore) == 'y' || fetch(:restore) == 'Y'
+        invoke 'magento:maintenance:enable' if fetch(:magento_deploy_maintenance)
+        invoke 'magento:rollback:rollback_db'
+      end
+    end
+  end
 end

@@ -587,6 +587,21 @@ namespace :magento do
         end
       end
   end
+
+  namespace :rollback do
+    desc 'Rollback DB to last releae'
+    task :rollback_db do
+      on release_roles :all do
+        within release_path do
+          if fetch(:db_backup_path)
+            execute :mkdir, '-p', fetch(:db_backup_path)
+            execute :n98, "db:import --skip-core-commands -c gz #{fetch(:db_backup_path)}/#{fetch(:rollback_timestamp)}.sql.gz"
+          end
+        end
+      end
+    end
+end
+  
   namespace :gulp do
       desc "Run configured gulpfiles"
       task :run do

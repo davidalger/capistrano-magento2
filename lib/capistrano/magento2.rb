@@ -10,6 +10,7 @@
 require 'date'
 
 SSHKit.config.command_map[:magento] = "/usr/bin/env php -f bin/magento --"
+SSHKit.config.command_map[:n98] = "/usr/bin/env n98-magerun2"
 
 module Capistrano
   module Magento2

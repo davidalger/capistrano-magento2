@@ -573,4 +573,18 @@ namespace :magento do
       end
     end
   end
+
+  namespace :prepare do
+      desc 'Backup DB in case rollback is required'
+      task :backup_db do
+        on release_roles :all do
+          within release_path do
+            if fetch(:db_backup_path)
+              execute :mkdir, '-p', fetch(:db_backup_path)
+              execute :n98, "db:dump -c gz --skip-core-commands -c gz #{fetch(:db_backup_path)}/#{release_timestamp}.sql.gz"
+            end
+          end
+        end
+      end
+  end
 end

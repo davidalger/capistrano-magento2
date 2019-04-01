@@ -581,7 +581,7 @@ namespace :magento do
           within release_path do
             if fetch(:db_backup_path)
               execute :mkdir, '-p', fetch(:db_backup_path)
-              execute :n98, "db:dump -c gz --skip-core-commands -c gz #{fetch(:db_backup_path)}/#{release_timestamp}.sql.gz"
+              execute :n98, "db:dump --skip-core-commands -c gz #{fetch(:db_backup_path)}/#{release_timestamp}.sql.gz"
             end
           end
         end

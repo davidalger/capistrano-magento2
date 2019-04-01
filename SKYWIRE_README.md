@@ -4,7 +4,7 @@ Requires ruby 2.5+
 
 Install bundler and this package 
 
-    $ gem install bundl`er
+    $ gem install bundler
     $ cd <project_root>
     $ echo -e "source 'https://rubygems.org'\ngem 'capistrano-magento2', :git => 'git@github.com:Skywire/capistrano-magento2.git', :branch => 'skywire-master'" > Gemfile
     $ bundle install

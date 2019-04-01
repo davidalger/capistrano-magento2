@@ -587,4 +587,20 @@ namespace :magento do
         end
       end
   end
+  namespace :gulp do
+      desc "Run configured gulpfiles"
+      task :run do
+        on release_roles :all do
+          within release_path do
+              fetch(:gulp_paths, []).each do |path|
+                within path do
+                  execute *%w[ npm install ]
+                  execute *%w[ ./node_modules/gulp/bin/gulp.js default]
+                end
+              end
+            end
+        end
+      end
+  end
+
 end

@@ -31,6 +31,10 @@ Replace `tools/cap/Capfile.rb` with
     Dir.glob('lib/capistrano/tasks/*.rake').each { |r| import r }
 
 
+### Configure Capistrano
+
+Refer to the configuration sestion in the main README.md doc titled `Capistrano Configuration`
+
 ### Configure production stage
 
 Update `tools/cap/config/deploy/production.rb`, Sonassi example provided
@@ -122,7 +126,6 @@ Create file `tools/cap/lib/capistrano/tasks/relative_symlinks.rake` with these c
         end
     end
     end
-
 
 ## Run a deployment
 

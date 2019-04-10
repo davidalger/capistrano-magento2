@@ -29,8 +29,8 @@ namespace :deploy do
     invoke 'magento:prepare:backup_db'
     if fetch(:magento_deploy_production)
       invoke 'magento:deploy:mode:production'
+      invoke 'magento:npm:run'
       invoke 'magento:gulp:run'
-      invoke 'magento:patternlab:build'
       invoke 'magento:setup:static-content:deploy'
       invoke 'magento:setup:di:compile'
       invoke 'magento:composer:dump-autoload' if fetch(:magento_deploy_composer)

@@ -607,29 +607,31 @@ namespace :magento do
       task :run do
         on release_roles :all do
           within release_path do
+            if fetch(:gulp_paths)
               fetch(:gulp_paths, []).each do |path|
                 within path do
-                  execute *%w[ npm install ]
                   execute *%w[ ./node_modules/gulp/bin/gulp.js default]
                 end
               end
             end
+          end
         end
       end
   end
 
-  namespace :patternlab do
-      desc "Build patternlab"
-      task :build do
+  namespace :npm do
+      desc "Run NPM commands"
+      task :run do
         on release_roles :all do
           within release_path do
-              fetch(:patternlab_paths, []).each do |path|
-                within path do
-                  execute *%w[ npm install ]
-                  execute *%w[ npm run pl:build ]
+            if fetch(:npm_commands)
+              fetch(:npm_commands, []).each do |commands|
+                within commands[:path] do
+                  execute :npm, commands[:command]
                 end
               end
             end
+          end
         end
       end
   end

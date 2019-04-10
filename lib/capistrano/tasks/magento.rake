@@ -600,7 +600,7 @@ namespace :magento do
         end
       end
     end
-end
+  end
   
   namespace :gulp do
       desc "Run configured gulpfiles"
@@ -611,6 +611,22 @@ end
                 within path do
                   execute *%w[ npm install ]
                   execute *%w[ ./node_modules/gulp/bin/gulp.js default]
+                end
+              end
+            end
+        end
+      end
+  end
+
+  namespace :patternlab do
+      desc "Build patternlab"
+      task :build do
+        on release_roles :all do
+          within release_path do
+              fetch(:patternlab_paths, []).each do |path|
+                within path do
+                  execute *%w[ npm install ]
+                  execute *%w[ npm run pl:build ]
                 end
               end
             end

@@ -600,20 +600,38 @@ namespace :magento do
         end
       end
     end
-end
+  end
   
   namespace :gulp do
       desc "Run configured gulpfiles"
       task :run do
         on release_roles :all do
           within release_path do
+            if fetch(:gulp_paths)
               fetch(:gulp_paths, []).each do |path|
                 within path do
-                  execute *%w[ npm install ]
                   execute *%w[ ./node_modules/gulp/bin/gulp.js default]
                 end
               end
             end
+          end
+        end
+      end
+  end
+
+  namespace :npm do
+      desc "Run NPM commands"
+      task :run do
+        on release_roles :all do
+          within release_path do
+            if fetch(:npm_commands)
+              fetch(:npm_commands, []).each do |commands|
+                within commands[:path] do
+                  execute :npm, commands[:command]
+                end
+              end
+            end
+          end
         end
       end
   end

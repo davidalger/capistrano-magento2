@@ -34,6 +34,14 @@ Replace `tools/cap/Capfile.rb` with
 ### Configure Capistrano
 
 Refer to the configuration sestion in the main README.md doc titled `Capistrano Configuration`
+You may also need to update `config/deploy.rb` with the following on Sonassi servers:
+~~~
+set :default_env, { path: '/opt/php/php-7.2/bin/:/microcloud/domains/cordm2/domains/.composer:$PATH' }
+~~~
+You can also set the NPM coomands with:
+~~~
+set :npm_commands, [{path: "app/design/frontend/skywire/default/", command: "install"},{path: "skywire-patternlab", command: "install"},{path: "skywire-patternlab", command: "run pl:build"}]
+~~~
 
 ### Configure production stage
 

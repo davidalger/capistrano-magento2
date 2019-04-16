@@ -69,3 +69,8 @@ set :magento_deploy_pending_format, fetch(
 
 # internal flags
 set :magento_internal_zero_down_flag, fetch(:magento_internal_zero_down_flag, false)
+
+# extra deployment defaults
+set :npm_commands, fetch(:npm_commands, [])
+set :gulp_paths, fetch(:gulp_paths, [])
+set :db_backup_path, fetch(:db_backup_path, '')

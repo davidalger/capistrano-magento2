@@ -2,7 +2,7 @@
 
 [![Gem Version](https://badge.fury.io/rb/capistrano-magento2.svg)](https://badge.fury.io/rb/capistrano-magento2)
 
-A Capistrano extension for Magento 2 deployments. Takes care of specific Magento 2 requirements and adds tasks specific to the Magento 2 application.
+A Capistrano extension for Magento 2 deployments. Takes care of specific Magento 2 requirements and adds tasks specific to the Magento 2 application. Supports zero-down deployments based on differences in deployed `config.php` and db status as reported by Magento's `setup:db:status` CLI command. When themes and scopes have been dumped to `config.php` via `bin/magento app:config:dump scopes themes i18n` then zero-side-effect pipeline will be utilized such that no database nor cache backend configuration are available during the build process.
 
 ## Supported Magento Versions
 

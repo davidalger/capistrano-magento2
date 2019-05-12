@@ -218,8 +218,10 @@ namespace :magento do
           exit 1  # only need to check the repo once, so we immediately exit
         end
 
+        # Checking app/etc/env.php in shared_path vs release_path to support the zero-side-effect
+        # builds as implemented in the :detect_scd_config hook of deploy.rake
         unless test %Q[#{SSHKit.config.command_map[:php]} -r '
-              $cfg = include "#{release_path}/app/etc/env.php";
+              $cfg = include "#{shared_path}/app/etc/env.php";
               exit((int)!isset($cfg["install"]["date"]));
           ']
           error "\e[0;31mError on #{host}:\e[0m No environment configuration could be found." +
@@ -317,11 +319,13 @@ namespace :magento do
       task :compile do
         on release_roles :all do
           within release_path do
-            output = capture :magento, 'setup:di:compile --no-ansi', verbosity: Logger::INFO
+            with mage_mode: :production do
+              output = capture :magento, 'setup:di:compile --no-ansi', verbosity: Logger::INFO
 
-            # 2.1.x doesn't return a non-zero exit code for certain errors (see davidalger/capistrano-magento2#41)
-            if output.to_s.include? 'Errors during compilation'
-              raise Exception, 'DI compilation command execution failed'
+              # 2.1.x doesn't return a non-zero exit code for certain errors (see davidalger/capistrano-magento2#41)
+              if output.to_s.include? 'Errors during compilation'
+                raise Exception, 'DI compilation command execution failed'
+              end
             end
           end
         end
@@ -332,66 +336,68 @@ namespace :magento do
       desc 'Deploys static view files'
       task :deploy do
         on release_roles :all do
-          _magento_version = magento_version
+          with mage_mode: :production do
+            _magento_version = magento_version
 
-          deploy_themes = fetch(:magento_deploy_themes)
-          deploy_jobs = fetch(:magento_deploy_jobs)
+            deploy_themes = fetch(:magento_deploy_themes)
+            deploy_jobs = fetch(:magento_deploy_jobs)
 
-          if deploy_themes.count() > 0
-            deploy_themes = deploy_themes.join(' -t ').prepend(' -t ')
-          else
-            deploy_themes = nil
-          end
-
-          if deploy_jobs
-            deploy_jobs = "--jobs #{deploy_jobs} "
-          else
-            deploy_jobs = nil
-          end
-
-          # Workaround core-bug with multi-lingual deployments on Magento 2.1.3 and greater. In these versions each
-          # language must be iterated individually. See issue #72 for details.
-          if _magento_version >= Gem::Version.new('2.1.3')
-            deploy_languages = fetch(:magento_deploy_languages)
-          else
-            deploy_languages = [fetch(:magento_deploy_languages).join(' ')]
-          end
-
-          # Magento 2.2 introduced static content compilation strategies that can be one of the following:
-          # quick (default), standard (like previous versions) or compact
-          compilation_strategy = fetch(:magento_deploy_strategy)
-          if compilation_strategy and _magento_version >= Gem::Version.new('2.2.0')
-            compilation_strategy =  "-s #{compilation_strategy} "
-          else
-            compilation_strategy = nil
-          end
-
-          within release_path do
-            # Magento 2.1 will fail to deploy if this file does not exist and static asset signing is enabled
-            execute :touch, "#{release_path}/pub/static/deployed_version.txt"
-
-            # This loop exists to support deploy on versions where each language must be deployed seperately
-            deploy_languages.each do |lang|
-              static_content_deploy "#{compilation_strategy}#{deploy_jobs}#{lang}#{deploy_themes}"
+            if deploy_themes.count() > 0
+              deploy_themes = deploy_themes.join(' -t ').prepend(' -t ')
+            else
+              deploy_themes = nil
             end
-          end
 
-          # Run again with HTTPS env var set to 'on' to pre-generate secure versions of RequireJS configs. A
-          # single run on these Magento versions will fail to generate the secure requirejs-config.js file.
-          if _magento_version < Gem::Version.new('2.1.8')
-            deploy_flags = ['css', 'less', 'images', 'fonts', 'html', 'misc', 'html-minify']
-              .join(' --no-').prepend(' --no-');
+            if deploy_jobs
+              deploy_jobs = "--jobs #{deploy_jobs} "
+            else
+              deploy_jobs = nil
+            end
 
-            within release_path do with(https: 'on') {
+            # Workaround core-bug with multi-lingual deployments on Magento 2.1.3 and greater. In these versions each
+            # language must be iterated individually. See issue #72 for details.
+            if _magento_version >= Gem::Version.new('2.1.3')
+              deploy_languages = fetch(:magento_deploy_languages)
+            else
+              deploy_languages = [fetch(:magento_deploy_languages).join(' ')]
+            end
+
+            # Magento 2.2 introduced static content compilation strategies that can be one of the following:
+            # quick (default), standard (like previous versions) or compact
+            compilation_strategy = fetch(:magento_deploy_strategy)
+            if compilation_strategy and _magento_version >= Gem::Version.new('2.2.0')
+              compilation_strategy =  "-s #{compilation_strategy} "
+            else
+              compilation_strategy = nil
+            end
+
+            within release_path do
+              # Magento 2.1 will fail to deploy if this file does not exist and static asset signing is enabled
+              execute :touch, "#{release_path}/pub/static/deployed_version.txt"
+
               # This loop exists to support deploy on versions where each language must be deployed seperately
               deploy_languages.each do |lang|
-                static_content_deploy "#{compilation_strategy}#{deploy_jobs}#{lang}#{deploy_themes}#{deploy_flags}"
+                static_content_deploy "#{compilation_strategy}#{deploy_jobs}#{lang}#{deploy_themes}"
               end
-            } end
-          end
+            end
 
-          # Set the deployed_version of static content to ensure it matches across all hosts
-          upload!(StringIO.new(deployed_version), "#{release_path}/pub/static/deployed_version.txt")
+            # Run again with HTTPS env var set to 'on' to pre-generate secure versions of RequireJS configs. A
+            # single run on these Magento versions will fail to generate the secure requirejs-config.js file.
+            if _magento_version < Gem::Version.new('2.1.8')
+              deploy_flags = ['css', 'less', 'images', 'fonts', 'html', 'misc', 'html-minify']
+                .join(' --no-').prepend(' --no-');
+
+              within release_path do with(https: 'on') {
+                # This loop exists to support deploy on versions where each language must be deployed seperately
+                deploy_languages.each do |lang|
+                  static_content_deploy "#{compilation_strategy}#{deploy_jobs}#{lang}#{deploy_themes}#{deploy_flags}"
+                end
+              } end
+            end
+
+            # Set the deployed_version of static content to ensure it matches across all hosts
+            upload!(StringIO.new(deployed_version), "#{release_path}/pub/static/deployed_version.txt")
+          end
         end
       end
     end

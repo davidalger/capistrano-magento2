@@ -1,6 +1,6 @@
 # Capistrano::Magento2 Change Log
 
-UNRELEASED
+0.8.8
 ==========
 
 * Added support for zero-side-effect pipeline deployments when scopes/themes have been dumped to config.php

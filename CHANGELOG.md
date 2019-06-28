@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+0.8.9
+=========
+
+* Fixed issue with RabbitMQ settings caused by app:config:import running after setup-upgrade step vs prior to the database upgrades (which connects to RabbitMQ in recurring data upgrade scripts)
+
 0.8.8
 ==========
 

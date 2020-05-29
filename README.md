@@ -118,33 +118,31 @@ Before you can use Capistrano to deploy, you must configure the `config/deploy.r
 
 ### Magento Deploy Settings
 
-| setting                        | default | what it does
-| ------------------------------ | ------- | ---
-| `:magento_deploy_setup_role`   | `:all`  | Role from which primary host is chosen to run things like setup:upgrade on
-| `:magento_deploy_cache_shared` | `true`  | If true, cache operations are restricted to the primary node in setup role
-| `:magento_deploy_languages`    | `['en_US']` | Array of languages passed to static content deploy routine
-| `:magento_deploy_themes`       | `[]`   | Array of themes passed to static content deploy
-| `:magento_deploy_jobs`         | `4`    | Number of threads to use for static content deploy
-| `:magento_deploy_composer`     | `true` | Enables composer install behaviour in the built-in deploy routine
-| `:magento_deploy_production`   | `true` | Enables production specific DI compilation and static content generation
-| `:magento_deploy_no_dev`       | `true` | Enables use of --no-dev flag on composer install
-| `:magento_deploy_maintenance`  | `true` | Enables use of maintenance mode while magento:setup:upgrade runs
-| `:magento_deploy_confirm`      | `[]`   | Used to require confirmation of deployment to a set of capistrano stages
+| setting                        | default  | what it does
+| ------------------------------ | -------- | ---
+| `:magento_deploy_setup_role`   | `:all`   | Role from which primary host is chosen to run things like setup:upgrade on
+| `:magento_deploy_cache_shared` | `true`   | If true, cache operations are restricted to the primary node in setup role
+| `:magento_deploy_languages`    | `[]`     | Array of languages passed to static content deploy routine
+| `:magento_deploy_themes`       | `[]`     | Array of themes passed to static content deploy
+| `:magento_deploy_jobs`         | `nil`    | Number of threads to use for static content deploy
+| `:magento_deploy_composer`     | `true`   | Enables composer install behavior in the built-in deploy routine
+| `:magento_deploy_production`   | `true`   | Enables production specific DI compilation and static content generation
+| `:magento_deploy_no_dev`       | `true`   | Enables use of --no-dev flag on composer install
+| `:magento_deploy_maintenance`  | `true`   | Enables use of maintenance mode while magento:setup:upgrade runs
+| `:magento_deploy_confirm`      | `[]`     | Used to require confirmation of deployment to a set of capistrano stages
 | `:magento_deploy_chmod_d`      | `'2770'` | Default permissions applied to all directories in the release path
 | `:magento_deploy_chmod_f`      | `'0660'` | Default permissions applied to all non-executable files in the release path
 | `:magento_deploy_chmod_x`      | `['bin/magento']` | Default list of files in release path to set executable bit on
-| `:magento_deploy_strategy`     | `nil`  | Can be `quick`, `standard` or `compact`; supported by Magento 2.2 or later
+| `:magento_deploy_strategy`     | `nil`    | Can be `quick`, `standard` or `compact`
 
 #### Example Usage
 
 Add a line similar to the following in `config/deploy.rb` to set a custom value on one of the above settings:
 
 ```ruby
+set :magento_deploy_jobs, '$(nproc)'
+set :magento_deploy_themes, ['Magento/backend', 'Magento/blank']
 set :magento_deploy_languages, ['en_US', 'en_CA']
-```
-
-```ruby
-set :magento_deploy_composer, false
 ```
 
 ### Capistrano Built-Ins
@@ -154,7 +152,6 @@ For the sake of simplicity in new project setups `:linked_dirs` and `:linked_fil
 ```ruby
 set :linked_files, [
   'app/etc/env.php',
-  'app/etc/config.local.php',
   'var/.setup_cronjob_status',
   'var/.update_cronjob_status'
 ]
@@ -177,8 +174,6 @@ If you would like to customize the linked files or directories for your project,
 ```ruby
 append :linked_dirs, 'path/to/link'
 ```
-
-Support for a `app/etc/config.local.php` configuration file was added to Magento 2.1.6. This file will be linked in from the `shared/app/etc` directory as of v0.6.4 of this gem. If this file is present in the project repository, the file will not be linked.
 
 ### Composer Auth Credentials
 

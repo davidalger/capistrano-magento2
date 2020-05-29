@@ -31,6 +31,15 @@ namespace :magento do
           end
         end
       end
+      
+      desc 'Checks if config propagation requires update'
+      task :status do
+        on primary fetch(:magento_deploy_setup_role) do
+          within release_path do
+            execute :magento, 'app:config:status'
+          end
+        end
+      end
     end
   end
 
@@ -42,6 +51,7 @@ namespace :magento do
           execute :magento, 'cache:flush'
         end
       end
+      Rake::Task['magento:cache:flush'].reenable  ## make task perpetually callable
     end
     
     desc 'Clean Magento cache by types'
@@ -184,19 +194,6 @@ namespace :magento do
       end
     end
 
-    task :version_check do
-      on release_roles(:all), in: :sequence, wait: 1 do
-        within release_path do
-          _magento_version = magento_version
-          unless _magento_version >= Gem::Version.new('2.1.1')
-            error "\e[0;31mVersion 0.7.0 and later of this gem only support deployment of Magento 2.1.1 or newer; " +
-              "attempted to deploy v" + _magento_version.to_s + ". Please try again using an earlier version of this gem!\e[0m"
-            exit 1  # only need to check a single server, exit immediately
-          end
-        end
-      end
-    end
-
     task :check do
       on release_roles :all do
         next unless any? :linked_files_touch
@@ -231,17 +228,6 @@ namespace :magento do
       end
       exit 1 if is_err
     end
-
-    task :local_config do
-      on release_roles :all do
-        if test "[ -f #{release_path}/app/etc/config.local.php ]"
-          info "The repository contains app/etc/config.local.php, removing from :linked_files list."
-          _linked_files = fetch(:linked_files, [])
-          _linked_files.delete('app/etc/config.local.php')
-          set :linked_files, _linked_files
-        end
-      end
-    end
   end
 
   namespace :setup do
@@ -258,7 +244,7 @@ namespace :magento do
     end
     
     namespace :db do
-      desc 'Checks if database schema and/or data require upgrading'
+      desc 'Checks if DB schema or data requires upgrade'
       task :status do
         on primary fetch(:magento_deploy_setup_role) do
           within release_path do
@@ -320,12 +306,7 @@ namespace :magento do
         on release_roles :all do
           within release_path do
             with mage_mode: :production do
-              output = capture :magento, 'setup:di:compile --no-ansi', verbosity: Logger::INFO
-
-              # 2.1.x doesn't return a non-zero exit code for certain errors (see davidalger/capistrano-magento2#41)
-              if output.to_s.include? 'Errors during compilation'
-                raise Exception, 'DI compilation command execution failed'
-              end
+              execute :magento, "setup:di:compile"
             end
           end
         end
@@ -337,62 +318,36 @@ namespace :magento do
       task :deploy do
         on release_roles :all do
           with mage_mode: :production do
-            _magento_version = magento_version
+            deploy_languages = fetch(:magento_deploy_languages)
+            if deploy_languages.count() > 0
+              deploy_languages = deploy_languages.join(' -l ').prepend(' -l ')
+            else
+              deploy_languages = nil
+            end
 
             deploy_themes = fetch(:magento_deploy_themes)
-            deploy_jobs = fetch(:magento_deploy_jobs)
-
             if deploy_themes.count() > 0
               deploy_themes = deploy_themes.join(' -t ').prepend(' -t ')
             else
               deploy_themes = nil
             end
 
+            deploy_jobs = fetch(:magento_deploy_jobs)
             if deploy_jobs
-              deploy_jobs = "--jobs #{deploy_jobs} "
+              deploy_jobs = " --jobs #{deploy_jobs}"
             else
               deploy_jobs = nil
             end
 
-            # Workaround core-bug with multi-lingual deployments on Magento 2.1.3 and greater. In these versions each
-            # language must be iterated individually. See issue #72 for details.
-            if _magento_version >= Gem::Version.new('2.1.3')
-              deploy_languages = fetch(:magento_deploy_languages)
-            else
-              deploy_languages = [fetch(:magento_deploy_languages).join(' ')]
-            end
-
-            # Magento 2.2 introduced static content compilation strategies that can be one of the following:
+            # Static content compilation strategies that can be one of the following:
             # quick (default), standard (like previous versions) or compact
             compilation_strategy = fetch(:magento_deploy_strategy)
-            if compilation_strategy and _magento_version >= Gem::Version.new('2.2.0')
-              compilation_strategy =  "-s #{compilation_strategy} "
-            else
-              compilation_strategy = nil
+            if compilation_strategy
+              compilation_strategy =  " -s #{compilation_strategy}"
             end
 
             within release_path do
-              # Magento 2.1 will fail to deploy if this file does not exist and static asset signing is enabled
-              execute :touch, "#{release_path}/pub/static/deployed_version.txt"
-
-              # This loop exists to support deploy on versions where each language must be deployed seperately
-              deploy_languages.each do |lang|
-                static_content_deploy "#{compilation_strategy}#{deploy_jobs}#{lang}#{deploy_themes}"
-              end
-            end
-
-            # Run again with HTTPS env var set to 'on' to pre-generate secure versions of RequireJS configs. A
-            # single run on these Magento versions will fail to generate the secure requirejs-config.js file.
-            if _magento_version < Gem::Version.new('2.1.8')
-              deploy_flags = ['css', 'less', 'images', 'fonts', 'html', 'misc', 'html-minify']
-                .join(' --no-').prepend(' --no-');
-
-              within release_path do with(https: 'on') {
-                # This loop exists to support deploy on versions where each language must be deployed seperately
-                deploy_languages.each do |lang|
-                  static_content_deploy "#{compilation_strategy}#{deploy_jobs}#{lang}#{deploy_themes}#{deploy_flags}"
-                end
-              } end
+              execute :magento, "setup:static-content:deploy#{compilation_strategy}#{deploy_jobs}#{deploy_languages}#{deploy_themes}"
             end
 
             # Set the deployed_version of static content to ensure it matches across all hosts
@@ -450,51 +405,43 @@ namespace :magento do
         end
 
         within release_path do
-          # The setup:db:status command is only available in Magento 2.2.2 and later
-          if not test :magento, 'setup:db:status --help >/dev/null 2>&1'
-            info "Magento CLI command setup:db:status is not available. Maintenance mode will be used by default."
-          else
-            info "Checking database status..."
-            # Check setup:db:status output and disable maintenance mode if all modules are up-to-date
-            database_status = capture :magento, 'setup:db:status', raise_on_non_zero_exit: false
+          info "Checking database status..."
+          # Check setup:db:status output and if out-of-date do not disable maintenance mode
+          database_status = capture :magento, 'setup:db:status', raise_on_non_zero_exit: false
+          database_uptodate = false
 
-            if database_status.to_s.include? 'All modules are up to date'
-              info "All modules are up to date. No database updates should occur during this release."
-              info ""
-              disable_maintenance = true
-            else
-              puts "      #{database_status.gsub("\n", "\n      ").sub("Run 'setup:upgrade' to update your DB schema and data.", "")}"
-            end
-
-            # Gather md5sums of app/etc/config.php on current and new release
-            info "Checking config status..."
-            config_hash_release = capture :md5sum, "#{release_path}/app/etc/config.php"
-            if test "[ -f #{current_path}/app/etc/config.php ]"
-              config_hash_current = capture :md5sum, "#{current_path}/app/etc/config.php"
-            else
-              config_hash_current = ("%-34s" % "n/a") + "#{current_path}/app/etc/config.php"
-            end
-
-            # Output some informational messages showing the config.php hash values
-            info "<release_path>/app/etc/config.php hash: #{config_hash_release.split(" ")[0]}"
-            info "<current_path>/app/etc/config.php hash: #{config_hash_current.split(" ")[0]}"
-
-            # If hashes differ, maintenance mode should not be disabled even if there are no database changes.
-            if config_hash_release.split(" ")[0] != config_hash_current.split(" ")[0]
-              info "Maintenance mode will not be disabled (config hashes differ)."
-              disable_maintenance = false
-            end
+          if database_status.to_s.include? 'All modules are up to date'
+            info "All modules are up to date."
             info ""
+            database_uptodate = true
+          else
+            puts "      #{database_status.gsub("\n", "\n      ").sub(" Run 'setup:upgrade' to update your DB schema and data.", "")}"
           end
 
-          if maintenance_enabled or disable_maintenance
-            info "Disabling maintenance mode management..."
+          # Check app:config:status output and if out-of-date do not disable maintenance mode
+          info "Checking config status..."
+          config_status = capture :magento, 'app:config:status', raise_on_non_zero_exit: false
+          config_uptodate = false
+
+          if config_status.to_s.include? 'Config files are up to date'
+            info "Config files are up to date."
+            config_uptodate = true
+          else
+            puts "      #{config_status.gsub("\n", "\n      ").sub(" Run app:config:import or setup:upgrade command to synchronize configuration.", "")}"
+          end
+          info ""
+
+          # If both checks above reported up-to-date status checks disable maintenance mode
+          if database_uptodate and config_uptodate
+            disable_maintenance = true
           end
 
           if maintenance_enabled
+            info "Disabling maintenance mode management..."
             info "Maintenance mode was already active prior to deploy."
             set :magento_deploy_maintenance, false
           elsif disable_maintenance
+            info "Disabling maintenance mode management..."
             info "There are no database updates or config changes. This is a zero-down deployment."
             set :magento_internal_zero_down_flag, true # Set internal flag to stop db schema/data upgrades from running
             set :magento_deploy_maintenance, false     # Disable maintenance mode management since it is not neccessary

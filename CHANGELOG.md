@@ -1,5 +1,36 @@
 # Capistrano::Magento2 Change Log
 
+0.9.0
+=========
+
+**Upgrade Notes:**
+
+As of this release only Magento 2.3 and later are supported and **support has been dropped for prior versions** which have long since reached their end-of-life. Moving forward versions past their EOL will no longer be supported by subsequent releases of this gem. Older versions of this gem may continue to be used to deploy older and EOL versions.
+
+If using a `Gemfile` with Bundler to lock versions of dependencies used for execution, the version lock on `capistrano` should be updated to `~>1.13` to match the minimal requirement of this release, otherwise `bundle update` will fail to update to version `0.9.0` of this gem. The following is recommended:
+
+```
+gem 'capistrano', '~> 3.14'
+gem 'capistrano-magento2', '~> 0.9'
+```
+
+If a capistrano version lock is present in a projects `deploy.rb` it will also need to be updated:
+
+```
+lock '~> 3.14'
+```
+
+**Change Summary:**
+
+* Dropped support for EOL versions of Magento and scrubbed all gated logic around legacy behaviors in 2.1.x and 2.2.x
+* Removed `magento:deploy:version_check` task and associated warning when attempting to deploy unsupported versions of Magento
+* Updated required version of `capistrano` to `~> 1.13` (>=1.13 and less than 2.0)
+* Resolved inability to use `--dry-run` flag ([issue #128](https://github.com/davidalger/capistrano-magento2/issues/128)) as made possible by the removal of all version related gating logic.
+* Dropped explicit default of `:magento_deploy_languages`; will now only be passed to `bin/magento` call when set in project configuration.
+* Updated zero-down deployment logic to rely on `app:config:status` to detect config changes rather than the md5sum of config.php in current and release directories.
+* Added `magento:app:config:status` to available commands for manual execution.
+* Fixes issue in 2.3.4 and later where app:config:import may fail if cache:flush is not run immediately prior ([issue #138](https://github.com/davidalger/capistrano-magento2/issues/138))
+
 0.8.9
 =========
 

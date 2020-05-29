@@ -83,7 +83,7 @@ namespace :deploy do
       within release_path do
         _disabled_modules = disabled_modules
         if _disabled_modules.count > 0
-          info "\nThe following modules are disabled per app/etc/config.php:\n"
+          info "\n\nThe following modules are disabled per app/etc/config.php:\n"
           _disabled_modules.each do |module_name|
             info '- ' + module_name
           end

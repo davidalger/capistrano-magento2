@@ -381,20 +381,6 @@ namespace :magento do
               end
             end
 
-            # Run again with HTTPS env var set to 'on' to pre-generate secure versions of RequireJS configs. A
-            # single run on these Magento versions will fail to generate the secure requirejs-config.js file.
-            if _magento_version < Gem::Version.new('2.1.8')
-              deploy_flags = ['css', 'less', 'images', 'fonts', 'html', 'misc', 'html-minify']
-                .join(' --no-').prepend(' --no-');
-
-              within release_path do with(https: 'on') {
-                # This loop exists to support deploy on versions where each language must be deployed seperately
-                deploy_languages.each do |lang|
-                  static_content_deploy "#{compilation_strategy}#{deploy_jobs}#{lang}#{deploy_themes}#{deploy_flags}"
-                end
-              } end
-            end
-
             # Set the deployed_version of static content to ensure it matches across all hosts
             upload!(StringIO.new(deployed_version), "#{release_path}/pub/static/deployed_version.txt")
           end

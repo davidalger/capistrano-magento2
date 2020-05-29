@@ -9,14 +9,12 @@
 
 set :linked_files, fetch(:linked_files, []).push(
   'app/etc/env.php',
-  'app/etc/config.local.php',
   'var/.setup_cronjob_status',
   'var/.update_cronjob_status'
 )
 
 set :linked_files_touch, fetch(:linked_files_touch, []).push(
   'app/etc/env.php',
-  'app/etc/config.local.php',
   'var/.setup_cronjob_status',
   'var/.update_cronjob_status'
 )
@@ -47,13 +45,13 @@ set :magento_deploy_chmod_x, fetch(:magento_deploy_chmod_x, ['bin/magento'])
 # deploy configuration defaults
 set :magento_deploy_composer, fetch(:magento_deploy_composer, true)
 set :magento_deploy_confirm, fetch(:magento_deploy_confirm, [])
-set :magento_deploy_languages, fetch(:magento_deploy_languages, ['en_US'])
+set :magento_deploy_languages, fetch(:magento_deploy_languages, [])
 set :magento_deploy_maintenance, fetch(:magento_deploy_maintenance, true)
 set :magento_deploy_production, fetch(:magento_deploy_production, true)
 set :magento_deploy_no_dev, fetch(:magento_deploy_no_dev, true)
 set :magento_deploy_themes, fetch(:magento_deploy_themes, [])
-set :magento_deploy_jobs, fetch(:magento_deploy_jobs, nil)      # this defaults to 4 when supported by bin/magento
-set :magento_deploy_strategy, fetch(:magento_deploy_strategy, nil)  # Magento 2.2 or later only: http://bit.ly/2yhMvVv
+set :magento_deploy_jobs, fetch(:magento_deploy_jobs, nil)
+set :magento_deploy_strategy, fetch(:magento_deploy_strategy, nil)
 
 # deploy targetting defaults
 set :magento_deploy_setup_role, fetch(:magento_deploy_setup_role, :all)

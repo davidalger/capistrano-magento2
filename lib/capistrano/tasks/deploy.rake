@@ -11,7 +11,6 @@ include Capistrano::Magento2::Helpers
 
 namespace :deploy do
   before 'deploy:check:linked_files', 'magento:deploy:check'
-  before 'deploy:symlink:linked_files', 'magento:deploy:local_config'
 
   # If both 'scopes' and 'themes' are available in app/etc/config.php then the build should not require database or
   # cache backend configuration to deploy. Removing the link to app/etc/env.php in this case prevents any possible
@@ -50,7 +49,6 @@ namespace :deploy do
   task :updated do
     invoke 'magento:deploy:verify'
     invoke 'magento:composer:install' if fetch(:magento_deploy_composer)
-    invoke 'magento:deploy:version_check'
     invoke 'magento:setup:permissions'
 
     if fetch(:magento_deploy_production)
@@ -77,17 +75,8 @@ namespace :deploy do
       end
     end
 
-    # The app:config:import command was introduced in 2.2.0; check if it exists before invoking it
-    on primary fetch(:magento_deploy_setup_role) do
-      within release_path do
-        if test :magento, 'app:config:import --help >/dev/null 2>&1'
-          if not fetch(:magento_internal_zero_down_flag)
-            invoke 'magento:app:config:import'
-          end
-        end
-      end
-    end
-
+    invoke 'magento:cache:flush' if not fetch(:magento_internal_zero_down_flag)
+    invoke 'magento:app:config:import' if not fetch(:magento_internal_zero_down_flag)
     invoke 'magento:setup:db:schema:upgrade' if not fetch(:magento_internal_zero_down_flag)
     invoke 'magento:setup:db:data:upgrade' if not fetch(:magento_internal_zero_down_flag)
 

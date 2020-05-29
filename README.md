@@ -140,9 +140,9 @@ Before you can use Capistrano to deploy, you must configure the `config/deploy.r
 Add a line similar to the following in `config/deploy.rb` to set a custom value on one of the above settings:
 
 ```ruby
+set :magento_deploy_jobs, '$(nproc)'
+set :magento_deploy_themes, ['Magento/backend', 'Magento/blank']
 set :magento_deploy_languages, ['en_US', 'en_CA']
-set :magento_deploy_composer, false
-set :magento_deploy_jobs, 4
 ```
 
 ### Capistrano Built-Ins

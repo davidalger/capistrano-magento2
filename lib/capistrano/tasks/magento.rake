@@ -401,42 +401,37 @@ namespace :magento do
         end
 
         within release_path do
-          # The setup:db:status command is only available in Magento 2.2.2 and later
-          if not test :magento, 'setup:db:status --help >/dev/null 2>&1'
-            info "Magento CLI command setup:db:status is not available. Maintenance mode will be used by default."
-          else
-            info "Checking database status..."
-            # Check setup:db:status output and disable maintenance mode if all modules are up-to-date
-            database_status = capture :magento, 'setup:db:status', raise_on_non_zero_exit: false
+          info "Checking database status..."
+          # Check setup:db:status output and disable maintenance mode if all modules are up-to-date
+          database_status = capture :magento, 'setup:db:status', raise_on_non_zero_exit: false
 
-            if database_status.to_s.include? 'All modules are up to date'
-              info "All modules are up to date. No database updates should occur during this release."
-              info ""
-              disable_maintenance = true
-            else
-              puts "      #{database_status.gsub("\n", "\n      ").sub("Run 'setup:upgrade' to update your DB schema and data.", "")}"
-            end
-
-            # Gather md5sums of app/etc/config.php on current and new release
-            info "Checking config status..."
-            config_hash_release = capture :md5sum, "#{release_path}/app/etc/config.php"
-            if test "[ -f #{current_path}/app/etc/config.php ]"
-              config_hash_current = capture :md5sum, "#{current_path}/app/etc/config.php"
-            else
-              config_hash_current = ("%-34s" % "n/a") + "#{current_path}/app/etc/config.php"
-            end
-
-            # Output some informational messages showing the config.php hash values
-            info "<release_path>/app/etc/config.php hash: #{config_hash_release.split(" ")[0]}"
-            info "<current_path>/app/etc/config.php hash: #{config_hash_current.split(" ")[0]}"
-
-            # If hashes differ, maintenance mode should not be disabled even if there are no database changes.
-            if config_hash_release.split(" ")[0] != config_hash_current.split(" ")[0]
-              info "Maintenance mode will not be disabled (config hashes differ)."
-              disable_maintenance = false
-            end
+          if database_status.to_s.include? 'All modules are up to date'
+            info "All modules are up to date. No database updates should occur during this release."
             info ""
+            disable_maintenance = true
+          else
+            puts "      #{database_status.gsub("\n", "\n      ").sub("Run 'setup:upgrade' to update your DB schema and data.", "")}"
           end
+
+          # Gather md5sums of app/etc/config.php on current and new release
+          info "Checking config status..."
+          config_hash_release = capture :md5sum, "#{release_path}/app/etc/config.php"
+          if test "[ -f #{current_path}/app/etc/config.php ]"
+            config_hash_current = capture :md5sum, "#{current_path}/app/etc/config.php"
+          else
+            config_hash_current = ("%-34s" % "n/a") + "#{current_path}/app/etc/config.php"
+          end
+
+          # Output some informational messages showing the config.php hash values
+          info "<release_path>/app/etc/config.php hash: #{config_hash_release.split(" ")[0]}"
+          info "<current_path>/app/etc/config.php hash: #{config_hash_current.split(" ")[0]}"
+
+          # If hashes differ, maintenance mode should not be disabled even if there are no database changes.
+          if config_hash_release.split(" ")[0] != config_hash_current.split(" ")[0]
+            info "Maintenance mode will not be disabled (config hashes differ)."
+            disable_maintenance = false
+          end
+          info ""
 
           if maintenance_enabled or disable_maintenance
             info "Disabling maintenance mode management..."

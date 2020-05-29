@@ -342,9 +342,6 @@ namespace :magento do
             end
 
             within release_path do
-              # Magento 2.1 will fail to deploy if this file does not exist and static asset signing is enabled
-              execute :touch, "#{release_path}/pub/static/deployed_version.txt"
-
               # Using -f here just in case MAGE_MODE environment variable in shell is set to something other than production
               execute :magento, "setup:static-content:deploy -f #{compilation_strategy}#{deploy_jobs}#{deploy_languages}#{deploy_themes}"
             end

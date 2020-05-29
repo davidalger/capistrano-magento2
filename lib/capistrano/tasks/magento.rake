@@ -337,18 +337,21 @@ namespace :magento do
       task :deploy do
         on release_roles :all do
           with mage_mode: :production do
-            _magento_version = magento_version
+            deploy_languages = fetch(:magento_deploy_languages)
+            if deploy_languages
+              deploy_languages = deploy_languages.join(' ')
+            else
+              deploy_languages = nil
+            end
 
-            deploy_languages = fetch(:magento_deploy_languages).join(' ')
             deploy_themes = fetch(:magento_deploy_themes)
-            deploy_jobs = fetch(:magento_deploy_jobs)
-
             if deploy_themes.count() > 0
               deploy_themes = deploy_themes.join(' -t ').prepend(' -t ')
             else
               deploy_themes = nil
             end
 
+            deploy_jobs = fetch(:magento_deploy_jobs)
             if deploy_jobs
               deploy_jobs = "--jobs #{deploy_jobs} "
             else
@@ -358,10 +361,8 @@ namespace :magento do
             # Magento 2.2 introduced static content compilation strategies that can be one of the following:
             # quick (default), standard (like previous versions) or compact
             compilation_strategy = fetch(:magento_deploy_strategy)
-            if compilation_strategy and _magento_version >= Gem::Version.new('2.2.0')
+            if compilation_strategy
               compilation_strategy =  "-s #{compilation_strategy} "
-            else
-              compilation_strategy = nil
             end
 
             within release_path do

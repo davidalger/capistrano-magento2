@@ -314,15 +314,15 @@ namespace :magento do
         on release_roles :all do
           with mage_mode: :production do
             deploy_languages = fetch(:magento_deploy_languages)
-            if deploy_languages
-              deploy_languages = deploy_languages.join(' ')
+            if deploy_languages.count() > 0
+              deploy_languages = deploy_languages.join(' -l ').prepend('-l ')
             else
               deploy_languages = nil
             end
 
             deploy_themes = fetch(:magento_deploy_themes)
             if deploy_themes.count() > 0
-              deploy_themes = deploy_themes.join(' -t ').prepend(' -t ')
+              deploy_themes = deploy_themes.join(' -t ').prepend('-t ')
             else
               deploy_themes = nil
             end

@@ -11,7 +11,6 @@ include Capistrano::Magento2::Helpers
 
 namespace :deploy do
   before 'deploy:check:linked_files', 'magento:deploy:check'
-  before 'deploy:symlink:linked_files', 'magento:deploy:local_config'
 
   # If both 'scopes' and 'themes' are available in app/etc/config.php then the build should not require database or
   # cache backend configuration to deploy. Removing the link to app/etc/env.php in this case prevents any possible

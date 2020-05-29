@@ -231,17 +231,6 @@ namespace :magento do
       end
       exit 1 if is_err
     end
-
-    task :local_config do
-      on release_roles :all do
-        if test "[ -f #{release_path}/app/etc/config.local.php ]"
-          info "The repository contains app/etc/config.local.php, removing from :linked_files list."
-          _linked_files = fetch(:linked_files, [])
-          _linked_files.delete('app/etc/config.local.php')
-          set :linked_files, _linked_files
-        end
-      end
-    end
   end
 
   namespace :setup do

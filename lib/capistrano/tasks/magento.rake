@@ -401,46 +401,43 @@ namespace :magento do
 
         within release_path do
           info "Checking database status..."
-          # Check setup:db:status output and disable maintenance mode if all modules are up-to-date
+          # Check setup:db:status output and if out-of-date do not disable maintenance mode
           database_status = capture :magento, 'setup:db:status', raise_on_non_zero_exit: false
+          database_uptodate = false
 
           if database_status.to_s.include? 'All modules are up to date'
-            info "All modules are up to date. No database updates should occur during this release."
+            info "All modules are up to date."
             info ""
-            disable_maintenance = true
+            database_uptodate = true
           else
-            puts "      #{database_status.gsub("\n", "\n      ").sub("Run 'setup:upgrade' to update your DB schema and data.", "")}"
+            puts "      #{database_status.gsub("\n", "\n      ").sub(" Run 'setup:upgrade' to update your DB schema and data.", "")}"
           end
 
-          # Gather md5sums of app/etc/config.php on current and new release
+          # Check app:config:status output and if out-of-date do not disable maintenance mode
           info "Checking config status..."
-          config_hash_release = capture :md5sum, "#{release_path}/app/etc/config.php"
-          if test "[ -f #{current_path}/app/etc/config.php ]"
-            config_hash_current = capture :md5sum, "#{current_path}/app/etc/config.php"
+          config_status = capture :magento, 'app:config:status', raise_on_non_zero_exit: false
+          config_uptodate = false
+
+          if config_status.to_s.include? 'Config files are up to date'
+            info "Config files are up to date."
+            info ""
+            config_uptodate = true
           else
-            config_hash_current = ("%-34s" % "n/a") + "#{current_path}/app/etc/config.php"
+            puts "      #{config_status.gsub("\n", "\n      ").sub(" Run app:config:import or setup:upgrade command to synchronize configuration.", "")}"
           end
 
-          # Output some informational messages showing the config.php hash values
-          info "<release_path>/app/etc/config.php hash: #{config_hash_release.split(" ")[0]}"
-          info "<current_path>/app/etc/config.php hash: #{config_hash_current.split(" ")[0]}"
-
-          # If hashes differ, maintenance mode should not be disabled even if there are no database changes.
-          if config_hash_release.split(" ")[0] != config_hash_current.split(" ")[0]
-            info "Maintenance mode will not be disabled (config hashes differ)."
-            disable_maintenance = false
-          end
-          info ""
-
-          if maintenance_enabled or disable_maintenance
-            info "Disabling maintenance mode management..."
+          # If both checks above reported up-to-date status checks disable maintenance mode
+          if database_uptodate and config_uptodate
+            disable_maintenance = true
           end
 
           if maintenance_enabled
             info "Maintenance mode was already active prior to deploy."
+            info "Disabling maintenance mode management..."
             set :magento_deploy_maintenance, false
           elsif disable_maintenance
             info "There are no database updates or config changes. This is a zero-down deployment."
+            info "Disabling maintenance mode management..."
             set :magento_internal_zero_down_flag, true # Set internal flag to stop db schema/data upgrades from running
             set :magento_deploy_maintenance, false     # Disable maintenance mode management since it is not neccessary
           else

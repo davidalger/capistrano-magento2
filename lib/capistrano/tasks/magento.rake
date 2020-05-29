@@ -339,6 +339,7 @@ namespace :magento do
           with mage_mode: :production do
             _magento_version = magento_version
 
+            deploy_languages = fetch(:magento_deploy_languages).join(' ')
             deploy_themes = fetch(:magento_deploy_themes)
             deploy_jobs = fetch(:magento_deploy_jobs)
 
@@ -354,14 +355,6 @@ namespace :magento do
               deploy_jobs = nil
             end
 
-            # Workaround core-bug with multi-lingual deployments on Magento 2.1.3 and greater. In these versions each
-            # language must be iterated individually. See issue #72 for details.
-            if _magento_version >= Gem::Version.new('2.1.3')
-              deploy_languages = fetch(:magento_deploy_languages)
-            else
-              deploy_languages = [fetch(:magento_deploy_languages).join(' ')]
-            end
-
             # Magento 2.2 introduced static content compilation strategies that can be one of the following:
             # quick (default), standard (like previous versions) or compact
             compilation_strategy = fetch(:magento_deploy_strategy)
@@ -375,10 +368,7 @@ namespace :magento do
               # Magento 2.1 will fail to deploy if this file does not exist and static asset signing is enabled
               execute :touch, "#{release_path}/pub/static/deployed_version.txt"
 
-              # This loop exists to support deploy on versions where each language must be deployed seperately
-              deploy_languages.each do |lang|
-                static_content_deploy "#{compilation_strategy}#{deploy_jobs}#{lang}#{deploy_themes}"
-              end
+              static_content_deploy "#{compilation_strategy}#{deploy_jobs}#{deploy_languages}#{deploy_themes}"
             end
 
             # Set the deployed_version of static content to ensure it matches across all hosts

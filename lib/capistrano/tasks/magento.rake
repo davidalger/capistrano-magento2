@@ -342,8 +342,7 @@ namespace :magento do
             end
 
             within release_path do
-              # Using -f here just in case MAGE_MODE environment variable in shell is set to something other than production
-              execute :magento, "setup:static-content:deploy -f #{compilation_strategy}#{deploy_jobs}#{deploy_languages}#{deploy_themes}"
+              execute :magento, "setup:static-content:deploy #{compilation_strategy}#{deploy_jobs}#{deploy_languages}#{deploy_themes}"
             end
 
             # Set the deployed_version of static content to ensure it matches across all hosts

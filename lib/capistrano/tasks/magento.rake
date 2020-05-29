@@ -315,21 +315,21 @@ namespace :magento do
           with mage_mode: :production do
             deploy_languages = fetch(:magento_deploy_languages)
             if deploy_languages.count() > 0
-              deploy_languages = deploy_languages.join(' -l ').prepend('-l ')
+              deploy_languages = deploy_languages.join(' -l ').prepend(' -l ')
             else
               deploy_languages = nil
             end
 
             deploy_themes = fetch(:magento_deploy_themes)
             if deploy_themes.count() > 0
-              deploy_themes = deploy_themes.join(' -t ').prepend('-t ')
+              deploy_themes = deploy_themes.join(' -t ').prepend(' -t ')
             else
               deploy_themes = nil
             end
 
             deploy_jobs = fetch(:magento_deploy_jobs)
             if deploy_jobs
-              deploy_jobs = "--jobs #{deploy_jobs} "
+              deploy_jobs = " --jobs #{deploy_jobs}"
             else
               deploy_jobs = nil
             end
@@ -338,11 +338,11 @@ namespace :magento do
             # quick (default), standard (like previous versions) or compact
             compilation_strategy = fetch(:magento_deploy_strategy)
             if compilation_strategy
-              compilation_strategy =  "-s #{compilation_strategy} "
+              compilation_strategy =  " -s #{compilation_strategy}"
             end
 
             within release_path do
-              execute :magento, "setup:static-content:deploy #{compilation_strategy}#{deploy_jobs}#{deploy_languages}#{deploy_themes}"
+              execute :magento, "setup:static-content:deploy#{compilation_strategy}#{deploy_jobs}#{deploy_languages}#{deploy_themes}"
             end
 
             # Set the deployed_version of static content to ensure it matches across all hosts

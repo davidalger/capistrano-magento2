@@ -75,6 +75,7 @@ namespace :deploy do
       end
     end
 
+    invoke 'magento:cache:flush' if not fetch(:magento_internal_zero_down_flag)
     invoke 'magento:app:config:import' if not fetch(:magento_internal_zero_down_flag)
     invoke 'magento:setup:db:schema:upgrade' if not fetch(:magento_internal_zero_down_flag)
     invoke 'magento:setup:db:data:upgrade' if not fetch(:magento_internal_zero_down_flag)

@@ -51,6 +51,7 @@ namespace :magento do
           execute :magento, 'cache:flush'
         end
       end
+      Rake::Task['magento:cache:flush'].reenable  ## make task perpetually callable
     end
     
     desc 'Clean Magento cache by types'

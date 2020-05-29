@@ -29,6 +29,7 @@ lock '~> 3.14'
 * Dropped explicit default of `:magento_deploy_languages`; will now only be passed to `bin/magento` call when set in project configuration.
 * Updated zero-down deployment logic to rely on `app:config:status` to detect config changes rather than the md5sum of config.php in current and release directories.
 * Added `magento:app:config:status` to available commands for manual execution.
+* Fixes issue in 2.3.4 and later where app:config:import may fail if cache:flush is not run immediately prior ([issue #138](https://github.com/davidalger/capistrano-magento2/issues/138))
 
 0.8.9
 =========

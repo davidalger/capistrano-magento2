@@ -122,7 +122,7 @@ Before you can use Capistrano to deploy, you must configure the `config/deploy.r
 | ------------------------------ | ------- | ---
 | `:magento_deploy_setup_role`   | `:all`  | Role from which primary host is chosen to run things like setup:upgrade on
 | `:magento_deploy_cache_shared` | `true`  | If true, cache operations are restricted to the primary node in setup role
-| `:magento_deploy_languages`    | `['en_US']` | Array of languages passed to static content deploy routine
+| `:magento_deploy_languages`    | `[]` | Array of languages passed to static content deploy routine
 | `:magento_deploy_themes`       | `[]`   | Array of themes passed to static content deploy
 | `:magento_deploy_jobs`         | `4`    | Number of threads to use for static content deploy
 | `:magento_deploy_composer`     | `true` | Enables composer install behaviour in the built-in deploy routine

@@ -26,6 +26,7 @@ lock '~> 3.14'
 * Removed `magento:deploy:version_check` task and associated warning when attempting to deploy unsupported versions of Magento
 * Updated required version of `capistrano` to `~> 1.13` (>=1.13 and less than 2.0)
 * Resolved inability to use `--dry-run` flag ([issue #128](https://github.com/davidalger/capistrano-magento2/issues/128)) as made possible by the removal of all version related gating logic.
+* Dropped explicit default of `:magento_deploy_languages`; will now only be passed to `bin/magento` call when set in project configuration.
 
 0.8.9
 =========

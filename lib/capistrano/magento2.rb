@@ -34,24 +34,6 @@ module Capistrano
     end
 
     module Setup
-      def static_content_deploy params
-        if magento_version >= Gem::Version.new('2.2.0-rc')
-          # Using -f here just in case MAGE_MODE environment variable in shell is set to something other than production
-          execute :magento, "setup:static-content:deploy -f #{params}"
-        else
-          # Sets pipefail option in shell allowing command exit codes to halt execution when piping command output
-          if not SSHKit.config.command_map[:magento].include? 'set -o pipefail' # avoids trouble on multi-host deploys
-            @@pipefail_less = SSHKit.config.command_map[:magento].dup
-            SSHKit.config.command_map[:magento] = "set -o pipefail; #{@@pipefail_less}"
-          end
-
-          execute :magento, "setup:static-content:deploy #{params} | stdbuf -o0 tr -d ."
-
-          # Unsets pipefail option in shell so it won't affect future command executions
-          SSHKit.config.command_map[:magento] = @@pipefail_less
-        end
-      end
-
       def deployed_version
         # Generate a static content version string, but only if one has not already been set on a previous call
         if not fetch(:magento_static_deployed_version)

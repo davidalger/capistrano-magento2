@@ -3,7 +3,11 @@
 0.9.0
 =========
 
-* Updated required version of `capistrano` to `~> 1.13`
+* **Dropped support for versions of Magento prior to 2.3.0** as they are well past their EOL by now
+* Cleanup of all `version_check` related gating logic around legacy behaviors in 2.1.x and 2.2.x
+* Removed `magento:deploy:version_check` task and associated warning when attempting to deploy unsupported versions of Magento
+* Updated required version of `capistrano` to `~> 1.13` (>1.13 and less than 2.0)
+* Resolved inability to use `--dry-run` flag (issue #128); direct result of removing all version related gating logic.
 
 0.8.9
 =========

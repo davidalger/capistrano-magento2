@@ -14,10 +14,6 @@ SSHKit.config.command_map[:magento] = "/usr/bin/env php -f bin/magento --"
 module Capistrano
   module Magento2
     module Helpers
-      def magento_version
-        return Gem::Version::new((capture :php, "-f #{release_path}/bin/magento -- -V --no-ansi").split(' ').pop)
-      end
-
       def disabled_modules
         output = capture :magento, 'module:status --no-ansi'
         output = output.split("disabled modules:\n", 2)[1]

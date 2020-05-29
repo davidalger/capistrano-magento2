@@ -305,12 +305,7 @@ namespace :magento do
         on release_roles :all do
           within release_path do
             with mage_mode: :production do
-              output = capture :magento, 'setup:di:compile --no-ansi', verbosity: Logger::INFO
-
-              # 2.1.x doesn't return a non-zero exit code for certain errors (see davidalger/capistrano-magento2#41)
-              if output.to_s.include? 'Errors during compilation'
-                raise Exception, 'DI compilation command execution failed'
-              end
+              execute :magento, "setup:di:compile"
             end
           end
         end

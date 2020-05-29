@@ -5,7 +5,7 @@
 
 **Upgrade Notes:**
 
-As of this release only Magento 2.3 and later are supported and **support has been dropped for prior versions** which have long since reached their end-of-life. This version likely works with 2.2.2 and later, but as 2.2 is officially EOL it will no longer be supported by new releases of this gem.
+As of this release only Magento 2.3 and later are supported and **support has been dropped for prior versions** which have long since reached their end-of-life. Moving forward versions past their EOL will no longer be supported by subsequent releases of this gem. Older versions of this gem may continue to be used to deploy older and EOL versions.
 
 If using a `Gemfile` with Bundler to lock versions of dependencies used for execution, the version lock on `capistrano` should be updated to `~>1.13` to match the minimal requirement of this release, otherwise `bundle update` will fail to update to version `0.9.0` of this gem. The following is recommended:
 

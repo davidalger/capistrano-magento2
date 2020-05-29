@@ -118,22 +118,22 @@ Before you can use Capistrano to deploy, you must configure the `config/deploy.r
 
 ### Magento Deploy Settings
 
-| setting                        | default | what it does
-| ------------------------------ | ------- | ---
-| `:magento_deploy_setup_role`   | `:all`  | Role from which primary host is chosen to run things like setup:upgrade on
-| `:magento_deploy_cache_shared` | `true`  | If true, cache operations are restricted to the primary node in setup role
-| `:magento_deploy_languages`    | `[]` | Array of languages passed to static content deploy routine
-| `:magento_deploy_themes`       | `[]`   | Array of themes passed to static content deploy
+| setting                        | default  | what it does
+| ------------------------------ | -------- | ---
+| `:magento_deploy_setup_role`   | `:all`   | Role from which primary host is chosen to run things like setup:upgrade on
+| `:magento_deploy_cache_shared` | `true`   | If true, cache operations are restricted to the primary node in setup role
+| `:magento_deploy_languages`    | `[]`     | Array of languages passed to static content deploy routine
+| `:magento_deploy_themes`       | `[]`     | Array of themes passed to static content deploy
 | `:magento_deploy_jobs`         | `nil`    | Number of threads to use for static content deploy
-| `:magento_deploy_composer`     | `true` | Enables composer install behaviour in the built-in deploy routine
-| `:magento_deploy_production`   | `true` | Enables production specific DI compilation and static content generation
-| `:magento_deploy_no_dev`       | `true` | Enables use of --no-dev flag on composer install
-| `:magento_deploy_maintenance`  | `true` | Enables use of maintenance mode while magento:setup:upgrade runs
-| `:magento_deploy_confirm`      | `[]`   | Used to require confirmation of deployment to a set of capistrano stages
+| `:magento_deploy_composer`     | `true`   | Enables composer install behavior in the built-in deploy routine
+| `:magento_deploy_production`   | `true`   | Enables production specific DI compilation and static content generation
+| `:magento_deploy_no_dev`       | `true`   | Enables use of --no-dev flag on composer install
+| `:magento_deploy_maintenance`  | `true`   | Enables use of maintenance mode while magento:setup:upgrade runs
+| `:magento_deploy_confirm`      | `[]`     | Used to require confirmation of deployment to a set of capistrano stages
 | `:magento_deploy_chmod_d`      | `'2770'` | Default permissions applied to all directories in the release path
 | `:magento_deploy_chmod_f`      | `'0660'` | Default permissions applied to all non-executable files in the release path
 | `:magento_deploy_chmod_x`      | `['bin/magento']` | Default list of files in release path to set executable bit on
-| `:magento_deploy_strategy`     | `nil`  | Can be `quick`, `standard` or `compact`
+| `:magento_deploy_strategy`     | `nil`    | Can be `quick`, `standard` or `compact`
 
 #### Example Usage
 

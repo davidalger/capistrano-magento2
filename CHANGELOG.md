@@ -28,6 +28,7 @@ lock '~> 3.14'
 * Resolved inability to use `--dry-run` flag ([issue #128](https://github.com/davidalger/capistrano-magento2/issues/128)) as made possible by the removal of all version related gating logic.
 * Dropped explicit default of `:magento_deploy_languages`; will now only be passed to `bin/magento` call when set in project configuration.
 * Updated zero-down deployment logic to rely on `app:config:status` to detect config changes rather than the md5sum of config.php in current and release directories.
+* Added `magento:app:config:status` to available commands for manual execution.
 
 0.8.9
 =========

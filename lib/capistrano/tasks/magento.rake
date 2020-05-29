@@ -31,6 +31,15 @@ namespace :magento do
           end
         end
       end
+      
+      desc 'Checks if config propagation requires update'
+      task :status do
+        on primary fetch(:magento_deploy_setup_role) do
+          within release_path do
+            execute :magento, 'app:config:status'
+          end
+        end
+      end
     end
   end
 
@@ -234,7 +243,7 @@ namespace :magento do
     end
     
     namespace :db do
-      desc 'Checks if database schema and/or data require upgrading'
+      desc 'Checks if DB schema or data requires upgrade'
       task :status do
         on primary fetch(:magento_deploy_setup_role) do
           within release_path do

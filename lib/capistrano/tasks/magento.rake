@@ -334,7 +334,7 @@ namespace :magento do
               deploy_jobs = nil
             end
 
-            # Magento 2.2 introduced static content compilation strategies that can be one of the following:
+            # Static content compilation strategies that can be one of the following:
             # quick (default), standard (like previous versions) or compact
             compilation_strategy = fetch(:magento_deploy_strategy)
             if compilation_strategy

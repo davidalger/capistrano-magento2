@@ -436,12 +436,12 @@ namespace :magento do
           end
 
           if maintenance_enabled
-            info "Maintenance mode was already active prior to deploy."
             info "Disabling maintenance mode management..."
+            info "Maintenance mode was already active prior to deploy."
             set :magento_deploy_maintenance, false
           elsif disable_maintenance
-            info "There are no database updates or config changes. This is a zero-down deployment."
             info "Disabling maintenance mode management..."
+            info "There are no database updates or config changes. This is a zero-down deployment."
             set :magento_internal_zero_down_flag, true # Set internal flag to stop db schema/data upgrades from running
             set :magento_deploy_maintenance, false     # Disable maintenance mode management since it is not neccessary
           else

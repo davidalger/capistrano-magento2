@@ -124,7 +124,7 @@ Before you can use Capistrano to deploy, you must configure the `config/deploy.r
 | `:magento_deploy_cache_shared` | `true`  | If true, cache operations are restricted to the primary node in setup role
 | `:magento_deploy_languages`    | `[]` | Array of languages passed to static content deploy routine
 | `:magento_deploy_themes`       | `[]`   | Array of themes passed to static content deploy
-| `:magento_deploy_jobs`         | `4`    | Number of threads to use for static content deploy
+| `:magento_deploy_jobs`         | `nil`    | Number of threads to use for static content deploy
 | `:magento_deploy_composer`     | `true` | Enables composer install behaviour in the built-in deploy routine
 | `:magento_deploy_production`   | `true` | Enables production specific DI compilation and static content generation
 | `:magento_deploy_no_dev`       | `true` | Enables use of --no-dev flag on composer install
@@ -141,10 +141,8 @@ Add a line similar to the following in `config/deploy.rb` to set a custom value 
 
 ```ruby
 set :magento_deploy_languages, ['en_US', 'en_CA']
-```
-
-```ruby
 set :magento_deploy_composer, false
+set :magento_deploy_jobs, 4
 ```
 
 ### Capistrano Built-Ins

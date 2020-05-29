@@ -50,7 +50,7 @@ set :magento_deploy_maintenance, fetch(:magento_deploy_maintenance, true)
 set :magento_deploy_production, fetch(:magento_deploy_production, true)
 set :magento_deploy_no_dev, fetch(:magento_deploy_no_dev, true)
 set :magento_deploy_themes, fetch(:magento_deploy_themes, [])
-set :magento_deploy_jobs, fetch(:magento_deploy_jobs, nil)      # this defaults to 4 when supported by bin/magento
+set :magento_deploy_jobs, fetch(:magento_deploy_jobs, nil)
 set :magento_deploy_strategy, fetch(:magento_deploy_strategy, nil)
 
 # deploy targetting defaults

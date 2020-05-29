@@ -424,11 +424,11 @@ namespace :magento do
 
           if config_status.to_s.include? 'Config files are up to date'
             info "Config files are up to date."
-            info ""
             config_uptodate = true
           else
             puts "      #{config_status.gsub("\n", "\n      ").sub(" Run app:config:import or setup:upgrade command to synchronize configuration.", "")}"
           end
+          info ""
 
           # If both checks above reported up-to-date status checks disable maintenance mode
           if database_uptodate and config_uptodate

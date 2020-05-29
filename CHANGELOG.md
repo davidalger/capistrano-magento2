@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+0.9.0
+=========
+
+* Updated required version of `capistrano` to `~> 1.13`
+
 0.8.9
 =========
 

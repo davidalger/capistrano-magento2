@@ -6,7 +6,10 @@ A Capistrano extension for Magento 2 deployments. Takes care of specific Magento
 
 ## Supported Magento Versions
 
-**As of version 0.7.0 this gem only supports deployment of Magento 2.1.1 or later; please use an earlier version to deploy older releases of Magento 2**
+The following describes minimum Magento versions supported by releases of this gem. Please use an earlier version to deploy older releases of Magento not supported by the most recent iterations of this gem.
+
+* Version 0.9.x supports deployment of Magento 2.3.0 and later.
+* Version 0.7.x supports deployment of Magento 2.1.1 and later.
 
 ## Installation
 

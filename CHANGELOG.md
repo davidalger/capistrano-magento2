@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+0.9.1
+=========
+
+* Fixed regression in 0.9.0 where relying on the `-l` flag broke multilingual static content deployment ([issue #141](https://github.com/davidalger/capistrano-magento2/issues/141))
+
 0.9.0
 =========
 

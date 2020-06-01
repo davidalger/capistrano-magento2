@@ -320,7 +320,7 @@ namespace :magento do
           with mage_mode: :production do
             deploy_languages = fetch(:magento_deploy_languages)
             if deploy_languages.count() > 0
-              deploy_languages = deploy_languages.join(' -l ').prepend(' -l ')
+              deploy_languages = deploy_languages.join(' ').prepend(' ')
             else
               deploy_languages = nil
             end

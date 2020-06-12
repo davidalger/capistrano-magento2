@@ -3,6 +3,7 @@
 0.9.2
 =========
 
+* Fixed issue preventing use of `after` tasks on `magento:cache:flush` from being used to trigger service reloads at end of deployment ([issue #143](https://github.com/davidalger/capistrano-magento2/issues/143))
 * Updated to use DSL method `invoke!` to call iterant tasks ([see capistrano/capistrano/pull/1911](https://github.com/capistrano/capistrano/pull/1911)))
 
 0.9.1

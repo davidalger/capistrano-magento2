@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+0.9.2
+=========
+
+* Updated to use DSL method `invoke!` to call iterant tasks ([see capistrano/capistrano/pull/1911](https://github.com/capistrano/capistrano/pull/1911)))
+
 0.9.1
 =========
 

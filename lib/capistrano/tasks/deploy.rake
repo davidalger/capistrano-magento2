@@ -63,7 +63,7 @@ namespace :deploy do
       invoke 'magento:deploy:mode:production'
     end
 
-    invoke 'magento:setup:permissions'
+    invoke! 'magento:setup:permissions'
     invoke 'magento:maintenance:check'
     invoke 'magento:maintenance:enable' if fetch(:magento_deploy_maintenance)
 
@@ -94,7 +94,7 @@ namespace :deploy do
   end
 
   task :published do
-    invoke 'magento:cache:flush'
+    invoke! 'magento:cache:flush'
     invoke 'magento:cache:varnish:ban'
     invoke 'magento:maintenance:disable' if fetch(:magento_deploy_maintenance)
   end

@@ -63,7 +63,7 @@ namespace :deploy do
       invoke 'magento:deploy:mode:production'
     end
 
-    invoke 'magento:setup:permissions'
+    invoke! 'magento:setup:permissions'
     invoke 'magento:maintenance:check'
     invoke 'magento:maintenance:enable' if fetch(:magento_deploy_maintenance)
 
@@ -75,10 +75,16 @@ namespace :deploy do
       end
     end
 
-    invoke 'magento:cache:flush' if not fetch(:magento_internal_zero_down_flag)
-    invoke 'magento:app:config:import' if not fetch(:magento_internal_zero_down_flag)
-    invoke 'magento:setup:db:schema:upgrade' if not fetch(:magento_internal_zero_down_flag)
-    invoke 'magento:setup:db:data:upgrade' if not fetch(:magento_internal_zero_down_flag)
+    if not fetch(:magento_internal_zero_down_flag)
+      on cache_hosts do
+        within release_path do
+          execute :magento, 'cache:flush'
+        end
+      end
+      invoke 'magento:app:config:import'
+      invoke 'magento:setup:db:schema:upgrade'
+      invoke 'magento:setup:db:data:upgrade'
+    end
 
     on primary fetch(:magento_deploy_setup_role) do
       within release_path do

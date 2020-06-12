@@ -51,7 +51,6 @@ namespace :magento do
           execute :magento, 'cache:flush'
         end
       end
-      Rake::Task['magento:cache:flush'].reenable  ## make task perpetually callable
     end
     
     desc 'Clean Magento cache by types'
@@ -297,7 +296,6 @@ namespace :magento do
           end
         end
       end
-      Rake::Task['magento:setup:permissions'].reenable  ## make task perpetually callable
     end
     
     namespace :di do

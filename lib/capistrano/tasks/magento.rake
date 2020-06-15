@@ -27,7 +27,7 @@ namespace :magento do
       task :import do
         on primary fetch(:magento_deploy_setup_role) do
           within release_path do
-            execute :magento, 'app:config:import'
+            execute :magento, 'app:config:import --no-interaction'
           end
         end
       end

@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+0.9.3
+=========
+
+* Updated to now specify `--non-interactive` flag on `app:config:import` so CLI command will not hang trying for user input.
+
 0.9.2
 =========
 

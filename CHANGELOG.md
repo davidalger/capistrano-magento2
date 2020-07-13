@@ -1,5 +1,10 @@
 # Capistrano::Magento2 Change Log
 
+0.9.4
+=========
+
+* Updated to now set SELinux context on `var` directory with default type of `httpd_sys_rw_content_t` to allow application writes where SELinux is enabled.
+
 0.9.3
 =========
 

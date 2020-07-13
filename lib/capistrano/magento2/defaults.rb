@@ -42,6 +42,10 @@ set :magento_deploy_chmod_d, fetch(:magento_deploy_chmod_d, '2770')
 set :magento_deploy_chmod_f, fetch(:magento_deploy_chmod_f, '0660')
 set :magento_deploy_chmod_x, fetch(:magento_deploy_chmod_x, ['bin/magento'])
 
+# deploy selinux defaults
+set :magento_deploy_chcon_dirs, fetch(:magento_deploy_chcon_dirs, ['var'])
+set :magento_deploy_chcon_type, fetch(:magento_deploy_chcon_type, 'httpd_sys_rw_content_t')
+
 # deploy configuration defaults
 set :magento_deploy_composer, fetch(:magento_deploy_composer, true)
 set :magento_deploy_confirm, fetch(:magento_deploy_confirm, [])

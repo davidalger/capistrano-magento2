@@ -298,6 +298,21 @@ namespace :magento do
       end
     end
     
+    desc 'Sets proper selinux context on directories which are written to by web processes'
+    task :selinux do
+      on release_roles :all do
+        with path: '/usr/sbin:$PATH' do
+          if test "selinuxenabled"
+            within release_path do
+              fetch(:magento_deploy_chcon_dirs).each() do |dir|
+                execute :chcon, "-RP -t #{fetch(:magento_deploy_chcon_type)} #{release_path}/#{dir}"
+              end
+            end
+          end
+        end
+      end
+    end
+
     namespace :di do
       desc 'Runs dependency injection compilation routine'
       task :compile do

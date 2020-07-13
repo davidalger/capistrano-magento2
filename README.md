@@ -136,6 +136,8 @@ Before you can use Capistrano to deploy, you must configure the `config/deploy.r
 | `:magento_deploy_chmod_d`      | `'2770'` | Default permissions applied to all directories in the release path
 | `:magento_deploy_chmod_f`      | `'0660'` | Default permissions applied to all non-executable files in the release path
 | `:magento_deploy_chmod_x`      | `['bin/magento']` | Default list of files in release path to set executable bit on
+| `:magento_deploy_chcon_dirs`   | `['var']`         | Default list of directories on which to recursively set an SELinux context type
+| `:magento_deploy_chcon_type`   | `httpd_sys_rw_content_t` | Default SELinux context type to set on directories which should be writeable by application
 | `:magento_deploy_strategy`     | `nil`    | Can be `quick`, `standard` or `compact`
 
 #### Example Usage

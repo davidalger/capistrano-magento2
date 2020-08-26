@@ -16,7 +16,7 @@ namespace :deploy do
   # cache backend configuration to deploy. Removing the link to app/etc/env.php in this case prevents any possible
   # side effects that may arise from the build running in parallel to the live production release (such as the cache
   # being randomly disabled during the composer install step of the build, something which has been observed). This
-  # requires "bin/magento scopes themes i18n" be run to dump theme/store config and the result comitted to repository
+  # requires "bin/magento app:config:dump scopes themes i18n" be run to dump theme/store config and the result comitted to repository
   before 'deploy:symlink:linked_files', :detect_scd_config do
     on primary fetch(:magento_deploy_setup_role) do
       unless test %Q[#{SSHKit.config.command_map[:php]} -r '

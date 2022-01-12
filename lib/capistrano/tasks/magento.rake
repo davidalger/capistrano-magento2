@@ -152,6 +152,10 @@ namespace :magento do
             composer_flags += ' --optimize'
           end
 
+           if fetch(:composer_authoritative_classmap)
+              composer_flags += ' --classmap-authoritative'
+            end
+
           execute :composer, "dump-autoload #{composer_flags} 2>&1"
         end
       end

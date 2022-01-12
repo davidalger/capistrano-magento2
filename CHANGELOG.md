@@ -1,5 +1,11 @@
 # Capistrano::Magento2 Change Log
 
+0.9.5
+=========
+
+* Adding `:composer_authoritative_classmap` flag to enable composer autoload dump `--classmap-authoritative` flag
+
+
 0.9.4
 =========
 

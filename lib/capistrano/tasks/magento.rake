@@ -359,8 +359,15 @@ namespace :magento do
               compilation_strategy =  " -s #{compilation_strategy}"
             end
 
+            deterministic_content_version = fetch(:magento_deploy_deterministic_content_version)
+            if deterministic_content_version
+              content_version = " --content-version=#{fetch(:release_timestamp)}"
+            else
+              content_version = nil
+            end
+
             within release_path do
-              execute :magento, "setup:static-content:deploy#{compilation_strategy}#{deploy_jobs}#{deploy_languages}#{deploy_themes}"
+              execute :magento, "setup:static-content:deploy#{compilation_strategy}#{deploy_jobs}#{deploy_languages}#{deploy_themes}#{content_version}"
             end
 
             # Set the deployed_version of static content to ensure it matches across all hosts

@@ -56,6 +56,7 @@ set :magento_deploy_no_dev, fetch(:magento_deploy_no_dev, true)
 set :magento_deploy_themes, fetch(:magento_deploy_themes, [])
 set :magento_deploy_jobs, fetch(:magento_deploy_jobs, nil)
 set :magento_deploy_strategy, fetch(:magento_deploy_strategy, nil)
+set :magento_deploy_deterministic_content_version, fetch(:magento_deploy_deterministic_content_version, false)
 
 # deploy targetting defaults
 set :magento_deploy_setup_role, fetch(:magento_deploy_setup_role, :all)
